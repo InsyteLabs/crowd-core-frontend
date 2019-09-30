@@ -28,10 +28,35 @@ class UserService{
         return new User(newUser);
     }
 
+    async authenticate(username: string, password: string): Promise<any>{
+        let jwt: any = await fetch(`${ apiUrl }/authenticate`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ username, password })
+        });
+
+        const { token } = await jwt.json();
+
+        if(!token) return {}
+
+        let [ header, payload, signature ] = token.split('.');
+
+        header  = atob(header),
+        payload = atob(payload);
+
+        localStorage.setItem('user', jwt.token);
+
+        return JSON.parse(payload);
+    }
+
     async getRoles(): Promise<IRole[]>{
         let roles: any = await fetch(`${ apiUrl }/roles`);
             roles      = await roles.json();
-
+        
+        roles.forEach((r: IRole) => r.checked = false);
+        
         return roles;
     }
 }

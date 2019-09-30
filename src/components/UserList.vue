@@ -1,6 +1,6 @@
 <template>
     <div class="user-list container-fluid">
-        <table class="table-sm table-striped">
+        <table class="table table-sm table-striped">
             <thead>
                 <th>Client ID</th>
                 <th>First Name</th>

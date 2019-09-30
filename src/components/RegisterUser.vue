@@ -1,5 +1,6 @@
 <template>
     <div class="register-user container-fluid">
+        <h3>Create User</h3>
         <div class="row">
             <div class="col-md-6">
                 <div class="form-group">
@@ -37,9 +38,11 @@
                 </div>
             </div>
             <div class="col-md-6">
-                <label for="password">Password</label>
-                <div class="input-group">
-                    <input v-model="password" type="password" id="password" class="form-control form-control-sm">
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <div class="input-group">
+                        <input v-model="password" type="password" id="password" class="form-control form-control-sm">
+                    </div>
                 </div>
             </div>
             <div class="col-md-6">

@@ -6,7 +6,7 @@
                     <h2>Users</h2>
                 </div>
                 <div class="col-md-4">
-                    <button @click="onAddUserClick()" class="btn btn-sm btn-primary float-right mb-1">+ User</button>
+                    <button @click="onAddUserClick()" class="btn btn-sm btn-primary float-right mb-1">Create User</button>
                     <div class="form-group">
                         <input v-model="filter" type="text" class="form-control form-control-sm" placeholder="Filter users">
                     </div>
@@ -66,8 +66,7 @@ export default class Users extends Vue {
     onSaveUser(user: User): void{
         userService.createUser(user).then((newUser: User) => {
             this.users.push(newUser);
-
-            // this.registerUserModal.close();
+            this.registerUserModal.close();
         });
     }
 
