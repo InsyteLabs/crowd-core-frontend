@@ -1,7 +1,36 @@
 <template>
     <div class="org-home container-fluid">
         <div v-if="client && client.id">
-            <h1 class="text-center">{{ client.name }}</h1>
+            <table class="table table-bordered table-sm">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Owner ID</th>
+                        <th>Name</th>
+                        <th>Slug</th>
+                        <th>Client Types</th>
+                        <th>Disabled</th>
+                        <th>Disabled Comment</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>{{ client.id }}</td>
+                        <td>{{ client.ownerId }}</td>
+                        <td>{{ client.name }}</td>
+                        <td>{{ client.slug }}</td>
+                        <td>{{ client.types.join(', ') }}</td>
+                        <td>
+                            {{
+                                client.disabled
+                                    ? 'Yes'
+                                    : 'No'
+                            }}
+                        </td>
+                        <td>{{ client.disabledComment }}</td>
+                    </tr>
+                </tbody>
+            </table>
         </div>
     </div>
 </template>
