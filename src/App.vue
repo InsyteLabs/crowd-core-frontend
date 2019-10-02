@@ -23,7 +23,7 @@
 
 import { Vue, Component } from 'vue-property-decorator';
 
-import { userService } from '@/services';
+import { userService, clientService } from '@/services';
 
 import Banner     from '@/components/Banner.vue';
 import Navigation from '@/components/Navigation.vue';
@@ -51,6 +51,16 @@ export default class App extends Vue{
 
     async onLoginClick(o: any): Promise<any>{
         let token = await userService.authenticate(o.username, o.password);
+
+        const currentUser = token.data;
+
+        if((!currentUser && currentUser.clientId)) return;
+
+        const { clientId } = currentUser;
+
+        let client = await clientService.getClient(clientId);
+
+        this.$router.push({ name: 'org-home', params: { slug: client.slug } });
 
         if(!(token && token.data)){
             console.log('Incorrect username/password');

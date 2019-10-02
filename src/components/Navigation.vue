@@ -10,10 +10,13 @@
 
 import { Vue, Component, Prop } from 'vue-property-decorator';
 
+import { IClient } from '../interfaces';
+
 @Component
 export default class Navigation extends Vue {
 
     @Prop() visible!: boolean;
+    @Prop() client!:  IClient;
 
 }
 </script>
