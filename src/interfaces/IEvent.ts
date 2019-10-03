@@ -8,5 +8,6 @@ export interface IEvent{
     description: string;
     startTime:   Date;
     endTime:     Date;
+    active:      boolean;
     questions:   any[];
 }

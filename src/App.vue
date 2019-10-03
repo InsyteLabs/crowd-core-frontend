@@ -5,7 +5,8 @@
             @userClick="onUserClick();">
         </Banner>
         <Navigation
-            :visible="navigationVisible">
+            :visible="navigationVisible"
+            :client="client">
         </Navigation>
 
         <div v-show="loginFormVisible" class="login-form">
@@ -24,6 +25,8 @@
 import { Vue, Component } from 'vue-property-decorator';
 
 import { userService, clientService } from '@/services';
+import { User }                       from './models';
+import { IClient }                    from './interfaces';
 
 import Banner     from '@/components/Banner.vue';
 import Navigation from '@/components/Navigation.vue';
@@ -37,9 +40,24 @@ import LoginForm  from '@/components/LoginForm.vue';
     }
 })
 export default class App extends Vue{
+    client:            IClient|null = null;
+    user:              User|null    = null;
+
     navigationVisible: boolean = true;
     loginFormVisible:  boolean = false;
     loggedIn:          boolean = false;
+
+    created(): void{
+        const user = this._getToken();
+
+        if(user){
+            this.user = user;
+
+            clientService.getClient(<number>user.clientId).then((c: IClient) => {
+                this.client = c;
+            });
+        }
+    }
 
     onToggleNav(){
         this.navigationVisible = !this.navigationVisible;
@@ -52,15 +70,20 @@ export default class App extends Vue{
     async onLoginClick(o: any): Promise<any>{
         let token = await userService.authenticate(o.username, o.password);
 
-        const currentUser = token.data;
+        this.user = new User(token.data);
 
-        if((!currentUser && currentUser.clientId)) return;
+        if(!(this.user && this.user.clientId)) return;
 
-        const { clientId } = currentUser;
+        this._setToken(JSON.stringify(this.user));
+
+        const { clientId } = this.user;
 
         let client = await clientService.getClient(clientId);
 
+        this.client = client;
+
         this.$router.push({ name: 'org-home', params: { slug: client.slug } });
+
 
         if(!(token && token.data)){
             console.log('Incorrect username/password');
@@ -68,6 +91,20 @@ export default class App extends Vue{
         else{
             console.log('Login successful');
             console.log(token);
+        }
+    }
+
+    private _setToken(token: string){
+        localStorage.setItem('token', token);
+    }
+
+    private _getToken(): User|void{
+        let user = localStorage.getItem('token');
+        
+        if(user && user.toString() !== 'undefined'){
+            user = JSON.parse(user);
+
+            return new User(user);
         }
     }
 }

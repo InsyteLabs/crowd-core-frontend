@@ -11,8 +11,8 @@ class EventService{
             events      = await events.json();
 
         events.forEach((e: any) => {
-            e.startDate = new Date(e.startDate);
-            e.endDate   = new Date(e.endDate);
+            e.startTime = new Date(e.startTime);
+            e.endTime   = new Date(e.endTime);
         });
 
         return events;

@@ -2,6 +2,7 @@
     <nav :class="{ hidden: !visible }" id="nav">
         <router-link to="/">HOME</router-link>
         <router-link to="/users">USERS</router-link>
+        <router-link v-if="client" :to="{ name: 'org-events', params: { slug: client.slug } }">EVENTS</router-link>
     </nav>
 </template>
 
@@ -14,7 +15,6 @@ import { IClient } from '../interfaces';
 
 @Component
 export default class Navigation extends Vue {
-
     @Prop() visible!: boolean;
     @Prop() client!:  IClient;
 
