@@ -1,5 +1,7 @@
 'use strict';
 
+import { IEventSettings } from './IEventSettings';
+
 export interface IEvent{
     id?:         number;
     clientId:    number;
@@ -8,6 +10,8 @@ export interface IEvent{
     description: string;
     startTime:   Date;
     endTime:     Date;
-    active:      boolean;
+    active?:     boolean;
     questions:   any[];
+
+    settings: IEventSettings;
 }
