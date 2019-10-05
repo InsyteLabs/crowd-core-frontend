@@ -1,8 +1,8 @@
 'use strict';
 
-import conf      from '@/conf';
-import { User }  from '@/models';
-import { IRole } from '@/interfaces';
+import conf                  from '@/conf';
+import { User }              from '@/models';
+import { IRole, IUserToken } from '@/interfaces';
 
 const apiUrl = conf.apiUrl;
 
@@ -28,7 +28,7 @@ class UserService{
         return new User(newUser);
     }
 
-    async authenticate(username: string, password: string): Promise<any>{
+    async authenticate(username: string, password: string): Promise<IUserToken|void>{
         let jwt: any = await fetch(`${ apiUrl }/authenticate`, {
             method: 'POST',
             headers: {
@@ -39,16 +39,23 @@ class UserService{
 
         const { token } = await jwt.json();
 
-        if(!token) return {}
+        if(!token) return;
 
         let [ header, payload, signature ] = token.split('.');
 
         header  = atob(header),
         payload = atob(payload);
 
-        localStorage.setItem('user', jwt.token);
+        let userToken: IUserToken;
+        try{
+            userToken = JSON.parse(payload);
+        }
+        catch(e){
+            console.error('Error parsing user token');
+            return;
+        }
 
-        return JSON.parse(payload);
+        return userToken;
     }
 
     async getRoles(): Promise<IRole[]>{
