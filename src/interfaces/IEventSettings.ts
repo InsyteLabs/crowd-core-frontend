@@ -2,7 +2,7 @@
 
 export interface IEventSettings{
     password:        string;
-    locked:          boolean;
+    isLocked:        boolean;
     requirePassword: boolean;
     requireLogin:    boolean;
     enableChat:      boolean;

@@ -96,11 +96,10 @@
 <script lang="ts">
 'use strict';
 
-import { Vue, Component, Prop, Watch } from 'vue-property-decorator';
+import { Vue, Component, Prop, Watch, Emit } from 'vue-property-decorator';
 
 import { IClient, IEvent, IEventSettings } from '@/interfaces';
-
-import { dateTimeFilter } from '@/filters/date-time';
+import { dateTimeFilter }                  from '@/filters/date-time';
 
 @Component
 export default class EventForm extends Vue {
@@ -135,13 +134,39 @@ export default class EventForm extends Vue {
 
             settings: <IEventSettings>{
                 password:        this.password,
-                locked:          this.locked,
+                isLocked:        this.locked,
                 requirePassword: this.requirePassword,
                 requireLogin:    this.requireLogin,
                 enableChat:      this.enableChat
             }
         }
+
+        if(this.newEvent){
+            this.createEvent(event);
+        }
+        else{
+            event.id = this.event.id;
+    
+            this.updateEvent(event);
+        }
     }
+
+    clear(): void{
+        this._clearForm();
+    }
+
+
+    /*
+        ==============
+        EVENT EMITTERS
+        ==============
+    */
+    @Emit('createEvent')
+    createEvent(event: IEvent): void{ }
+
+    @Emit('updateEvent')
+    updateEvent(event: IEvent): void{ }
+
 
     /*
         ========
@@ -180,9 +205,12 @@ export default class EventForm extends Vue {
         this.start           = dateTimeFilter(event.startTime);
         this.end             = dateTimeFilter(event.endTime);
         this.description     = event.description;
+
+        if(!settings) return;
+
         this.password        = settings.password;
         this.requirePassword = settings.requirePassword;
-        this.locked          = settings.locked;
+        this.locked          = settings.isLocked;
         this.requireLogin    = settings.requireLogin;
         this.enableChat      = settings.enableChat;
     }
