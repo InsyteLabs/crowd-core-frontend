@@ -1,7 +1,17 @@
 <template>
     <div class="org-events container-fluid">
-        <h3>Events</h3>
-        <div v-if="events">
+        <div class="card p-3">
+            <div class="row">
+                <div class="col-md-8">
+                    <h3>Events</h3>
+                </div>
+                <div class="col-md-4">
+                    <button @click="onCreateEventClick()" class="btn btn-sm btn-primary float-right mb-1">Create Event</button>
+                    <div class="form-group">
+                        <input v-model="filter" type="text" class="form-control form-control-sm" placeholder="Filter Events">
+                    </div>
+                </div>
+            </div>
             <table class="table table-sm table-striped">
                 <thead>
                     <tr>
@@ -14,13 +24,13 @@
                         <th># Questions</th>
                     </tr>
                 </thead>
-                <tbody v-if="events.length">
+                <tbody v-if="events && events.length">
                     <tr v-for="event of events" :key="event.id">
                         <td>{{ event.title }}</td>
                         <td>{{ event.slug }}</td>
                         <td>{{ event.description }}</td>
-                        <td>{{ formatDate(event.startTime) }}</td>
-                        <td>{{ formatDate(event.endTime) }}</td>
+                        <td>{{ event.startTime | dateTime }}</td>
+                        <td>{{ event.endTime | dateTime }}</td>
                         <td>
                             {{
                                 event.active
@@ -33,42 +43,44 @@
                 </tbody>
             </table>
         </div>
+        <ModalWindow @modalActiveStateChange="onModalActiveStateChange($event)" ref="eventModal">
+            <h3>Event Form</h3>
+        </ModalWindow>
     </div>
 </template>
 
 <script lang="ts">
 'use strict';
 
-import { Vue, Component } from 'vue-property-decorator';
+import { Vue, Component, Ref } from 'vue-property-decorator';
+
+import ModalWindow from '@/components/ModalWindow.vue';
 
 import { eventService, clientService } from '@/services';
 import { IEvent, IClient }             from '@/interfaces';
 
-@Component
+@Component({
+    components: {
+        ModalWindow
+    }
+})
 export default class OrgEvents extends Vue {
+    @Ref('eventModal') eventModal!: ModalWindow;
 
     client: IClient|null = null;
     events: IEvent[]     = [];
+    filter: string       = '';
 
     created(){
         this._loadClient();
     }
 
-    formatDate(date: Date|string): string{
-        const d = new Date(date);
+    onCreateEventClick(): void{
+        this.eventModal.open();
+    }
 
-        if(d.toString() === 'Invalid Date'){
-            return '';
-        }
+    onModalActiveStateChange(active: boolean): void{
 
-        const year  = d.getFullYear(),
-              month = `${ d.getMonth() + 1 }`,
-              day   = `${ d.getDate() }`,
-              hour  = `${ d.getHours() }`,
-              min   = `${ d.getMinutes() }`,
-              sec   = `${ d.getSeconds() }`;
-
-        return `${ year }/${ month.padStart(2, '0') }/${ day.padStart(2, '0') } ${ hour.padStart(2, '0') }:${ min.padStart(2, '0') }:${ sec.padStart(2, '0') }`;
     }
 
     async _loadEvents(): Promise<void>{
