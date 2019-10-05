@@ -44,7 +44,10 @@
             </table>
         </div>
         <ModalWindow @modalActiveStateChange="onModalActiveStateChange($event)" ref="eventModal">
-            <h3>Event Form</h3>
+            <EventForm
+                :event="selectedEvent"
+                :newEvent="newEvent">
+            </EventForm>
         </ModalWindow>
     </div>
 </template>
@@ -55,27 +58,32 @@
 import { Vue, Component, Ref } from 'vue-property-decorator';
 
 import ModalWindow from '@/components/ModalWindow.vue';
+import EventForm   from '@/components/event/EventForm.vue';
 
 import { eventService, clientService } from '@/services';
 import { IEvent, IClient }             from '@/interfaces';
 
 @Component({
     components: {
-        ModalWindow
+        ModalWindow,
+        EventForm
     }
 })
 export default class OrgEvents extends Vue {
     @Ref('eventModal') eventModal!: ModalWindow;
 
-    client: IClient|null = null;
-    events: IEvent[]     = [];
-    filter: string       = '';
+    client:        IClient|null = null;
+    events:        IEvent[]     = [];
+    selectedEvent: IEvent|null  = null;
+    newEvent:      boolean      = true;
+    filter:        string       = '';
 
     created(){
         this._loadClient();
     }
 
     onCreateEventClick(): void{
+
         this.eventModal.open();
     }
 
