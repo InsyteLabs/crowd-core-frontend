@@ -7,6 +7,7 @@ import Home      from '@/views/Home.vue';
 import Users     from '@/views/Users.vue';
 import OrgHome   from '@/views/OrgHome.vue';
 import OrgEvents from '@/views/OrgEvents.vue';
+import OrgEvent  from '@/views/OrgEvent.vue';
 
 Vue.use(Router);
 
@@ -33,6 +34,11 @@ export default new Router({
             path: '/orgs/:slug/events',
             name: 'org-events',
             component: OrgEvents
+        },
+        {
+            path: '/orgs/:slug/events/:eventSlug',
+            name: 'org-event',
+            component: OrgEvent
         }
     ]
 });

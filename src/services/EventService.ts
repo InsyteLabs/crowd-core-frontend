@@ -18,6 +18,18 @@ class EventService{
         return events;
     }
 
+    async getEvent(clientId: number, slug: string): Promise<IEvent>{
+        const url = `${ apiUrl }/clients/${ clientId }/events/${ slug }`;
+
+        let event: any = await fetch(url);
+            event      = await event.json();
+
+        event.startTime = new Date(event.startTime);
+        event.endTime   = new Date(event.endTime);
+
+        return event;
+    }
+
     async createEvent(event: IEvent): Promise<IEvent>{
         const url = `${ apiUrl }/events`;
 
