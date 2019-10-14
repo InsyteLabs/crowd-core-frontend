@@ -83,6 +83,16 @@ class EventService{
         return deleted;
     }
 
+    async getQeustion(eventId: number, questionId: number): Promise<IEventQuestion>{
+        const url = `${ apiUrl }/events/${ eventId }/questions/${ questionId }`;
+
+        let res: Response = await fetch(url);
+
+        const question: IEventQuestion = await res.json();
+
+        return question;
+    }
+
     async createEventQuestion(question: IEventQuestion): Promise<IEventQuestion>{
         const url = `${ apiUrl }/events/${ question.eventId }/questions`;
 
@@ -125,6 +135,27 @@ class EventService{
         const { deleted } = await res.json();
 
         return deleted
+    }
+
+    async createQuestionVote(eventId: number, questionId: number, userId: number, value: number): Promise<IEventQuestion>{
+        const url = `${ apiUrl }/events/${ eventId }/questions/${ questionId }/votes`;
+
+        const body = {
+            eventId,
+            questionId,
+            userId,
+            value
+        }
+
+        let res: Response = await fetch(url, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(body)
+        });
+
+        return this.getQeustion(eventId, questionId);
     }
 }
 

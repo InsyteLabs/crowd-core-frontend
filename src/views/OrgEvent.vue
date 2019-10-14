@@ -21,7 +21,9 @@
                                 :question="question"
                                 
                                 @editQuestion="onEditQuestionClick($event)"
-                                @deleteQuestion="onDeleteQuestionClick($event)">
+                                @deleteQuestion="onDeleteQuestionClick($event)"
+                                @upvote="onUpvoteQuestionClick($event)"
+                                @downvote="onDownvoteQuestionClick($event)">
                             </Question>
                         </li>
                     </ul>
@@ -97,6 +99,8 @@ export default class OrgEvent extends Vue {
             }
         }
         else{
+            if(!this.selectedQuestion) return;
+
             question.id = this.selectedQuestion.id;
 
             let updatedQuestion = await eventService.updateEventQuestion(question);
@@ -125,6 +129,8 @@ export default class OrgEvent extends Vue {
     }
 
     async onDeleteQuestionClick(question: IEventQuestion): Promise<void>{
+        if(!this.event) return;
+
         const deleted = await eventService.deleteEventQuestion(question);
 
         if(deleted){
@@ -135,6 +141,29 @@ export default class OrgEvent extends Vue {
             }
         }
     }
+
+    async onUpvoteQuestionClick(question: IEventQuestion): Promise<void>{
+        this.vote(<number>question.id, 1);
+    }
+
+    async onDownvoteQuestionClick(question: IEventQuestion): Promise<void>{
+        this.vote(<number>question.id, -1);
+    }
+
+    async vote(questionId: number, val: number): Promise<void>{
+        if(!this.event) return;
+
+        const updatedQuestion = await eventService.createQuestionVote(<number>this.event.id, questionId, <number>this.user.id, val);
+
+        if(updatedQuestion && updatedQuestion.id){
+            const idx = this.event.questions.findIndex(i => i.id === updatedQuestion.id);
+
+            if(~idx){
+                this.event.questions.splice(idx, 1, updatedQuestion);
+            }
+        }
+    }
+
 
 
 
