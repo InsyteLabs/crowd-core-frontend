@@ -1,7 +1,7 @@
 'use strict';
 
 import conf       from '@/conf';
-import { IEvent } from '@/interfaces';
+import { IEvent, IEventQuestion } from '@/interfaces';
 
 const { apiUrl } = conf;
 
@@ -16,6 +16,18 @@ class EventService{
         });
 
         return events;
+    }
+
+    async getEvent(clientId: number, slug: string): Promise<IEvent>{
+        const url = `${ apiUrl }/clients/${ clientId }/events/${ slug }`;
+
+        let event: any = await fetch(url);
+            event      = await event.json();
+
+        event.startTime = new Date(event.startTime);
+        event.endTime   = new Date(event.endTime);
+
+        return event;
     }
 
     async createEvent(event: IEvent): Promise<IEvent>{
@@ -69,6 +81,81 @@ class EventService{
         console.log(deleted);
 
         return deleted;
+    }
+
+    async getQeustion(eventId: number, questionId: number): Promise<IEventQuestion>{
+        const url = `${ apiUrl }/events/${ eventId }/questions/${ questionId }`;
+
+        let res: Response = await fetch(url);
+
+        const question: IEventQuestion = await res.json();
+
+        return question;
+    }
+
+    async createEventQuestion(question: IEventQuestion): Promise<IEventQuestion>{
+        const url = `${ apiUrl }/events/${ question.eventId }/questions`;
+
+        let res: Response = await fetch(url, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(question)
+        });
+
+        const newQuestion: IEventQuestion = await res.json();
+
+        return newQuestion;
+    }
+
+    async updateEventQuestion(question: IEventQuestion): Promise<IEventQuestion>{
+        const url = `${ apiUrl }/events/${ question.eventId }/questions/${ question.id }`;
+
+        let res: Response = await fetch(url, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(question)
+        });
+
+        const updatedQuestion: IEventQuestion = await res.json();
+
+        return updatedQuestion;
+    }
+
+    async deleteEventQuestion(question: IEventQuestion): Promise<boolean>{
+        const url = `${ apiUrl }/events/${ question.eventId }/questions/${ question.id }`;
+
+        let res: Response = await fetch(url, {
+            method: 'DELETE'
+        });
+
+        const { deleted } = await res.json();
+
+        return deleted
+    }
+
+    async createQuestionVote(eventId: number, questionId: number, userId: number, value: number): Promise<IEventQuestion>{
+        const url = `${ apiUrl }/events/${ eventId }/questions/${ questionId }/votes`;
+
+        const body = {
+            eventId,
+            questionId,
+            userId,
+            value
+        }
+
+        let res: Response = await fetch(url, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(body)
+        });
+
+        return this.getQeustion(eventId, questionId);
     }
 }
 
