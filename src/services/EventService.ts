@@ -1,7 +1,7 @@
 'use strict';
 
 import conf       from '@/conf';
-import { IEvent } from '@/interfaces';
+import { IEvent, IEventQuestion } from '@/interfaces';
 
 const { apiUrl } = conf;
 
@@ -81,6 +81,50 @@ class EventService{
         console.log(deleted);
 
         return deleted;
+    }
+
+    async createEventQuestion(question: IEventQuestion): Promise<IEventQuestion>{
+        const url = `${ apiUrl }/events/${ question.eventId }/questions`;
+
+        let res: Response = await fetch(url, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(question)
+        });
+
+        const newQuestion: IEventQuestion = await res.json();
+
+        return newQuestion;
+    }
+
+    async updateEventQuestion(question: IEventQuestion): Promise<IEventQuestion>{
+        const url = `${ apiUrl }/events/${ question.eventId }/questions/${ question.id }`;
+
+        let res: Response = await fetch(url, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(question)
+        });
+
+        const updatedQuestion: IEventQuestion = await res.json();
+
+        return updatedQuestion;
+    }
+
+    async deleteEventQuestion(question: IEventQuestion): Promise<boolean>{
+        const url = `${ apiUrl }/events/${ question.eventId }/questions/${ question.id }`;
+
+        let res: Response = await fetch(url, {
+            method: 'DELETE'
+        });
+
+        const { deleted } = await res.json();
+
+        return deleted
     }
 }
 
