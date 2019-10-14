@@ -1,11 +1,11 @@
 'use strict';
 
-export { IVueFilter }          from './IVueFilter';
+export * from './IVueFilter';
 
-export { IUserToken }          from './IUserToken';
-export { IRole }               from './IRole';
-export { IClient }             from './IClient';
-export { IEvent }              from './IEvent';
-export { IEventSettings }      from './IEventSettings';
-export { IEventQuestion }      from './IEventQuestion';
-export { IEventQuestionStats } from './IEventQuestionStats';
+export * from './IUserToken';
+export * from './IRole';
+export * from './IClient';
+export * from './IEvent';
+export * from './IEventSettings';
+export * from './IEventQuestion';
+export * from './IEventQuestionStats';
