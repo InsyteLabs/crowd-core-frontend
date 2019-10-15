@@ -10,10 +10,13 @@ import { IClient, IUserToken } from '@/interfaces';
 
 Vue.use(Vuex);
 
+let socket: WebSocket|null = null;
+
 const store = new Vuex.Store({
     state: {
-        client: <IClient|null> null,
-        user:   <User|null>    null
+        client: <IClient|null>   null,
+        user:   <User|null>      null,
+        socket: <WebSocket|null> socket
     },
     getters: {
         client(state){ return state.client },
@@ -63,12 +66,39 @@ const store = new Vuex.Store({
                 }
             }
         },
-
         saveUserToken({ commit }, token: string): void{
             localStorage.setItem('token', token);
+        },
+        handleMessage({ commit }, message: string): void{
+            let msg;
+            try{
+                msg = JSON.parse(message);
+            }
+            catch(e){
+                console.error('Socket message not valid JSON');
+                return;
+            }
+
+            console.log('Socket message received:');
+            console.log(msg);
+            console.log('------------------------');
         }
     }
 });
+
+if(window.WebSocket){
+    socket = new WebSocket('ws://localhost:8080');
+
+    socket.addEventListener('open', (ev: Event) => {
+        console.log('Connection open');
+        console.log(ev);
+        console.log('-----------------------');
+    });
+
+    socket.addEventListener('message', (ev: MessageEvent) => {
+        store.dispatch('handleMessage', ev.data);
+    });
+}
 
 /*
     ====================
