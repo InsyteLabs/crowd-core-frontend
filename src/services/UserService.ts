@@ -45,6 +45,8 @@ class UserService{
 
         if(!token) return;
 
+        localStorage.setItem('jwt', token);
+
         let [ header, payload ] = token.split('.');
 
         header  = atob(header),
