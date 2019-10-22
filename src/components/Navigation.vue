@@ -1,8 +1,9 @@
 <template>
     <nav :class="{ hidden: !visible }" id="nav">
-        <router-link to="/">HOME</router-link>
-        <router-link to="/users">USERS</router-link>
-        <router-link v-if="client" :to="{ name: 'org-events', params: { slug: client.slug } }">EVENTS</router-link>
+        <router-link v-if="client" :to="'/' + client.slug">HOME</router-link>
+        <router-link v-if="!client" to="/">HOME</router-link>
+        <router-link v-if="client" :to="'/' + client.slug + '/users'">USERS</router-link>
+        <router-link v-if="client" :to="'/' + client.slug + '/events'">EVENTS</router-link>
     </nav>
 </template>
 
@@ -12,11 +13,24 @@
 import { Vue, Component, Prop } from 'vue-property-decorator';
 
 import { IClient } from '../interfaces';
+import { User }    from '../models';
 
 @Component
 export default class Navigation extends Vue {
     @Prop() visible!: boolean;
-    @Prop() client!:  IClient;
+
+    /*
+        =======
+        GETTERS
+        =======
+    */
+    get user(): User{
+        return this.$store.getters.user;
+    }
+
+    get client(): IClient{
+        return this.$store.getters.client;
+    }
 
 }
 </script>
