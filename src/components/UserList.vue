@@ -2,7 +2,6 @@
     <div class="user-list container-fluid">
         <table class="table table-sm table-striped">
             <thead>
-                <th>Client ID</th>
                 <th>First Name</th>
                 <th>Last Name</th>
                 <th>Email</th>
@@ -13,7 +12,6 @@
             </thead>
             <tbody v-if="users">
                 <tr v-for="user of users" :key="user.id">
-                    <td>{{ user.clientId }}</td>
                     <td>{{ user.firstName }}</td>
                     <td>{{ user.lastName }}</td>
                     <td>{{ user.email }}</td>

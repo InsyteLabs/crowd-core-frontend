@@ -85,6 +85,7 @@ import EventForm   from '@/components/event/EventForm.vue';
 
 import { eventService, clientService } from '@/services';
 import { IEvent, IClient }             from '@/interfaces';
+import { User }                        from '@/models';
 
 @Component({
     components: {
@@ -101,8 +102,14 @@ export default class OrgEvents extends Vue {
     newEvent:      boolean      = true;
     filter:        string       = '';
 
-    created(){
-        this._loadEvents();
+    async created(): Promise<void>{
+        if(!(this.user && this.client)){
+            await this.$store.dispatch('loadUserToken');
+        }
+
+        if(this.client && this.user){
+            this._loadEvents();
+        }
     }
 
     onCreateEventClick(): void{
@@ -159,6 +166,10 @@ export default class OrgEvents extends Vue {
         GETTERS
         =======
     */
+    get user(): User|null{
+        return this.$store.getters.user;
+    }
+
     get client(): IClient|null{
         return this.$store.getters.client;
     }
@@ -170,11 +181,9 @@ export default class OrgEvents extends Vue {
         ===============
     */
     async _loadEvents(): Promise<void>{
-        if(this.client && this.client.id){
-            let events = await eventService.getEvents(this.client.id);
+        if(!this.client) return;
 
-            this.events = events;
-        }
+        this.events = await eventService.getEvents(<number>this.client.id);
     }
 }
 </script>
