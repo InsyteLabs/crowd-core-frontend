@@ -12,8 +12,8 @@ const JSON_HEADERS = {
 }
 
 class UserService{
-    async getUsers(): Promise<User[]>{
-        const url = `${ apiUrl }/users`;
+    async getUsers(clientId: number): Promise<User[]>{
+        const url = `${ apiUrl }/clients/${ clientId }/users`;
 
         let users: User[] = await http.get<User[]>({ url });
 

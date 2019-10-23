@@ -6,7 +6,7 @@
                     <h2>Users</h2>
                 </div>
                 <div class="col-md-4">
-                    <button @click="onAddUserClick()" class="btn btn-sm btn-primary float-right mb-1">Create User</button>
+                    <button @click="onAddUserClick()" class="btn btn-sm btn-primary float-right mb-1" :disabled="!client">Create User</button>
                     <div class="form-group">
                         <input v-model="filter" type="text" class="form-control form-control-sm" placeholder="Filter users">
                     </div>
@@ -31,12 +31,12 @@
 
 import { Vue, Component, Ref } from 'vue-property-decorator';
 
-import { userService } from '@/services';
-import { User }        from '@/models';
-import { IRole }       from '@/interfaces';
-import UserList        from '@/components/UserList.vue';
-import RegisterUser    from '@/components/RegisterUser.vue';
-import ModalWindow     from '@/components/ModalWindow.vue';
+import { userService }    from '@/services';
+import { User }           from '@/models';
+import { IRole, IClient } from '@/interfaces';
+import UserList           from '@/components/UserList.vue';
+import RegisterUser       from '@/components/RegisterUser.vue';
+import ModalWindow        from '@/components/ModalWindow.vue';
 
 @Component({
     components: {
@@ -45,7 +45,7 @@ import ModalWindow     from '@/components/ModalWindow.vue';
         ModalWindow
     }
 })
-export default class Users extends Vue {
+export default class OrgUsers extends Vue {
     @Ref('registerUserModal') registerUserModal!: ModalWindow;
     @Ref('userForm')          userForm!:          RegisterUser;
 
@@ -53,9 +53,15 @@ export default class Users extends Vue {
     roles:  IRole[] = [];
     filter: string  = '';
 
-    async created(){
-        this._loadUsers();
-        this._loadRoles();
+    async created(): Promise<void>{
+        if(!(this.client && this.user)){
+            await this.$store.dispatch('loadUserToken');
+        }
+
+        if(this.client && this.user){
+            this._loadUsers(<number>this.client.id);
+            this._loadRoles();
+        }
     }
 
     onAddUserClick(): void{
@@ -64,6 +70,10 @@ export default class Users extends Vue {
     }
 
     onSaveUser(user: User): void{
+        if(!this.client) return;
+
+        user.clientId = this.client.id;
+        
         userService.createUser(user).then((newUser: User) => {
             this.users.push(newUser);
             this.registerUserModal.close();
@@ -74,13 +84,28 @@ export default class Users extends Vue {
         
     }
 
+
+    /*
+        =======
+        GETTERS
+        =======
+    */
+    get client(): IClient{
+        return this.$store.getters.client;
+    }
+
+    get user(): User{
+        return this.$store.getters.user;
+    }
+
+
     /*
         ===============
         PRIVATE METHODS
         ===============
     */
-    private async _loadUsers(): Promise<User[]>{
-        const users = await userService.getUsers();
+    private async _loadUsers(clientId: number): Promise<User[]>{
+        const users = await userService.getUsers(clientId);
 
         return this.users = users;
     }

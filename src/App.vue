@@ -43,8 +43,17 @@ export default class App extends Vue{
     loginFormVisible:  boolean = false;
     loggedIn:          boolean = (this.user && this.user.id) ? true : false;
 
-    created(): void{
-        this.$store.dispatch('loadUserToken');
+    async created(): Promise<void>{
+        await this.$store.dispatch('loadUserToken');
+
+        if(this.client){
+            this.$router.push({
+                name: 'org-home',
+                params: {
+                    orgSlug: this.client.slug
+                }
+            });
+        }
     }
 
     onToggleNav(){
