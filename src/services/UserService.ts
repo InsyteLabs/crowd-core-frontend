@@ -32,6 +32,14 @@ class UserService{
         return new User(newUser);
     }
 
+    async deleteUser(user: User): Promise<any>{
+        const url = `${ apiUrl }/users/${ user.id }`;
+
+        const deletedUser: any = await http.delete<any>({ url });
+
+        return deletedUser;
+    }
+
     async authenticate(username: string, password: string): Promise<IUserToken|void>{
         const url = `${ apiUrl }/authenticate`;
 

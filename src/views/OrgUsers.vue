@@ -13,7 +13,8 @@
                 </div>
             </div>
             <UserList
-                :users="users">
+                :users="users"
+                @deleteUser="onDeleteUserClick($event)">
             </UserList>
         </div>
         <ModalWindow @modalActiveStateChange="onModalActiveStateChange($event)" ref="registerUserModal">
@@ -58,10 +59,8 @@ export default class OrgUsers extends Vue {
             await this.$store.dispatch('loadUserToken');
         }
 
-        if(this.client && this.user){
-            this._loadUsers(<number>this.client.id);
-            this._loadRoles();
-        }
+        this._loadUsers();
+        this._loadRoles();
     }
 
     onAddUserClick(): void{
@@ -78,6 +77,12 @@ export default class OrgUsers extends Vue {
             this.users.push(newUser);
             this.registerUserModal.close();
         });
+    }
+
+    async onDeleteUserClick(user: User): Promise<void>{
+        const deleted = await userService.deleteUser(user);
+
+        this._loadUsers();
     }
 
     onModalActiveStateChange(active: boolean): void{
@@ -104,8 +109,10 @@ export default class OrgUsers extends Vue {
         PRIVATE METHODS
         ===============
     */
-    private async _loadUsers(clientId: number): Promise<User[]>{
-        const users = await userService.getUsers(clientId);
+    private async _loadUsers(): Promise<User[]>{
+        if(!(this.client && this.client.id)) return [];
+
+        const users = await userService.getUsers(this.client.id);
 
         return this.users = users;
     }
