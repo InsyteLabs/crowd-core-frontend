@@ -20,7 +20,8 @@ const store = new Vuex.Store({
     },
     getters: {
         client(state){ return state.client },
-        user(state)  { return state.user   }
+        user(state)  { return state.user   },
+        socket(state){ return state.socket }
     },
     mutations: {
         setClient(state, client: IClient): void{
@@ -28,6 +29,9 @@ const store = new Vuex.Store({
         },
         setUser(state, user: User): void{
             state.user = user;
+        },
+        setSocket(state, socket: WebSocket): void{
+            state.socket = socket;
         }
     },
     actions: {
@@ -37,7 +41,7 @@ const store = new Vuex.Store({
         setClient({ commit }, client: IClient): void{
             commit('setClient', client);
         },
-        async loadUserToken({ commit }): Promise<void>{
+        async loadUserToken({ commit, dispatch }): Promise<void>{
             let token:     string|null = localStorage.getItem('token'),
                 userToken: IUserToken;
 
@@ -60,6 +64,8 @@ const store = new Vuex.Store({
                     const client = await clientService.getClient(user.clientId);
 
                     commit('setClient', client);
+
+                    dispatch('openConnection');
                 }
                 catch(e){
                     console.error(`Failed to load client of ID ${ user.clientId }`);
@@ -79,26 +85,36 @@ const store = new Vuex.Store({
                 return;
             }
 
-            console.log('Socket message received:');
+            console.group(`$store.handleMessage`);
+            console.log('Socket message received');
             console.log(msg);
-            console.log('------------------------');
+            console.groupEnd();
+        },
+        async openConnection(store): Promise<void>{
+            if(!store.getters.client) return;
+            if(!window.WebSocket)     return;
+
+            let socket: WebSocket|null = store.getters.socket;
+            
+            if(!socket){
+                socket = new WebSocket(`ws://localhost:8080/client/${ store.getters.client.slug }`);
+
+                socket.addEventListener('open', (ev: Event) => {
+                    console.group('$store.openConnection')
+                    console.log('Connection Opened');
+                    console.log(ev);
+                    console.groupEnd();
+                });
+
+                socket.addEventListener('message', (ev: MessageEvent) => {
+                    store.dispatch('handleMessage', ev.data);
+                });
+
+                store.commit('setSocket', socket);
+            }
         }
     }
 });
-
-if(window.WebSocket){
-    socket = new WebSocket('ws://localhost:8080');
-
-    socket.addEventListener('open', (ev: Event) => {
-        console.log('Connection open');
-        console.log(ev);
-        console.log('-----------------------');
-    });
-
-    socket.addEventListener('message', (ev: MessageEvent) => {
-        store.dispatch('handleMessage', ev.data);
-    });
-}
 
 /*
     ====================
