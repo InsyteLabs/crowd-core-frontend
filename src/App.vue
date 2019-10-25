@@ -45,15 +45,6 @@ export default class App extends Vue{
 
     async created(): Promise<void>{
         await this.$store.dispatch('loadUserToken');
-
-        if(this.client){
-            this.$router.push({
-                name: 'org-home',
-                params: {
-                    orgSlug: this.client.slug
-                }
-            });
-        }
     }
 
     onToggleNav(){
