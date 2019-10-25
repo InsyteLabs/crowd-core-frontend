@@ -36,8 +36,8 @@ class EventService{
         return event;
     }
 
-    async createEvent(event: IEvent): Promise<IEvent>{
-        const url = `${ apiUrl }/events`;
+    async createEvent(clientId: number, event: IEvent): Promise<IEvent>{
+        const url = `${ apiUrl }/clients/${ clientId }/events`;
 
         const newEvent: IEvent = await http.post<IEvent>({
             url,
