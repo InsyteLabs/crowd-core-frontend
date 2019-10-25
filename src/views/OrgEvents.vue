@@ -135,7 +135,11 @@ export default class OrgEvents extends Vue {
     }
 
     async onCreateEvent(event: IEvent): Promise<void>{
-        const newEvent = await eventService.createEvent(event);
+        if(!this.client){
+            return console.error('Cannot create event without client reference');
+        }
+
+        const newEvent = await eventService.createEvent(<number>this.client.id, event);
 
         await this._loadEvents();
 
