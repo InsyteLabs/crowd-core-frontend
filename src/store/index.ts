@@ -14,15 +14,17 @@ let socket: WebSocket|null = null;
 const store = new Vuex.Store({
     state: {
         client: <IClient|null>   null,
+        users:  <User[]>         [],
         user:   <User|null>      null,
         socket: <WebSocket|null> socket,
-        events: <Event[]>       [],
-        event:  <Event|null>    null
+        events: <Event[]>        [],
+        event:  <Event|null>     null
     },
     getters: {
         events(state){ return state.events },
         event(state) { return state.event  },
         client(state){ return state.client },
+        users(state) { return state.users  },
         user(state)  { return state.user   },
         socket(state){ return state.socket }
     },
@@ -84,6 +86,16 @@ const store = new Vuex.Store({
         setUser(state, user: User): void{
             state.user = user;
         },
+        setUsers(state, users: User[]): void{
+            state.users = users;
+        },
+        addUser(state, user: User): void{
+            if(!(state.users && Array.isArray(state.users))){
+                state.users = [ user ];
+            }
+
+            state.users.push(user);
+        },
 
 
         /*
@@ -133,8 +145,12 @@ const store = new Vuex.Store({
             USER METHDOS
             ============
         */
-        setUser({ commit }, user: User): void{
-            commit('setUser', user);
+        async loadUsers({ commit }, clientId: number): Promise<User[]>{
+            const users: User[] = await userService.getUsers(clientId);
+
+            commit('setUsers', users);
+
+            return users;
         },
 
         async loadUserToken({ commit, dispatch, getters }): Promise<void>{
@@ -190,6 +206,11 @@ const store = new Vuex.Store({
             }
 
             switch(msg.type){
+                /*
+                    ==============
+                    EVENT MESSAGES
+                    ==============
+                */
                 case 'event-created':
                     const newEvent: Event = new Event(msg.data);
 
@@ -223,6 +244,25 @@ const store = new Vuex.Store({
                     commit('deleteEvent', deletedEvent);
 
                     break;
+
+                /*
+                    =============
+                    USER MESSAGES
+                    =============
+                */
+                case 'user-created':
+                    const newUser: User = new User(msg.data);
+
+                    console.group(`$store.handleMessage`);
+                    console.log('USER CREATED');
+                    console.log(newUser);
+                    console.groupEnd();
+
+                    commit('addUser', newUser);
+
+                    break;
+
+
                 default:
                     console.group(`$store.handleMessage`);
                     console.log('UNKNOWN MESSAGE RECEIVED');
