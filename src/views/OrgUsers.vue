@@ -25,6 +25,7 @@
                 :user="selectedUser"
                 :newUser="newUser"
                 :roles="roles"
+
                 @createUser="onCreateUser($event)"
                 @updateUser="onUpdateUser($event)">
             </UserForm>
