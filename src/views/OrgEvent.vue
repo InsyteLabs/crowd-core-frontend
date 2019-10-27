@@ -51,7 +51,7 @@ import { Vue, Component, Watch }  from 'vue-property-decorator';
 import Question from '@/components/event/question/Question.vue';
 
 import { IClient, IEventQuestion, IEventQuestionStats } from '../interfaces';
-import { User, Event }                                  from '../models';
+import { User, ClientEvent }                            from '../models';
 import { eventService }                                 from '../services';
 
 @Component({
@@ -179,7 +179,7 @@ export default class OrgEvent extends Vue {
         return this.$store.getters.user;
     }
 
-    get event(): Event{
+    get event(): ClientEvent{
         return this.$store.getters.event;
     }
 

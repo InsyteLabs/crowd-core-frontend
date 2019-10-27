@@ -2,7 +2,7 @@
 
 import { IEventQuestion, IEventSettings } from '@/interfaces';
 
-export class Event{
+export class ClientEvent{
     id?: number;
 
     clientId:    number;
