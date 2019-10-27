@@ -18,11 +18,11 @@
             </UserList>
         </div>
         <ModalWindow @modalActiveStateChange="onModalActiveStateChange($event)" ref="registerUserModal">
-            <RegisterUser
+            <UserForm
                 ref="userForm"
                 :roles="roles"
                 @saveUser="onSaveUser($event)">
-            </RegisterUser>
+            </UserForm>
         </ModalWindow>
     </div>
 </template>
@@ -36,19 +36,19 @@ import { userService }    from '@/services';
 import { User }           from '@/models';
 import { IRole, IClient } from '@/interfaces';
 import UserList           from '@/components/user/UserList.vue';
-import RegisterUser       from '@/components/user/RegisterUser.vue';
+import UserForm           from '@/components/user/UserForm.vue';
 import ModalWindow        from '@/components/ModalWindow.vue';
 
 @Component({
     components: {
         UserList,
-        RegisterUser,
+        UserForm,
         ModalWindow
     }
 })
 export default class OrgUsers extends Vue {
     @Ref('registerUserModal') registerUserModal!: ModalWindow;
-    @Ref('userForm')          userForm!:          RegisterUser;
+    @Ref('userForm')          userForm!:          UserForm;
 
     roles:  IRole[] = [];
     filter: string  = '';
