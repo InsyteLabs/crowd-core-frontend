@@ -5,7 +5,7 @@ import Vuex from 'vuex';
 
 import { userService, clientService, eventService }                       from '@/services';
 import { IClient, IUserToken, IClientEventDescriptor, IWebSocketMessage } from '@/interfaces';
-import { User, Event }                                                    from '@/models';
+import { User, ClientEvent }                                              from '@/models';
 
 Vue.use(Vuex);
 
@@ -13,12 +13,12 @@ let socket: WebSocket|null = null;
 
 const store = new Vuex.Store({
     state: {
-        client: <IClient|null>   null,
-        users:  <User[]>         [],
-        user:   <User|null>      null,
-        socket: <WebSocket|null> socket,
-        events: <Event[]>        [],
-        event:  <Event|null>     null
+        client: <IClient|null>     null,
+        users:  <User[]>           [],
+        user:   <User|null>        null,
+        socket: <WebSocket|null>   socket,
+        events: <ClientEvent[]>    [],
+        event:  <ClientEvent|null> null
     },
     getters: {
         events(state){ return state.events },
@@ -34,13 +34,13 @@ const store = new Vuex.Store({
             EVENT METHODS
             =============
         */
-        setEvents(state, events: Event[]): void{
+        setEvents(state, events: ClientEvent[]): void{
             state.events = events;
         },
-        setEvent(state, event: Event): void{
+        setEvent(state, event: ClientEvent): void{
             state.event = event;
         },
-        addEvent(state, event: Event): void{
+        addEvent(state, event: ClientEvent): void{
             if(!(state.events && Array.isArray(state.events))){
                 state.events = [ event ];
                 return;
@@ -48,7 +48,7 @@ const store = new Vuex.Store({
 
             state.events.push(event);
         },
-        updateEvent(state, event: Event): void{
+        updateEvent(state, event: ClientEvent): void{
             if(!(state.events && Array.isArray(state.events))){
                 state.events = [ event ];
                 return;
@@ -59,7 +59,7 @@ const store = new Vuex.Store({
                 state.events.splice(idx, 1, event);
             }
         },
-        deleteEvent(state, event: Event): void{
+        deleteEvent(state, event: ClientEvent): void{
             if(!(state.events && Array.isArray(state.events))) return;
 
             const idx = state.events.findIndex(e => e.id === event.id);
@@ -113,16 +113,16 @@ const store = new Vuex.Store({
             EVENT METHODS
             =============
         */
-        async loadEvents({ commit }, clientId: number): Promise<Event[]>{
-            const events: Event[] = await eventService.getEvents(clientId);
+        async loadEvents({ commit }, clientId: number): Promise<ClientEvent[]>{
+            const events: ClientEvent[] = await eventService.getEvents(clientId);
 
             commit('setEvents', events);
 
             return events;
         },
         
-        async loadEvent({ commit }, descriptor: IClientEventDescriptor): Promise<Event>{
-            const event: Event = await eventService.getEvent(descriptor.clientId, descriptor.eventSlug);
+        async loadEvent({ commit }, descriptor: IClientEventDescriptor): Promise<ClientEvent>{
+            const event: ClientEvent = await eventService.getEvent(descriptor.clientId, descriptor.eventSlug);
 
             store.commit('setEvent', event);
 
@@ -212,7 +212,7 @@ const store = new Vuex.Store({
                     ==============
                 */
                 case 'event-created':
-                    const newEvent: Event = new Event(msg.data);
+                    const newEvent: ClientEvent = new ClientEvent(msg.data);
 
                     console.group(`$store.handleMessage`);
                     console.log('EVENT CREATED');
@@ -223,7 +223,7 @@ const store = new Vuex.Store({
 
                     break;
                 case 'event-updated':
-                    const updatedEvent: Event = new Event(msg.data);
+                    const updatedEvent: ClientEvent = new ClientEvent(msg.data);
 
                     console.group(`$store.handleMessage`);
                     console.log('EVENT UPDATED');
@@ -234,7 +234,7 @@ const store = new Vuex.Store({
 
                     break;
                 case 'event-deleted':
-                    const deletedEvent: Event = new Event(msg.data);
+                    const deletedEvent: ClientEvent = new ClientEvent(msg.data);
 
                     console.group(`$store.handleMessage`);
                     console.log('EVENT DELETED');
