@@ -9,24 +9,26 @@ import { User, ClientEvent }                                              from '
 
 Vue.use(Vuex);
 
-let socket: WebSocket|null = null;
+const SOCKET_INTERVAAL: number = 10000; // 10 seconds
 
 const store = new Vuex.Store({
     state: {
-        client: <IClient|null>     null,
-        users:  <User[]>           [],
-        user:   <User|null>        null,
-        socket: <WebSocket|null>   socket,
-        events: <ClientEvent[]>    [],
-        event:  <ClientEvent|null> null
+        client:      <IClient|null>     null,
+        users:       <User[]>           [],
+        user:        <User|null>        null,
+        socket:      <WebSocket|null>   null,
+        socketTimer: <number|null>      null,
+        events:      <ClientEvent[]>    [],
+        event:       <ClientEvent|null> null
     },
     getters: {
-        events(state){ return state.events },
-        event(state) { return state.event  },
-        client(state){ return state.client },
-        users(state) { return state.users  },
-        user(state)  { return state.user   },
-        socket(state){ return state.socket }
+        events(state):      ClientEvent[]    { return state.events      },
+        event(state):       ClientEvent|null { return state.event       },
+        client(state):      IClient|null     { return state.client      },
+        users(state):       User[]           { return state.users       },
+        user(state):        User|null        { return state.user        },
+        socket(state):      WebSocket|null   { return state.socket      },
+        socketTimer(state): number|null      { return state.socketTimer }
     },
     mutations: {
         /*
@@ -125,6 +127,9 @@ const store = new Vuex.Store({
         */
         setSocket(state, socket: WebSocket): void{
             state.socket = socket;
+        },
+        setSocketTimer(state, timer: number): void{
+            state.socketTimer = timer;
         }
     },
     actions: {
@@ -147,16 +152,6 @@ const store = new Vuex.Store({
             store.commit('setEvent', event);
 
             return event;
-        },
-
-
-        /*
-            ==============
-            CLIENT METHODS
-            ==============
-        */
-        setClient({ commit }, client: IClient): void{
-            commit('setClient', client);
         },
 
 
@@ -312,7 +307,7 @@ const store = new Vuex.Store({
 
             let socket: WebSocket|null = store.getters.socket;
             
-            if(!socket){
+            if(!socket || ![socket.CONNECTING, socket.OPEN].includes(socket.readyState)){
                 socket = new WebSocket(`ws://localhost:8080/client/${ store.getters.client.slug }`);
 
                 socket.addEventListener('open', (ev) => {
@@ -327,6 +322,43 @@ const store = new Vuex.Store({
                 });
 
                 store.commit('setSocket', socket);
+
+                clearInterval(store.getters.socketTimer);
+
+                const timer = setInterval(() => store.dispatch('testConnection'), SOCKET_INTERVAAL);
+
+                store.commit('setSocketTimer', timer);
+            }
+        },
+
+        async testConnection(store): Promise<void>{
+            const socket: WebSocket = store.getters.socket;
+
+            let err: string = '';
+
+            if(!socket){
+                err = 'Socket was falsy, re-opening';
+            }
+
+            else if(![socket.OPEN, socket.CONNECTING].includes(socket.readyState)){
+                err = 'Socket not connected, re-opening';
+            }
+            else{
+                try{
+                    socket.send('{"type": "test-connection"}');
+                }
+                catch(e){
+                    err = 'Socket unable to send data, re-opening';
+                }
+            }
+
+            if(err){
+                console.group(`$store.testConnection`);
+                console.error(`Socket Error: ${ err }`);
+                console.log('Reconnecting...');
+                console.groupEnd();
+
+                return store.dispatch('openConnection');
             }
         }
     }
