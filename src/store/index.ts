@@ -3,9 +3,14 @@
 import Vue  from 'vue';
 import Vuex from 'vuex';
 
-import { userService, clientService, eventService }                       from '@/services';
-import { IClient, IUserToken, IClientEventDescriptor, IWebSocketMessage } from '@/interfaces';
-import { User, ClientEvent }                                              from '@/models';
+import { userService, clientService, eventService } from '@/services';
+import { User, ClientEvent }                        from '@/models';
+import { AppMessageType }                           from '@/constants';
+
+import {
+    IClient, IUserToken, IClientEventDescriptor, IWebSocketMessage, IAppMessage
+} from '@/interfaces';
+
 
 Vue.use(Vuex);
 
@@ -19,7 +24,8 @@ const store = new Vuex.Store({
         socket:      <WebSocket|null>   null,
         socketTimer: <number|null>      null,
         events:      <ClientEvent[]>    [],
-        event:       <ClientEvent|null> null
+        event:       <ClientEvent|null> null,
+        appMessages: <IAppMessage[]>    []
     },
     getters: {
         events(state):      ClientEvent[]    { return state.events      },
@@ -27,6 +33,7 @@ const store = new Vuex.Store({
         client(state):      IClient|null     { return state.client      },
         users(state):       User[]           { return state.users       },
         user(state):        User|null        { return state.user        },
+        appMessages(state): IAppMessage[]    { return state.appMessages },
         socket(state):      WebSocket|null   { return state.socket      },
         socketTimer(state): number|null      { return state.socketTimer }
     },
@@ -121,6 +128,23 @@ const store = new Vuex.Store({
 
 
         /*
+            ===================
+            APP MESSAGE METHODS
+            ===================
+        */
+        addAppMessage(state, message: IAppMessage): void{
+            state.appMessages.push(message);
+        },
+        removeAppMessage(state, message: IAppMessage): void{
+            const idx = state.appMessages.indexOf(message);
+
+            if(~idx){
+                state.appMessages.splice(idx, 1);
+            }
+        },
+
+
+        /*
             =================
             WEBSOCKET METHODS
             =================
@@ -206,11 +230,31 @@ const store = new Vuex.Store({
 
 
         /*
+            ===================
+            APP MESSAGE METHODS
+            ===================
+        */
+        addAppMessage({ commit }, message: IAppMessage): void{
+
+            message.type = message.type || AppMessageType.DEFAULT;
+
+            commit('addAppMessage', message);
+
+            if(message.autoClose){
+                setTimeout(() => commit('removeAppMessage', message), message.timeout || 5000);
+            }
+        },
+        removeAppMessage({ commit }, message: IAppMessage): void{
+            commit('removeAppMessage', message);
+        },
+
+
+        /*
             =================
             WEBSOCKET METHODS
             =================
         */
-        handleMessage({ commit }, message: string): void{
+        handleMessage({ commit, dispatch }, message: string): void{
             let msg: IWebSocketMessage;
             try{
                 msg = JSON.parse(message);
@@ -299,6 +343,13 @@ const store = new Vuex.Store({
             }
             
             console.groupEnd();
+
+            dispatch('addAppMessage', {
+                text: `WS: ${ msg.type }`,
+                type: AppMessageType.INFO,
+                autoClose: true,
+                timeout: 3000
+            });
         },
 
         async openConnection(store): Promise<void>{

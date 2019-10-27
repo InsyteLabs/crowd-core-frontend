@@ -10,3 +10,4 @@ export * from './IEventQuestion';
 export * from './IEventQuestionStats';
 export * from './IClientEventDescriptor';
 export * from './IWebSocketMessage';
+export * from './IAppMessage';

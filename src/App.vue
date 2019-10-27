@@ -1,5 +1,7 @@
 <template>
     <div id="app">
+        <AppMessages ref="messages"></AppMessages>
+
         <Banner
             @toggleNav="onToggleNav($event);"
             @userClick="onUserClick();">
@@ -20,24 +22,27 @@
 <script lang="ts">
 'use strict';
 
-import { Vue, Component } from 'vue-property-decorator';
+import { Vue, Component, Ref } from 'vue-property-decorator';
 
 import { userService, clientService } from '@/services';
 import { User }                       from './models';
 import { IClient, IUserToken }        from './interfaces';
 
-import Banner     from '@/components/Banner.vue';
-import Navigation from '@/components/Navigation.vue';
-import LoginForm  from '@/components/LoginForm.vue';
+import Banner      from '@/components/Banner.vue';
+import Navigation  from '@/components/Navigation.vue';
+import AppMessages from '@/components/AppMessages.vue';
+import LoginForm   from '@/components/LoginForm.vue';
 
 @Component({
     components: {
         Banner,
         Navigation,
+        AppMessages,
         LoginForm
     }
 })
 export default class App extends Vue{
+    @Ref('messages') messages!: AppMessages;
 
     navigationVisible: boolean = true;
     loginFormVisible:  boolean = false;
