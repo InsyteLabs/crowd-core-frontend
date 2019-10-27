@@ -50,7 +50,6 @@ export default class OrgUsers extends Vue {
     @Ref('registerUserModal') registerUserModal!: ModalWindow;
     @Ref('userForm')          userForm!:          RegisterUser;
 
-    users:  User[]  = [];
     roles:  IRole[] = [];
     filter: string  = '';
 
@@ -68,15 +67,14 @@ export default class OrgUsers extends Vue {
         this.registerUserModal.open();
     }
 
-    onSaveUser(user: User): void{
+    async onSaveUser(user: User): Promise<void>{
         if(!this.client) return;
 
         user.clientId = this.client.id;
-        
-        userService.createUser(user).then((newUser: User) => {
-            this.users.push(newUser);
-            this.registerUserModal.close();
-        });
+
+        const newUser = await userService.createUser(<number>this.client.id, user);
+
+        this.registerUserModal.close();
     }
 
     async onDeleteUserClick(user: User): Promise<void>{
@@ -103,18 +101,20 @@ export default class OrgUsers extends Vue {
         return this.$store.getters.user;
     }
 
+    get users(): User[]{
+        return this.$store.getters.users;
+    }
+
 
     /*
         ===============
         PRIVATE METHODS
         ===============
     */
-    private async _loadUsers(): Promise<User[]>{
-        if(!(this.client && this.client.id)) return [];
+    private async _loadUsers(): Promise<void>{
+        if(!(this.client && this.client.id)) return;
 
-        const users = await userService.getUsers(this.client.id);
-
-        return this.users = users;
+        this.$store.dispatch('loadUsers', this.client.id);
     }
 
     private async _loadRoles(): Promise<IRole[]>{

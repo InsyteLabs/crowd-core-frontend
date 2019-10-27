@@ -20,8 +20,8 @@ class UserService{
         return users.map(u => new User(u));
     }
 
-    async createUser(user: User): Promise<User>{
-        const url = `${ apiUrl }/users`;
+    async createUser(clientId: number, user: User): Promise<User>{
+        const url = `${ apiUrl }/clients/${ clientId }/users`;
 
         const newUser: User = await http.post<User>({
             url,
