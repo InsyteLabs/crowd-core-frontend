@@ -90,7 +90,7 @@
                 </div>
             </div>
 
-            <button @click="save()" class="btn btn-primary">
+            <button type="submit" role="submit" class="btn btn-primary">
                 {{
                     newUser
                         ? 'Create User'
