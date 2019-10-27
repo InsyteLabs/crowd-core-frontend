@@ -129,7 +129,9 @@ export default class OrgEvents extends Vue {
     }
 
     async onDeleteEventClick(event: IEvent): Promise<void>{
-        const res = await eventService.deleteEvent(event);
+        if(!this.client) return;
+
+        const res = await eventService.deleteEvent(<number>this.client.id, event);
 
         this._loadEvents();
     }
@@ -147,7 +149,9 @@ export default class OrgEvents extends Vue {
     }
 
     async onUpdateEvent(event: IEvent): Promise<void>{
-        const updatedEvent = await eventService.updateEvent(event);
+        if(!this.client) return;
+
+        const updatedEvent = await eventService.updateEvent(<number>this.client.id, event);
 
         await this._loadEvents();
 
