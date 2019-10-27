@@ -84,8 +84,8 @@ import ModalWindow from '@/components/ModalWindow.vue';
 import EventForm   from '@/components/event/EventForm.vue';
 
 import { eventService, clientService } from '@/services';
-import { IEvent, IClient }             from '@/interfaces';
-import { User }                        from '@/models';
+import { IClient }                     from '@/interfaces';
+import { User, Event }                 from '@/models';
 
 @Component({
     components: {
@@ -97,7 +97,7 @@ export default class OrgEvents extends Vue {
     @Ref('eventModal') eventModal!: ModalWindow;
     @Ref('eventForm')  eventForm!:  EventForm;
 
-    selectedEvent: IEvent|null  = null;
+    selectedEvent: Event|null  = null;
     newEvent:      boolean      = true;
     filter:        string       = '';
 
@@ -119,7 +119,7 @@ export default class OrgEvents extends Vue {
         this.eventModal.open();
     }
 
-    onEditEventClick(event: IEvent): void{
+    onEditEventClick(event: Event): void{
         this.newEvent      = false;
         this.selectedEvent = event;
 
@@ -127,32 +127,32 @@ export default class OrgEvents extends Vue {
         this.eventModal.open();
     }
 
-    async onDeleteEventClick(event: IEvent): Promise<void>{
+    async onDeleteEventClick(event: Event): Promise<void>{
         if(!this.client) return;
 
         const res = await eventService.deleteEvent(<number>this.client.id, event);
 
-        this._loadEvents();
+        // this._loadEvents();
     }
 
-    async onCreateEvent(event: IEvent): Promise<void>{
+    async onCreateEvent(event: Event): Promise<void>{
         if(!this.client){
             return console.error('Cannot create event without client reference');
         }
 
         const newEvent = await eventService.createEvent(<number>this.client.id, event);
 
-        await this._loadEvents();
+        // await this._loadEvents();
 
         this.eventModal.close();
     }
 
-    async onUpdateEvent(event: IEvent): Promise<void>{
+    async onUpdateEvent(event: Event): Promise<void>{
         if(!this.client) return;
 
         const updatedEvent = await eventService.updateEvent(<number>this.client.id, event);
 
-        await this._loadEvents();
+        // await this._loadEvents();
 
         this.eventModal.close();
     }
@@ -181,7 +181,7 @@ export default class OrgEvents extends Vue {
         return this.$store.getters.client;
     }
 
-    get events(): IEvent[]{
+    get events(): Event[]{
         return this.$store.getters.events;
     }
 
