@@ -58,7 +58,7 @@ export default class OrgHome extends Vue {
         ===============
     */
     private async _loadClient(): Promise<IClient>{
-        const client = await clientService.getClientBySlug(this.$route.params.slug);
+        const client = await clientService.getClientBySlug(this.$route.params.orgSlug);
 
         return this.client = client;
     }

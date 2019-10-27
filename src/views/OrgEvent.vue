@@ -50,9 +50,9 @@ import { Vue, Component, Watch }  from 'vue-property-decorator';
 
 import Question from '@/components/event/question/Question.vue';
 
-import { IEvent, IClient, IEventQuestion, IEventQuestionStats } from '../interfaces';
-import { User }                                                 from '../models';
-import { eventService }                                         from '../services';
+import { IClient, IEventQuestion, IEventQuestionStats } from '../interfaces';
+import { User, ClientEvent }                            from '../models';
+import { eventService }                                 from '../services';
 
 @Component({
     components: {
@@ -61,7 +61,6 @@ import { eventService }                                         from '../service
 })
 export default class OrgEvent extends Vue {
 
-    event:            IEvent|null         = null;
     selectedQuestion: IEventQuestion|null = null;
     isAskQuestion:    boolean             = false;
     isEditQuestion:   boolean             = false;
@@ -180,6 +179,10 @@ export default class OrgEvent extends Vue {
         return this.$store.getters.user;
     }
 
+    get event(): ClientEvent{
+        return this.$store.getters.event;
+    }
+
 
     /*
         ========
@@ -198,9 +201,10 @@ export default class OrgEvent extends Vue {
         ===============
     */
     private async _loadEvent(): Promise<void>{
-        let event = await eventService.getEvent(<number>this.client.id, this.$route.params.eventSlug);
-
-        this.event = event;
+        await this.$store.dispatch('loadEvent', {
+            clientId: this.client.id,
+            eventSlug: this.$route.params.eventSlug
+        });
     }
 }
 </script>

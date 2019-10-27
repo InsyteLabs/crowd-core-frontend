@@ -4,8 +4,8 @@ import Vue    from 'vue';
 import Router from 'vue-router';
 
 import Home      from '@/views/Home.vue';
-import Users     from '@/views/Users.vue';
 import OrgHome   from '@/views/OrgHome.vue';
+import OrgUsers  from '@/views/OrgUsers.vue';
 import OrgEvents from '@/views/OrgEvents.vue';
 import OrgEvent  from '@/views/OrgEvent.vue';
 
@@ -21,22 +21,22 @@ export default new Router({
             component: Home
         },
         {
-            path: '/users',
-            name: 'users',
-            component: Users
-        },
-        {
-            path: '/orgs/:slug',
+            path: '/:orgSlug',
             name: 'org-home',
             component: OrgHome
         },
         {
-            path: '/orgs/:slug/events',
+            path: '/:orgSlug/users',
+            name: 'org-users',
+            component: OrgUsers
+        },
+        {
+            path: '/:orgSlug/events',
             name: 'org-events',
             component: OrgEvents
         },
         {
-            path: '/orgs/:slug/events/:eventSlug',
+            path: '/:orgSlug/events/:eventSlug',
             name: 'org-event',
             component: OrgEvent
         }

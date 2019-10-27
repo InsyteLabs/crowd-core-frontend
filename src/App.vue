@@ -4,10 +4,8 @@
             @toggleNav="onToggleNav($event);"
             @userClick="onUserClick();">
         </Banner>
-        <Navigation
-            :visible="navigationVisible"
-            :client="client">
-        </Navigation>
+
+        <Navigation :visible="navigationVisible"></Navigation>
 
         <div v-show="loginFormVisible" class="login-form">
             <LoginForm @login="onLoginClick($event);"></LoginForm>
@@ -45,8 +43,8 @@ export default class App extends Vue{
     loginFormVisible:  boolean = false;
     loggedIn:          boolean = (this.user && this.user.id) ? true : false;
 
-    created(): void{
-        this.$store.dispatch('loadUserToken');
+    async created(): Promise<void>{
+        await this.$store.dispatch('loadUserToken');
     }
 
     onToggleNav(){
@@ -78,7 +76,7 @@ export default class App extends Vue{
             this.$router.push({
                 name: 'org-home',
                 params: {
-                    slug: client.slug
+                    orgSlug: client.slug
                 }
             });
         }

@@ -1,47 +1,73 @@
 'use strict';
 
-import conf                  from '@/conf';
-import { User }              from '@/models';
-import { IRole, IUserToken } from '@/interfaces';
+import conf                    from '@/conf';
+import { User }                from '@/models';
+import { IRole, IUserToken }   from '@/interfaces';
+import { httpService as http } from './Http';
 
-const apiUrl = conf.apiUrl;
+const { apiUrl } = conf;
+
+const JSON_HEADERS = {
+    'Content-Type': 'application/json'
+}
 
 class UserService{
-    async getUsers(): Promise<User[]>{
-        let users: any = await fetch(`${ apiUrl }/users`);
-            users      = await users.json();
+    async getUsers(clientId: number): Promise<User[]>{
+        const url = `${ apiUrl }/clients/${ clientId }/users`;
 
-        return users.map((user: any) => new User(user));
+        let users: User[] = await http.get<User[]>({ url });
+
+        return users.map(u => new User(u));
     }
 
-    async createUser(user: User): Promise<User>{
-        let newUser: any = await fetch(`${ apiUrl }/users`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
+    async createUser(clientId: number, user: User): Promise<User>{
+        const url = `${ apiUrl }/clients/${ clientId }/users`;
+
+        const newUser: User = await http.post<User>({
+            url,
+            headers: JSON_HEADERS,
             body: JSON.stringify(user)
         });
 
-        newUser = await newUser.json();
-
         return new User(newUser);
+    }
+    
+    async updateUser(clientId: number, user: User): Promise<User>{
+        const url = `${ apiUrl }/clients/${ clientId }/users/${ user.id }`;
+
+        const updatedUser: User = await http.put<User>({
+            url,
+            headers: JSON_HEADERS,
+            body: JSON.stringify(user)
+        });
+
+        return new User(updatedUser);
+    }
+
+    async deleteUser(clientId: number, user: User): Promise<any>{
+        const url = `${ apiUrl }/clients/${ clientId }/users/${ user.id }`;
+
+        const deletedUser: any = await http.delete<any>({ url });
+
+        return deletedUser;
     }
 
     async authenticate(username: string, password: string): Promise<IUserToken|void>{
-        let jwt: any = await fetch(`${ apiUrl }/authenticate`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
+        const url = `${ apiUrl }/authenticate`;
+
+        const jwt: any = await http.post<any>({
+            url,
+            headers: JSON_HEADERS,
             body: JSON.stringify({ username, password })
         });
 
-        const { token } = await jwt.json();
+        const { token } = jwt
 
         if(!token) return;
 
-        let [ header, payload, signature ] = token.split('.');
+        localStorage.setItem('jwt', token);
+
+        let [ header, payload ] = token.split('.');
 
         header  = atob(header),
         payload = atob(payload);
@@ -59,8 +85,9 @@ class UserService{
     }
 
     async getRoles(): Promise<IRole[]>{
-        let roles: any = await fetch(`${ apiUrl }/roles`);
-            roles      = await roles.json();
+        const url = `${ apiUrl }/roles`;
+
+        const roles: IRole[] = await http.get<IRole[]>({ url });
         
         roles.forEach((r: IRole) => r.checked = false);
         

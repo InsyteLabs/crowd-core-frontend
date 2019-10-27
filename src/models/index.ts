@@ -1,3 +1,4 @@
 'use strict';
 
-export { User } from './User';
+export * from './User';
+export * from './ClientEvent';
