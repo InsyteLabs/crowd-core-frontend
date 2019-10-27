@@ -61,7 +61,6 @@ import { eventService }                                         from '../service
 })
 export default class OrgEvent extends Vue {
 
-    event:            IEvent|null         = null;
     selectedQuestion: IEventQuestion|null = null;
     isAskQuestion:    boolean             = false;
     isEditQuestion:   boolean             = false;
@@ -180,6 +179,10 @@ export default class OrgEvent extends Vue {
         return this.$store.getters.user;
     }
 
+    get event(): IEvent{
+        return this.$store.getters.event;
+    }
+
 
     /*
         ========
@@ -198,9 +201,10 @@ export default class OrgEvent extends Vue {
         ===============
     */
     private async _loadEvent(): Promise<void>{
-        let event = await eventService.getEvent(<number>this.client.id, this.$route.params.eventSlug);
-
-        this.event = event;
+        await this.$store.dispatch('loadEvent', {
+            clientId: this.client.id,
+            eventSlug: this.$route.params.eventSlug
+        });
     }
 }
 </script>

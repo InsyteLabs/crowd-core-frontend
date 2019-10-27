@@ -97,7 +97,6 @@ export default class OrgEvents extends Vue {
     @Ref('eventModal') eventModal!: ModalWindow;
     @Ref('eventForm')  eventForm!:  EventForm;
 
-    events:        IEvent[]     = [];
     selectedEvent: IEvent|null  = null;
     newEvent:      boolean      = true;
     filter:        string       = '';
@@ -182,6 +181,10 @@ export default class OrgEvents extends Vue {
         return this.$store.getters.client;
     }
 
+    get events(): IEvent[]{
+        return this.$store.getters.events;
+    }
+
 
     /*
         ===============
@@ -191,7 +194,7 @@ export default class OrgEvents extends Vue {
     async _loadEvents(): Promise<void>{
         if(!this.client) return;
 
-        this.events = await eventService.getEvents(<number>this.client.id);
+        this.$store.dispatch('loadEvents', this.client.id);
     }
 }
 </script>

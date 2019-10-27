@@ -3,10 +3,9 @@
 import Vue  from 'vue';
 import Vuex from 'vuex';
 
-import { userService, clientService } from '@/services';
-
-import { User }                from '@/models';
-import { IClient, IUserToken } from '@/interfaces';
+import { userService, clientService, eventService }            from '@/services';
+import { IClient, IUserToken, IEvent, IClientEventDescriptor } from '@/interfaces';
+import { User }                                                from '@/models';
 
 Vue.use(Vuex);
 
@@ -16,31 +15,102 @@ const store = new Vuex.Store({
     state: {
         client: <IClient|null>   null,
         user:   <User|null>      null,
-        socket: <WebSocket|null> socket
+        socket: <WebSocket|null> socket,
+        events: <IEvent[]>       [],
+        event:  <IEvent|null>    null
     },
     getters: {
+        events(state){ return state.events },
+        event(state) { return state.event  },
         client(state){ return state.client },
         user(state)  { return state.user   },
         socket(state){ return state.socket }
     },
     mutations: {
+        /*
+            =============
+            EVENT METHODS
+            =============
+        */
+        setEvents(state, events: IEvent[]): void{
+            state.events = events;
+        },
+        setEvent(state, event: IEvent): void{
+            state.event = event;
+        },
+
+
+        /*
+            ==============
+            CLIENT METHODS
+            ==============
+        */
         setClient(state, client: IClient): void{
             state.client = client;
         },
+
+
+        /*
+            ============
+            USER METHODS
+            ============
+        */
         setUser(state, user: User): void{
             state.user = user;
         },
+
+
+        /*
+            =================
+            WEBSOCKET METHODS
+            =================
+        */
         setSocket(state, socket: WebSocket): void{
             state.socket = socket;
         }
     },
     actions: {
-        setUser({ commit }, user: User): void{
-            commit('setUser', user);
+        /*
+            =============
+            EVENT METHODS
+            =============
+        */
+        async loadEvents({ commit }, clientId: number): Promise<IEvent[]>{
+            const events: IEvent[] = await eventService.getEvents(clientId);
+
+            commit('setEvents', events);
+
+            return events;
         },
+        
+        async loadEvent({ commit }, descriptor: IClientEventDescriptor): Promise<IEvent>{
+            const event: IEvent = await eventService.getEvent(descriptor.clientId, descriptor.eventSlug);
+
+            store.commit('setEvent', event);
+
+            return event;
+        },
+
+
+        /*
+            ==============
+            CLIENT METHODS
+            ==============
+        */
         setClient({ commit }, client: IClient): void{
             commit('setClient', client);
         },
+
+
+        /*
+            ============
+            USER METHDOS
+            ============
+        */
+        setUser({ commit }, user: User): void{
+            commit('setUser', user);
+        },
+
         async loadUserToken({ commit, dispatch, getters }): Promise<void>{
             let token:     string|null = localStorage.getItem('token'),
                 userToken: IUserToken;
@@ -72,9 +142,17 @@ const store = new Vuex.Store({
                 }
             }
         },
+
         saveUserToken({ commit }, token: string): void{
             localStorage.setItem('token', token);
         },
+
+
+        /*
+            =================
+            WEBSOCKET METHODS
+            =================
+        */
         handleMessage({ commit }, message: string): void{
             let msg;
             try{
@@ -90,6 +168,7 @@ const store = new Vuex.Store({
             console.log(msg);
             console.groupEnd();
         },
+
         async openConnection(store): Promise<void>{
             if(!store.getters.client) return;
             if(!window.WebSocket)     return;

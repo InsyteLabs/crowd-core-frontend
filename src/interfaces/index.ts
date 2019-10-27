@@ -9,3 +9,4 @@ export * from './IEvent';
 export * from './IEventSettings';
 export * from './IEventQuestion';
 export * from './IEventQuestionStats';
+export * from './IClientEventDescriptor';
