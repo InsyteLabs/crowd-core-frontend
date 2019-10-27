@@ -41,7 +41,7 @@ const store = new Vuex.Store({
         setClient({ commit }, client: IClient): void{
             commit('setClient', client);
         },
-        async loadUserToken({ commit, dispatch }): Promise<void>{
+        async loadUserToken({ commit, dispatch, getters }): Promise<void>{
             let token:     string|null = localStorage.getItem('token'),
                 userToken: IUserToken;
 
@@ -59,7 +59,7 @@ const store = new Vuex.Store({
 
             commit('setUser', user);
 
-            if(user.clientId){
+            if(user.clientId && !getters.client){
                 try{
                     const client = await clientService.getClient(user.clientId);
 

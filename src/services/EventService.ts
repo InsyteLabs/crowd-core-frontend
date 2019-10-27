@@ -51,8 +51,8 @@ class EventService{
         return newEvent;
     }
 
-    async updateEvent(event: IEvent): Promise<IEvent>{
-        const url = `${ apiUrl }/events/${ event.id }`;
+    async updateEvent(clientId: number, event: IEvent): Promise<IEvent>{
+        const url = `${ apiUrl }/clients/${ clientId }/events/${ event.id }`;
 
         const updatedEvent: IEvent = await http.put<IEvent>({
             url,
@@ -66,8 +66,8 @@ class EventService{
         return updatedEvent;
     }
 
-    async deleteEvent(event: IEvent): Promise<IEvent>{
-        const url = `${ apiUrl }/events/${ event.id }`;
+    async deleteEvent(clientId: number, event: IEvent): Promise<IEvent>{
+        const url = `${ apiUrl }/clients/${ clientId }/events/${ event.id }`;
 
         const deleted: IEvent = await http.delete<IEvent>({ url });
 
