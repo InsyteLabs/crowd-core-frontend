@@ -98,12 +98,13 @@
 
 import { Vue, Component, Prop, Watch, Emit } from 'vue-property-decorator';
 
-import { IClient, IEvent, IEventSettings } from '@/interfaces';
-import { dateTimeFilter }                  from '@/filters/date-time';
+import { Event }                   from '@/models';
+import { IClient, IEventSettings } from '@/interfaces';
+import { dateTimeFilter }          from '@/filters/date-time';
 
 @Component
 export default class EventForm extends Vue {
-    @Prop() event!:    IEvent;
+    @Prop() event!:    Event;
     @Prop() newEvent!: boolean;
 
     title:           string = '';
@@ -123,7 +124,7 @@ export default class EventForm extends Vue {
             return;
         }
 
-        const event: IEvent = {
+        const event: Event = {
             clientId:    this.client.id,
             title:       this.title,
             slug:        this.slug,
@@ -162,10 +163,10 @@ export default class EventForm extends Vue {
         ==============
     */
     @Emit('createEvent')
-    createEvent(event: IEvent): void{ }
+    createEvent(event: Event): void{ }
 
     @Emit('updateEvent')
-    updateEvent(event: IEvent): void{ }
+    updateEvent(event: Event): void{ }
 
 
     /*
@@ -174,7 +175,7 @@ export default class EventForm extends Vue {
         ========
     */
     @Watch('event')
-    eventWatcher(event: IEvent): void{
+    eventWatcher(event: Event): void{
         event ? this._initForm() : this._clearForm();
     }
 

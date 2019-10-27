@@ -1,8 +1,9 @@
 'use strict';
 
-import conf                       from '@/conf';
-import { IEvent, IEventQuestion } from '@/interfaces';
-import { httpService as http }    from '@/services/Http';
+import conf                    from '@/conf';
+import { Event }               from '@/models';
+import { IEventQuestion }      from '@/interfaces';
+import { httpService as http } from '@/services/Http';
 
 const { apiUrl } = conf;
 
@@ -11,70 +12,53 @@ const JSON_HEADERS = {
 }
 
 class EventService{
-    async getEvents(clientId: number){
+    async getEvents(clientId: number): Promise<Event[]>{
 
         const url = `${ apiUrl }/clients/${ clientId }/events`;
 
-        const events: IEvent[] = await http.get<IEvent[]>({ url });
+        const events: Event[] = await http.get<Event[]>({ url });
 
-        events.forEach((e: any) => {
-            e.startTime = new Date(e.startTime);
-            e.endTime   = new Date(e.endTime);
-        });
-
-        return events;
+        return events.map(e => new Event(e));
     }
 
-    async getEvent(clientId: number, slug: string): Promise<IEvent>{
+    async getEvent(clientId: number, slug: string): Promise<Event>{
         const url = `${ apiUrl }/clients/${ clientId }/events/${ slug }`;
 
-        const event: IEvent = await http.get<IEvent>({ url });
+        const event: Event = await http.get<Event>({ url });
 
-        event.startTime = new Date(event.startTime);
-        event.endTime   = new Date(event.endTime);
-
-        return event;
+        return new Event(event);
     }
 
-    async createEvent(clientId: number, event: IEvent): Promise<IEvent>{
+    async createEvent(clientId: number, event: Event): Promise<Event>{
         const url = `${ apiUrl }/clients/${ clientId }/events`;
 
-        const newEvent: IEvent = await http.post<IEvent>({
+        const newEvent: Event = await http.post<Event>({
             url,
             headers: JSON_HEADERS,
             body: JSON.stringify(event)
         });
 
-        newEvent.startTime = new Date(newEvent.startTime);
-        newEvent.endTime   = new Date(newEvent.endTime);
-
-        return newEvent;
+        return new Event(newEvent);
     }
 
-    async updateEvent(clientId: number, event: IEvent): Promise<IEvent>{
+    async updateEvent(clientId: number, event: Event): Promise<Event>{
         const url = `${ apiUrl }/clients/${ clientId }/events/${ event.id }`;
 
-        const updatedEvent: IEvent = await http.put<IEvent>({
+        const updatedEvent: Event = await http.put<Event>({
             url,
             headers: JSON_HEADERS,
             body: JSON.stringify(event)
         });
 
-        updatedEvent.startTime = new Date(updatedEvent.startTime);
-        updatedEvent.endTime   = new Date(updatedEvent.endTime);
-
-        return updatedEvent;
+        return new Event(updatedEvent);
     }
 
-    async deleteEvent(clientId: number, event: IEvent): Promise<IEvent>{
+    async deleteEvent(clientId: number, event: Event): Promise<Event>{
         const url = `${ apiUrl }/clients/${ clientId }/events/${ event.id }`;
 
-        const deleted: IEvent = await http.delete<IEvent>({ url });
+        const deletedEvent: Event = await http.delete<Event>({ url });
 
-        deleted.startTime = new Date(deleted.startTime);
-        deleted.endTime   = new Date(deleted.endTime);
-
-        return deleted;
+        return new Event(deletedEvent);
     }
 
     async getQeustion(eventId: number, questionId: number): Promise<IEventQuestion>{
