@@ -14,14 +14,19 @@
             </div>
             <UserList
                 :users="users"
+
+                @editUser="onEditUserClick($event)"
                 @deleteUser="onDeleteUserClick($event)">
             </UserList>
         </div>
-        <ModalWindow @modalActiveStateChange="onModalActiveStateChange($event)" ref="registerUserModal">
+        <ModalWindow @modalActiveStateChange="onModalActiveStateChange($event)" ref="userModal">
             <UserForm
                 ref="userForm"
+                :user="selectedUser"
+                :newUser="newUser"
                 :roles="roles"
-                @saveUser="onSaveUser($event)">
+                @createUser="onCreateUser($event)"
+                @updateUser="onUpdateUser($event)">
             </UserForm>
         </ModalWindow>
     </div>
@@ -47,11 +52,13 @@ import ModalWindow        from '@/components/ModalWindow.vue';
     }
 })
 export default class OrgUsers extends Vue {
-    @Ref('registerUserModal') registerUserModal!: ModalWindow;
-    @Ref('userForm')          userForm!:          UserForm;
+    @Ref('userModal') userModal!: ModalWindow;
+    @Ref('userForm')  userForm!:  UserForm;
 
-    roles:  IRole[] = [];
-    filter: string  = '';
+    selectedUser: User|null = null;
+    newUser:      boolean   = false;
+    roles:        IRole[]   = [];
+    filter:       string    = '';
 
     async created(): Promise<void>{
         if(!(this.client && this.user)){
@@ -63,24 +70,46 @@ export default class OrgUsers extends Vue {
     }
 
     onAddUserClick(): void{
+        this.newUser      = true;
+        this.selectedUser = null;
+
         this.userForm.clear();
-        this.registerUserModal.open();
+        this.userModal.open();
     }
 
-    async onSaveUser(user: User): Promise<void>{
+    onEditUserClick(user: User): void{
+        this.newUser      = false;
+        this.selectedUser = user;
+
+        this.userForm.init();
+        this.userModal.open();
+    }
+
+    async onCreateUser(user: User): Promise<void>{
         if(!this.client) return;
 
         user.clientId = this.client.id;
 
         const newUser = await userService.createUser(<number>this.client.id, user);
 
-        this.registerUserModal.close();
+        this.userModal.close();
+    }
+
+    async onUpdateUser(user: User): Promise<void>{
+        if(!this.client) return;
+
+        user.clientId = this.client.id;
+
+        const updatedUser = await userService.updateUser(<number>this.client.id, user);
+
+        this.userModal.close();
+        this.userForm.clear();
     }
 
     async onDeleteUserClick(user: User): Promise<void>{
-        const deleted = await userService.deleteUser(user);
+        if(!(this.client && this.client.id)) return;
 
-        this._loadUsers();
+        const deleted = await userService.deleteUser(this.client.id, user);
     }
 
     onModalActiveStateChange(active: boolean): void{

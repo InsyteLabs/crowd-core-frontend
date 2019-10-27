@@ -49,7 +49,7 @@ const store = new Vuex.Store({
             state.events.push(event);
         },
         updateEvent(state, event: ClientEvent): void{
-            if(!(state.events && Array.isArray(state.events))){
+            if(!state.events || !Array.isArray(state.events)){
                 state.events = [ event ];
                 return;
             }
@@ -95,6 +95,26 @@ const store = new Vuex.Store({
             }
 
             state.users.push(user);
+        },
+        updateUser(state, user: User): void{
+            if(!state.users || !Array.isArray(state.users)){
+                state.users = [ user ];
+                return;
+            }
+
+            const idx = state.users.findIndex(u => u.id === user.id);
+            if(~idx){
+                state.users.splice(idx, 1, user);
+            }
+
+        },
+        deleteUser(state, user: User): void{
+            if(!(state.users && Array.isArray(state.users))) return;
+
+            const idx = state.users.findIndex(u => u.id === user.id);
+            if(~idx){
+                state.users.splice(idx, 1);
+            }
         },
 
 
@@ -205,6 +225,7 @@ const store = new Vuex.Store({
                 return;
             }
 
+            console.group('$store.handleMessage');
             switch(msg.type){
                 /*
                     ==============
@@ -214,10 +235,8 @@ const store = new Vuex.Store({
                 case 'event-created':
                     const newEvent: ClientEvent = new ClientEvent(msg.data);
 
-                    console.group(`$store.handleMessage`);
                     console.log('EVENT CREATED');
                     console.log(newEvent);
-                    console.groupEnd();
 
                     commit('addEvent', newEvent);
 
@@ -225,10 +244,8 @@ const store = new Vuex.Store({
                 case 'event-updated':
                     const updatedEvent: ClientEvent = new ClientEvent(msg.data);
 
-                    console.group(`$store.handleMessage`);
                     console.log('EVENT UPDATED');
                     console.log(updatedEvent);
-                    console.groupEnd();
 
                     commit('updateEvent', updatedEvent);
 
@@ -236,10 +253,8 @@ const store = new Vuex.Store({
                 case 'event-deleted':
                     const deletedEvent: ClientEvent = new ClientEvent(msg.data);
 
-                    console.group(`$store.handleMessage`);
                     console.log('EVENT DELETED');
                     console.log(deletedEvent);
-                    console.groupEnd();
 
                     commit('deleteEvent', deletedEvent);
 
@@ -253,22 +268,42 @@ const store = new Vuex.Store({
                 case 'user-created':
                     const newUser: User = new User(msg.data);
 
-                    console.group(`$store.handleMessage`);
                     console.log('USER CREATED');
                     console.log(newUser);
-                    console.groupEnd();
 
                     commit('addUser', newUser);
 
                     break;
+                case 'user-updated':
+                    const updatedUser: User = new User(msg.data);
 
+                    console.log('USER UPDATED');
+                    console.log(updatedUser);
 
+                    commit('updateUser', updatedUser);
+
+                    break;
+                case 'user-deleted':
+                    const deletedUser: User = new User(msg.data);
+
+                    console.log('USER DELETED');
+                    console.log(deletedUser);
+
+                    commit('deleteUser', deletedUser);
+
+                    break;
+
+                /*
+                    =======
+                    DEFAULT
+                    =======
+                */
                 default:
-                    console.group(`$store.handleMessage`);
                     console.log('UNKNOWN MESSAGE RECEIVED');
                     console.log(msg);
-                    console.groupEnd();
             }
+            
+            console.groupEnd();
         },
 
         async openConnection(store): Promise<void>{

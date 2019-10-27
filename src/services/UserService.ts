@@ -31,9 +31,21 @@ class UserService{
 
         return new User(newUser);
     }
+    
+    async updateUser(clientId: number, user: User): Promise<User>{
+        const url = `${ apiUrl }/clients/${ clientId }/users/${ user.id }`;
 
-    async deleteUser(user: User): Promise<any>{
-        const url = `${ apiUrl }/users/${ user.id }`;
+        const updatedUser: User = await http.put<User>({
+            url,
+            headers: JSON_HEADERS,
+            body: JSON.stringify(user)
+        });
+
+        return new User(updatedUser);
+    }
+
+    async deleteUser(clientId: number, user: User): Promise<any>{
+        const url = `${ apiUrl }/clients/${ clientId }/users/${ user.id }`;
 
         const deletedUser: any = await http.delete<any>({ url });
 
