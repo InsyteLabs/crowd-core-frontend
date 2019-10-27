@@ -35,8 +35,8 @@ import { Vue, Component, Ref } from 'vue-property-decorator';
 import { userService }    from '@/services';
 import { User }           from '@/models';
 import { IRole, IClient } from '@/interfaces';
-import UserList           from '@/components/UserList.vue';
-import RegisterUser       from '@/components/RegisterUser.vue';
+import UserList           from '@/components/user/UserList.vue';
+import RegisterUser       from '@/components/user/RegisterUser.vue';
 import ModalWindow        from '@/components/ModalWindow.vue';
 
 @Component({

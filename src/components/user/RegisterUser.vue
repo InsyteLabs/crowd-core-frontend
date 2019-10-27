@@ -67,7 +67,7 @@
 
 import { Vue, Component, Prop, Emit } from 'vue-property-decorator';
 import { User }  from '@/models';
-import { IRole } from '../interfaces';
+import { IRole } from '@/interfaces';
 
 @Component
 export default class RegisterUser extends Vue {
