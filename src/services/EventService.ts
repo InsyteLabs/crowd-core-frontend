@@ -69,8 +69,8 @@ class EventService{
         return question;
     }
 
-    async createEventQuestion(question: IEventQuestion): Promise<IEventQuestion>{
-        const url = `${ apiUrl }/events/${ question.eventId }/questions`;
+    async createEventQuestion(clientId: number, question: IEventQuestion): Promise<IEventQuestion>{
+        const url = `${ apiUrl }/clients/${ clientId }/events/${ question.eventId }/questions`;
 
         const newQuestion: IEventQuestion = await http.post<IEventQuestion>({
             url,
@@ -81,8 +81,8 @@ class EventService{
         return newQuestion;
     }
 
-    async updateEventQuestion(question: IEventQuestion): Promise<IEventQuestion>{
-        const url = `${ apiUrl }/events/${ question.eventId }/questions/${ question.id }`;
+    async updateEventQuestion(clientId: number, question: IEventQuestion): Promise<IEventQuestion>{
+        const url = `${ apiUrl }/clients/${ clientId }/events/${ question.eventId }/questions/${ question.id }`;
 
         const updatedQuestion: IEventQuestion = await http.put<IEventQuestion>({
             url,
@@ -93,8 +93,8 @@ class EventService{
         return updatedQuestion;
     }
 
-    async deleteEventQuestion(question: IEventQuestion): Promise<boolean>{
-        const url = `${ apiUrl }/events/${ question.eventId }/questions/${ question.id }`;
+    async deleteEventQuestion(clientId: number, question: IEventQuestion): Promise<boolean>{
+        const url = `${ apiUrl }/clients/${ clientId }/events/${ question.eventId }/questions/${ question.id }`;
 
         const res: any = await http.delete<any>({ url });
 

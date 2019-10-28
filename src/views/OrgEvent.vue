@@ -89,7 +89,7 @@ export default class OrgEvent extends Vue {
         }
 
         if(this.isAskQuestion){
-            let newQuestion = await eventService.createEventQuestion(question);
+            let newQuestion = await eventService.createEventQuestion(this.client.id, question);
     
             if(newQuestion && newQuestion.id){
                 this.event.questions.push(newQuestion);
@@ -102,7 +102,7 @@ export default class OrgEvent extends Vue {
 
             question.id = this.selectedQuestion.id;
 
-            let updatedQuestion = await eventService.updateEventQuestion(question);
+            let updatedQuestion = await eventService.updateEventQuestion(this.client.id, question);
 
             const idx = this.event.questions.findIndex(i => i.id === updatedQuestion.id);
 
@@ -128,9 +128,10 @@ export default class OrgEvent extends Vue {
     }
 
     async onDeleteQuestionClick(question: IEventQuestion): Promise<void>{
-        if(!this.event) return;
+        if(!this.event)                      return;
+        if(!(this.client && this.client.id)) return;
 
-        const deleted = await eventService.deleteEventQuestion(question);
+        const deleted = await eventService.deleteEventQuestion(this.client.id, question);
 
         if(deleted){
             const idx = this.event.questions.findIndex(i => i.id === question.id);
