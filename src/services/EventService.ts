@@ -101,8 +101,8 @@ class EventService{
         return res.deleted;
     }
 
-    async createQuestionVote(eventId: number, questionId: number, userId: number, value: number): Promise<IEventQuestion>{
-        const url = `${ apiUrl }/events/${ eventId }/questions/${ questionId }/votes`;
+    async createQuestionVote(clientId: number, eventId: number, questionId: number, userId: number, value: number): Promise<IEventQuestion>{
+        const url = `${ apiUrl }/clients/${ clientId }/events/${ eventId }/questions/${ questionId }/votes`;
 
         const body = {
             eventId,

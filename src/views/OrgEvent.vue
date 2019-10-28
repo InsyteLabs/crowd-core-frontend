@@ -151,9 +151,10 @@ export default class OrgEvent extends Vue {
     }
 
     async vote(questionId: number, val: number): Promise<void>{
-        if(!this.event) return;
+        if(!this.event)                      return;
+        if(!(this.client && this.client.id)) return;
 
-        const updatedQuestion = await eventService.createQuestionVote(<number>this.event.id, questionId, <number>this.user.id, val);
+        const updatedQuestion = await eventService.createQuestionVote(this.client.id, <number>this.event.id, questionId, <number>this.user.id, val);
 
         if(updatedQuestion && updatedQuestion.id){
             const idx = this.event.questions.findIndex(i => i.id === updatedQuestion.id);
