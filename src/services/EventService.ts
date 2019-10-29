@@ -111,13 +111,13 @@ class EventService{
             value
         }
 
-        const res: any = await http.post<any>({
+        const updatedQuestion: IEventQuestion = await http.post<IEventQuestion>({
             url,
             headers: JSON_HEADERS,
             body: JSON.stringify(body)
         });
         
-        return this.getQeustion(eventId, questionId);
+        return updatedQuestion;
     }
 }
 

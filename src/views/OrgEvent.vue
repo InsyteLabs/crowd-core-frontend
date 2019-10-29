@@ -92,7 +92,7 @@ export default class OrgEvent extends Vue {
             let newQuestion = await eventService.createEventQuestion(this.client.id, question);
     
             if(newQuestion && newQuestion.id){
-                this.event.questions.push(newQuestion);
+                // this.event.questions.push(newQuestion);
     
                 this.cancelQuestionClick();
             }
@@ -107,7 +107,7 @@ export default class OrgEvent extends Vue {
             const idx = this.event.questions.findIndex(i => i.id === updatedQuestion.id);
 
             if(~idx){
-                this.event.questions.splice(idx, 1, updatedQuestion);
+                // this.event.questions.splice(idx, 1, updatedQuestion);
 
                 this.selectedQuestion = null;
                 this.cancelQuestionClick();
@@ -133,13 +133,13 @@ export default class OrgEvent extends Vue {
 
         const deleted = await eventService.deleteEventQuestion(this.client.id, question);
 
-        if(deleted){
-            const idx = this.event.questions.findIndex(i => i.id === question.id);
+        // if(deleted){
+        //     const idx = this.event.questions.findIndex(i => i.id === question.id);
 
-            if(~idx){
-                this.event.questions.splice(idx, 1);
-            }
-        }
+        //     if(~idx){
+        //         this.event.questions.splice(idx, 1);
+        //     }
+        // }
     }
 
     async onUpvoteQuestionClick(question: IEventQuestion): Promise<void>{
@@ -156,13 +156,13 @@ export default class OrgEvent extends Vue {
 
         const updatedQuestion = await eventService.createQuestionVote(this.client.id, <number>this.event.id, questionId, <number>this.user.id, val);
 
-        if(updatedQuestion && updatedQuestion.id){
-            const idx = this.event.questions.findIndex(i => i.id === updatedQuestion.id);
+        // if(updatedQuestion && updatedQuestion.id){
+        //     const idx = this.event.questions.findIndex(i => i.id === updatedQuestion.id);
 
-            if(~idx){
-                this.event.questions.splice(idx, 1, updatedQuestion);
-            }
-        }
+        //     if(~idx){
+        //         this.event.questions.splice(idx, 1, updatedQuestion);
+        //     }
+        // }
     }
 
 

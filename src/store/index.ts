@@ -8,7 +8,7 @@ import { User, ClientEvent }                        from '@/models';
 import { AppMessageType }                           from '@/constants';
 
 import {
-    IClient, IUserToken, IClientEventDescriptor, IWebSocketMessage, IAppMessage
+    IClient, IUserToken, IClientEventDescriptor, IWebSocketMessage, IAppMessage, IEventQuestion
 } from '@/interfaces';
 
 
@@ -76,6 +76,45 @@ const store = new Vuex.Store({
                 state.events.splice(idx, 1);
             }
         },
+
+
+        /*
+            ======================
+            EVENT QUESTION METHODS
+            ======================
+        */
+        addQuestion(state, question: IEventQuestion): void{
+            const { eventId }: { eventId: number } = question;
+
+            if(state.event && state.event.id === eventId){
+                state.event.questions.push(question);
+            }
+        },
+        updateQuestion(state, question: IEventQuestion): void{
+            const { eventId }: { eventId: number } = question;
+
+            if(state.event && state.event.id === eventId){
+                const { questions }: { questions: IEventQuestion[] } = state.event;
+
+                const idx = questions.findIndex(q => q.id === question.id);
+                if(~idx){
+                    questions.splice(idx, 1, question);
+                }
+            }
+        },
+        deleteQuestion(state, question: IEventQuestion): void{
+            const { eventId }: { eventId: number } = question;
+
+            if(state.event && state.event.id === eventId){
+                const { questions }: { questions: IEventQuestion[] } = state.event;
+
+                const idx = questions.findIndex(q => q.id === question.id);
+                if(~idx){
+                    questions.splice(idx, 1);
+                }
+            }
+        },
+        
 
         /*
             ==============
@@ -298,6 +337,41 @@ const store = new Vuex.Store({
                     commit('deleteEvent', deletedEvent);
 
                     break;
+
+                
+                /*
+                    =======================
+                    EVENT QUESTION MESSAGES
+                    =======================
+                */
+                case 'question-created':
+                    const newQuestion: IEventQuestion = msg.data;
+
+                    console.log('QUESTION CREATED');
+                    console.log(newQuestion);
+
+                    commit('addQuestion', newQuestion);
+
+                    break;
+                case 'question-updated':
+                    const updatedQuestion: IEventQuestion = msg.data;
+
+                    console.log('QUESTION UPDATED');
+                    console.log(updatedQuestion);
+
+                    commit('updateQuestion', updatedQuestion);
+
+                    break;
+                case 'question-deleted':
+                    const deletedQuestion: IEventQuestion = msg.data;
+
+                    console.log('QUESTION DELETED');
+                    console.log(deletedQuestion);
+
+                    commit('deleteQuestion', deletedQuestion);
+
+                    break;
+
 
                 /*
                     =============
