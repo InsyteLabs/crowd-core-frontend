@@ -83,6 +83,7 @@ import { Vue, Component, Ref, Watch } from 'vue-property-decorator';
 import ModalWindow from '@/components/ModalWindow.vue';
 import EventForm   from '@/components/event/EventForm.vue';
 
+import { escapeRegex }                 from '@/utilities';
 import { eventService, clientService } from '@/services';
 import { IClient }                     from '@/interfaces';
 import { User, ClientEvent }           from '@/models';
@@ -176,7 +177,20 @@ export default class OrgEvents extends Vue {
     }
 
     get events(): ClientEvent[]{
-        return this.$store.getters.events;
+        const events: ClientEvent[] = this.$store.getters.events;
+
+        if(!this.filter) return events;
+
+        const exp = new RegExp(escapeRegex(this.filter), 'i');
+        return events.filter((e: ClientEvent) => {
+            if(exp.test(e.title))       return true;
+            if(exp.test(e.slug))        return true;
+            if(exp.test(e.description)) return true;
+
+            if(exp.test(e.active ? 'yes' : 'no')) return true;
+
+            return false;
+        });
     }
 
 

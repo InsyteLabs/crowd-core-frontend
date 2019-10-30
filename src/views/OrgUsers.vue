@@ -38,6 +38,7 @@
 
 import { Vue, Component, Ref } from 'vue-property-decorator';
 
+import { escapeRegex }    from '@/utilities';
 import { userService }    from '@/services';
 import { User }           from '@/models';
 import { IRole, IClient } from '@/interfaces';
@@ -132,7 +133,26 @@ export default class OrgUsers extends Vue {
     }
 
     get users(): User[]{
-        return this.$store.getters.users;
+        const users: User[] = this.$store.getters.users;
+
+        if(!this.filter) return users;
+
+        const exp = new RegExp(escapeRegex(this.filter), 'i');
+        return users.filter((u: User) => {
+            if(exp.test(u.firstName))               return true;
+            if(exp.test(u.lastName))                return true;
+            if(exp.test(u.email))                   return true;
+            if(exp.test(u.username))                return true;
+            if(exp.test(<string>u.disabledComment)) return true;
+
+            for(let role of u.roles){
+                if(exp.test(`${ role }`)) return true;
+            }
+
+            if(exp.test(u.isDisabled ? 'yes' : 'no')) return true;
+
+            return false;
+        });
     }
 
 
