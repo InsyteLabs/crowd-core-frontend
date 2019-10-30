@@ -1,7 +1,12 @@
 'use strict';
 
 import Vue    from 'vue';
-import Router from 'vue-router';
+import Router, { Route } from 'vue-router';
+
+import store                   from '@/store';
+import { User }                from '@/models';
+import { IClient, IUserToken } from '@/interfaces';
+import { clientService }       from '@/services';
 
 import Home      from '@/views/Home.vue';
 import OrgHome   from '@/views/OrgHome.vue';
@@ -23,22 +28,73 @@ export default new Router({
         {
             path: '/:orgSlug',
             name: 'org-home',
-            component: OrgHome
+            component: OrgHome,
+            beforeEnter: beforeEnterGuard
         },
         {
             path: '/:orgSlug/users',
             name: 'org-users',
-            component: OrgUsers
+            component: OrgUsers,
+            beforeEnter: beforeEnterGuard
         },
         {
             path: '/:orgSlug/events',
             name: 'org-events',
-            component: OrgEvents
+            component: OrgEvents,
+            beforeEnter: beforeEnterGuard
         },
         {
             path: '/:orgSlug/events/:eventSlug',
             name: 'org-event',
-            component: OrgEvent
+            component: OrgEvent,
+            beforeEnter: beforeEnterGuard
         }
     ]
 });
+
+async function beforeEnterGuard(to: Route, from: Route, next: Function): Promise<void>{
+    if(!to.params.hasOwnProperty('orgSlug')) return next();
+
+    const orgSlug: string = to.params.orgSlug;
+
+    let client: IClient = store.getters.client;
+    if(!client){
+        client = await clientService.getClientBySlug(orgSlug);
+    }
+
+    if(!client){
+        console.log('CLIENT NOT FOUND');
+        return;
+    }
+
+    const user = getLocalStorageUser();
+    
+    next();
+}
+
+
+function getLocalStorageUser(): User|void{
+    const token: IUserToken|void = getUserToken();
+
+    if(!token) return;
+
+    return new User(token.data);
+}
+
+function getUserToken(): IUserToken|void{
+    let token = localStorage.getItem('token');
+
+    if(!token) return;
+
+    try{
+        const userToken: IUserToken = JSON.parse(token);
+
+        return userToken;
+    }
+    catch(e){
+        console.error('Error parsing user token from localStorage');
+        console.error(e);
+
+        return;
+    }
+}
