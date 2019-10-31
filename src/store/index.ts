@@ -11,6 +11,8 @@ import {
     IClient, IUserToken, IClientEventDescriptor, IWebSocketMessage, IAppMessage, IEventQuestion
 } from '@/interfaces';
 
+import { sortQuestionsByScore } from '@/utilities';
+
 
 Vue.use(Vuex);
 
@@ -48,6 +50,8 @@ const store = new Vuex.Store({
         },
         setEvent(state, event: ClientEvent): void{
             state.event = event;
+
+            event.questions = event.questions.sort(sortQuestionsByScore);
         },
         addEvent(state, event: ClientEvent): void{
             if(!(state.events && Array.isArray(state.events))){
@@ -88,6 +92,8 @@ const store = new Vuex.Store({
 
             if(state.event && state.event.id === eventId){
                 state.event.questions.push(question);
+
+                state.event.questions = state.event.questions.sort(sortQuestionsByScore);
             }
         },
         updateQuestion(state, question: IEventQuestion): void{
@@ -99,6 +105,8 @@ const store = new Vuex.Store({
                 const idx = questions.findIndex(q => q.id === question.id);
                 if(~idx){
                     questions.splice(idx, 1, question);
+
+                    state.event.questions = state.event.questions.sort(sortQuestionsByScore);
                 }
             }
         },
