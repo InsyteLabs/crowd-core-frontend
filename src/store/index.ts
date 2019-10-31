@@ -426,7 +426,7 @@ const store = new Vuex.Store({
             });
         },
 
-        async openConnection(store): Promise<void>{
+        openConnection(store): void{
             if(!store.getters.client) return;
             if(!window.WebSocket)     return;
 
@@ -454,9 +454,12 @@ const store = new Vuex.Store({
 
                 store.commit('setSocketTimer', timer);
             }
+            else{
+                console.log('Connection already open');
+            }
         },
 
-        async testConnection(store): Promise<void>{
+        testConnection(store): void{
             const socket: WebSocket = store.getters.socket;
 
             let err: string = '';
@@ -483,7 +486,7 @@ const store = new Vuex.Store({
                 console.log('Reconnecting...');
                 console.groupEnd();
 
-                return store.dispatch('openConnection');
+                store.dispatch('openConnection');
             }
         }
     }

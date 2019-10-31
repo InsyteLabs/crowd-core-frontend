@@ -31,6 +31,14 @@ class UserService{
 
         return new User(newUser);
     }
+
+    async createAnonymousUser(clientId: number): Promise<User>{
+        const url = `${ apiUrl }/clients/${ clientId }/users/anonymous`;
+
+        const newUser: User = await http.post<User>({ url });
+
+        return new User(newUser);
+    }
     
     async updateUser(clientId: number, user: User): Promise<User>{
         const url = `${ apiUrl }/clients/${ clientId }/users/${ user.id }`;
@@ -62,6 +70,38 @@ class UserService{
         });
 
         const { token } = jwt
+
+        if(!token) return;
+
+        localStorage.setItem('jwt', token);
+
+        let [ header, payload ] = token.split('.');
+
+        header  = atob(header),
+        payload = atob(payload);
+
+        let userToken: IUserToken;
+        try{
+            userToken = JSON.parse(payload);
+        }
+        catch(e){
+            console.error('Error parsing user token');
+            return;
+        }
+
+        return userToken;
+    }
+
+    async authenticateAnonymous(username: string): Promise<IUserToken|void>{
+        const url = `${ apiUrl }/authenticate/anonymous`;
+
+        const jwt: any = await http.post<any>({
+            url,
+            headers: JSON_HEADERS,
+            body: JSON.stringify({ username })
+        });
+
+        const { token } = jwt;
 
         if(!token) return;
 

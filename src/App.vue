@@ -49,7 +49,7 @@ export default class App extends Vue{
     loggedIn:          boolean = (this.user && this.user.id) ? true : false;
 
     async created(): Promise<void>{
-        await this.$store.dispatch('loadUserToken');
+        // await this.$store.dispatch('loadUserToken');
     }
 
     onToggleNav(){
@@ -71,12 +71,12 @@ export default class App extends Vue{
         const user = new User(token.data);
 
         this.$store.dispatch('saveUserToken', JSON.stringify(token));
-        this.$store.dispatch('setUser', user);
+        this.$store.commit('setUser', user);
 
         if(user && user.clientId){
             let client: IClient = await clientService.getClient(user.clientId);
 
-            this.$store.dispatch('setClient', client);
+            this.$store.commit('setClient', client);
 
             this.$router.push({
                 name: 'org-home',

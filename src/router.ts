@@ -6,7 +6,7 @@ import Router, { Route } from 'vue-router';
 import store                   from '@/store';
 import { User }                from '@/models';
 import { IClient, IUserToken } from '@/interfaces';
-import { clientService }       from '@/services';
+import { clientService, userService }       from '@/services';
 
 import Home      from '@/views/Home.vue';
 import OrgHome   from '@/views/OrgHome.vue';
@@ -58,8 +58,16 @@ async function beforeEnterGuard(to: Route, from: Route, next: Function): Promise
     const orgSlug: string = to.params.orgSlug;
 
     let client: IClient = store.getters.client;
-    if(!client){
+    if(client){
+        // Handle client switching /client-a -> /client-b
+        if(client.slug !== orgSlug){
+            client = await clientService.getClientBySlug(orgSlug);
+        }
+    }
+    else {
         client = await clientService.getClientBySlug(orgSlug);
+
+        store.commit('setClient', client);
     }
 
     if(!client){
@@ -67,11 +75,26 @@ async function beforeEnterGuard(to: Route, from: Route, next: Function): Promise
         return;
     }
 
-    const user = getLocalStorageUser();
+    store.dispatch('openConnection');
+
+    let user = getLocalStorageUser();
+    if(user){
+        store.commit('setUser', user);
+    }
+    else{
+        // try and get anon token
+        user = await userService.createAnonymousUser(<number>client.id);
+
+        store.commit('setUser', user);
+
+        const token: IUserToken|void = await userService.authenticateAnonymous(user.username);
+        if(token){
+            store.dispatch('saveUserToken', JSON.stringify(token));
+        }
+    }
     
     next();
 }
-
 
 function getLocalStorageUser(): User|void{
     const token: IUserToken|void = getUserToken();
@@ -87,6 +110,7 @@ function getUserToken(): IUserToken|void{
     if(!token) return;
 
     try{
+        console.log(token);
         const userToken: IUserToken = JSON.parse(token);
 
         return userToken;
