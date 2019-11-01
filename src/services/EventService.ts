@@ -2,7 +2,7 @@
 
 import conf                    from '@/conf';
 import { ClientEvent }         from '@/models';
-import { IEventQuestion }      from '@/interfaces';
+import { IEventQuestion, IEventMessage }      from '@/interfaces';
 import { httpService as http } from '@/services/Http';
 
 const { apiUrl } = conf;
@@ -125,10 +125,10 @@ class EventService{
         EVENT CHAT METHODS
         ==================
     */
-    async getMessages(clientId: number, eventId: number): Promise<any>{
+    async getMessages(clientId: number, eventId: number): Promise<IEventMessage[]>{
         const url = `${ apiUrl }/clients/${ clientId }/events/${ eventId }/chat`;
 
-        const messages: any = await http.get<any>({ url });
+        const messages: IEventMessage[] = await http.get<IEventMessage[]>({ url });
 
         return messages;
     }

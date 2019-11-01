@@ -43,7 +43,12 @@
                     <h4>Chat</h4>
                     <ul v-if="messages && messages.length" class="messages">
                         <li v-for="message of messages" :key="message.id">
-                            {{ message.text }}
+                            <Message
+                                :message="message"
+                                
+                                @editMessage="editMessageClick($event)"
+                                @deleteMessage="deleteMessageClick($event)">
+                            </Message>
                         </li>
                     </ul>
                 </div>
@@ -58,14 +63,20 @@
 import { Vue, Component, Watch }  from 'vue-property-decorator';
 
 import Question from '@/components/event/question/Question.vue';
+import Message  from '@/components/event/message/Message.vue';
 
-import { IClient, IEventQuestion, IEventQuestionStats } from '../interfaces';
-import { User, ClientEvent }                            from '../models';
-import { eventService }                                 from '../services';
+import { eventService }      from '@/services';
+import { User, ClientEvent } from '@/models';
+import { AppMessageType }    from '@/constants';
+
+import {
+    IClient, IEventQuestion, IEventQuestionStats, IEventMessage, IAppMessage
+} from '../interfaces';
 
 @Component({
     components: {
-        Question
+        Question,
+        Message
     }
 })
 export default class OrgEvent extends Vue {
@@ -75,7 +86,7 @@ export default class OrgEvent extends Vue {
     isEditQuestion:   boolean             = false;
     question:         string              = '';
 
-    messages: any[] = [];
+    messages: IEventMessage[] = [];
 
     async created(): Promise<void>{
         if(this.client){
@@ -84,6 +95,12 @@ export default class OrgEvent extends Vue {
         }
     }
 
+    
+    /*
+        ================
+        QUESTION METHODS
+        ================
+    */
     askQuestionClick(): void{
         this.isAskQuestion = true;
     }
@@ -144,14 +161,6 @@ export default class OrgEvent extends Vue {
         if(!(this.client && this.client.id)) return;
 
         const deleted = await eventService.deleteEventQuestion(this.client.id, question);
-
-        // if(deleted){
-        //     const idx = this.event.questions.findIndex(i => i.id === question.id);
-
-        //     if(~idx){
-        //         this.event.questions.splice(idx, 1);
-        //     }
-        // }
     }
 
     async onUpvoteQuestionClick(question: IEventQuestion): Promise<void>{
@@ -167,17 +176,35 @@ export default class OrgEvent extends Vue {
         if(!(this.client && this.client.id)) return;
 
         const updatedQuestion = await eventService.createQuestionVote(this.client.id, <number>this.event.id, questionId, <number>this.user.id, val);
-
-        // if(updatedQuestion && updatedQuestion.id){
-        //     const idx = this.event.questions.findIndex(i => i.id === updatedQuestion.id);
-
-        //     if(~idx){
-        //         this.event.questions.splice(idx, 1, updatedQuestion);
-        //     }
-        // }
     }
 
 
+    /*
+        ============
+        CHAT METHODS
+        ============
+    */
+    editMessageClick(message: IEventMessage): void{
+        console.log(message);
+        const notification: IAppMessage = {
+            text: `User wants to edit message ${ message.id }`,
+            autoClose: true,
+            type: AppMessageType.INFO
+        }
+
+        this.$store.dispatch('addAppMessage', notification);
+    }
+
+    deleteMessageClick(message: IEventMessage): void{
+        console.log(message);
+        const notification: IAppMessage = {
+            text: `User wants to delete message ${ message.id }`,
+            autoClose: true,
+            type: AppMessageType.INFO
+        }
+
+        this.$store.dispatch('addAppMessage', notification);
+    }
 
 
     /*
@@ -224,7 +251,7 @@ export default class OrgEvent extends Vue {
     private async _loadChat(): Promise<void>{
         if(!(this.client && this.event)) return;
 
-        const messages = await eventService.getMessages(<number>this.client.id, <number>this.event.id);
+        const messages: IEventMessage[] = await eventService.getMessages(<number>this.client.id, <number>this.event.id);
 
         this.messages = messages;
     }
