@@ -3,14 +3,16 @@
 import Vue  from 'vue';
 import Vuex from 'vuex';
 
-import { userService, clientService, eventService } from '@/services';
-import { User, ClientEvent }                        from '@/models';
-import { AppMessageType }                           from '@/constants';
+import {
+    userService, clientService, eventService, tokenService
+} from '@/services';
 
 import {
     IClient, IUserToken, IClientEventDescriptor, IWebSocketMessage, IAppMessage, IEventQuestion
 } from '@/interfaces';
 
+import { User, ClientEvent }    from '@/models';
+import { AppMessageType }       from '@/constants';
 import { sortQuestionsByScore } from '@/utilities';
 
 
@@ -239,42 +241,6 @@ const store = new Vuex.Store({
             return users;
         },
 
-        async loadUserToken({ commit, dispatch, getters }): Promise<void>{
-            let token:     string|null = localStorage.getItem('token'),
-                userToken: IUserToken;
-
-            if(!token || token.toString() === 'undefined') return;
-
-            try{
-                userToken = JSON.parse(token);
-            }
-            catch(e){
-                console.error('Failed parsing user token from storage');
-                return;
-            }
-
-            const user = new User(userToken.data);
-
-            commit('setUser', user);
-
-            if(user.clientId && !getters.client){
-                try{
-                    const client = await clientService.getClient(user.clientId);
-
-                    commit('setClient', client);
-
-                    dispatch('openConnection');
-                }
-                catch(e){
-                    console.error(`Failed to load client of ID ${ user.clientId }`);
-                }
-            }
-        },
-
-        saveUserToken({ commit }, token: string): void{
-            localStorage.setItem('token', token);
-        },
-
 
         /*
             ===================
@@ -499,12 +465,5 @@ const store = new Vuex.Store({
         }
     }
 });
-
-/*
-    ====================
-    STORE INITIALIZATION
-    ====================
-*/
-store.dispatch('loadUserToken');
 
 export default store;

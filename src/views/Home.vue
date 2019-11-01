@@ -32,11 +32,8 @@ export default class Home extends Vue {
             return;
         }
 
-        const user = new User(token.data);
-
-        this.$store.dispatch('saveUserToken', JSON.stringify(token));
-        this.$store.dispatch('setUser', user);
-
+        const user = new User(token.user);
+        
         if(user && user.clientId){
             let client: IClient = await clientService.getClient(user.clientId);
 

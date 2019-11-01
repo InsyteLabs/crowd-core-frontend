@@ -63,10 +63,6 @@ export default class OrgUsers extends Vue {
     filter:       string    = '';
 
     async created(): Promise<void>{
-        if(!(this.client && this.user)){
-            await this.$store.dispatch('loadUserToken');
-        }
-
         this._loadUsers();
         this._loadRoles();
     }

@@ -1,5 +1,7 @@
 'use strict';
 
+import { tokenService } from '@/services';
+
 import conf                    from '@/conf';
 import { User }                from '@/models';
 import { IRole, IUserToken }   from '@/interfaces';
@@ -60,68 +62,40 @@ class UserService{
         return deletedUser;
     }
 
-    async authenticate(username: string, password: string): Promise<IUserToken|void>{
+    async authenticate(username: string, password: string): Promise<IUserToken|undefined>{
         const url = `${ apiUrl }/authenticate`;
 
-        const jwt: any = await http.post<any>({
+        const response: any = await http.post<any>({
             url,
             headers: JSON_HEADERS,
             body: JSON.stringify({ username, password })
         });
 
-        const { token } = jwt
+        const jwt: string = response.token;
 
-        if(!token) return;
+        if(!jwt) return;
 
-        localStorage.setItem('jwt', token);
-
-        let [ header, payload ] = token.split('.');
-
-        header  = atob(header),
-        payload = atob(payload);
-
-        let userToken: IUserToken;
-        try{
-            userToken = JSON.parse(payload);
-        }
-        catch(e){
-            console.error('Error parsing user token');
-            return;
-        }
+        const userToken: IUserToken|undefined = tokenService.addToken(jwt);
 
         return userToken;
     }
 
-    async authenticateAnonymous(username: string): Promise<IUserToken|void>{
+    async authenticateAnonymous(clientSlug: string, username: string): Promise<IUserToken|undefined>{
         const url = `${ apiUrl }/authenticate/anonymous`;
 
-        const jwt: any = await http.post<any>({
+        const response: any = await http.post<any>({
             url,
             headers: JSON_HEADERS,
             body: JSON.stringify({ username })
         });
 
-        const { token } = jwt;
+        const jwt: string = response.token;
 
-        if(!token) return;
+        if(!jwt) return;
 
-        localStorage.setItem('jwt', token);
+        const anonymousToken: IUserToken|undefined = tokenService.addAnonymousToken(clientSlug, jwt);
 
-        let [ header, payload ] = token.split('.');
-
-        header  = atob(header),
-        payload = atob(payload);
-
-        let userToken: IUserToken;
-        try{
-            userToken = JSON.parse(payload);
-        }
-        catch(e){
-            console.error('Error parsing user token');
-            return;
-        }
-
-        return userToken;
+        return anonymousToken;
     }
 
     async getRoles(): Promise<IRole[]>{

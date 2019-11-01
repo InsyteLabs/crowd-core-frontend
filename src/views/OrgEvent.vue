@@ -67,8 +67,6 @@ export default class OrgEvent extends Vue {
     question:         string              = '';
 
     async created(): Promise<void>{
-        await this.$store.dispatch('loadUserToken');
-
         this.client && this._loadEvent();
     }
 

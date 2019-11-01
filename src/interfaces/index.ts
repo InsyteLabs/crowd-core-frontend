@@ -2,7 +2,8 @@
 
 export * from './IVueFilter';
 
-export * from './IUserToken';
+export * from './token';
+
 export * from './IRole';
 export * from './IClient';
 export * from './IEventSettings';

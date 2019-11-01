@@ -1,5 +1,6 @@
 'use strict';
 
-export { userService }   from './UserService';
-export { clientService } from './ClientService';
-export { eventService }  from './EventService';
+export * from './UserService';
+export * from './ClientService';
+export * from './EventService';
+export * from './TokenService';

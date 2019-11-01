@@ -103,10 +103,6 @@ export default class OrgEvents extends Vue {
     filter:        string           = '';
 
     async created(): Promise<void>{
-        if(!(this.user && this.client)){
-            await this.$store.dispatch('loadUserToken');
-        }
-
         if(this.client && this.user){
             this._loadEvents();
         }

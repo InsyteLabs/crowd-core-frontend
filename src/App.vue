@@ -48,9 +48,7 @@ export default class App extends Vue{
     loginFormVisible:  boolean = false;
     loggedIn:          boolean = (this.user && this.user.id) ? true : false;
 
-    async created(): Promise<void>{
-        // await this.$store.dispatch('loadUserToken');
-    }
+    async created(): Promise<void>{ }
 
     onToggleNav(){
         this.navigationVisible = !this.navigationVisible;
@@ -61,30 +59,19 @@ export default class App extends Vue{
     }
 
     async onLoginClick(o: any): Promise<any>{
-        let token: IUserToken|void = await userService.authenticate(o.username, o.password);
+        let token: IUserToken|undefined = await userService.authenticate(o.username, o.password);
 
         if(!token){
             console.error('Incorrect username/password');
             return;
         }
 
-        const user = new User(token.data);
-
-        this.$store.dispatch('saveUserToken', JSON.stringify(token));
-        this.$store.commit('setUser', user);
-
-        if(user && user.clientId){
-            let client: IClient = await clientService.getClient(user.clientId);
-
-            this.$store.commit('setClient', client);
-
-            this.$router.push({
-                name: 'org-home',
-                params: {
-                    orgSlug: client.slug
-                }
-            });
-        }
+        this.$router.push({
+            name: 'org-home',
+            params: {
+                orgSlug: this.client.slug
+            }
+        });
     }
 
 

@@ -1,5 +1,7 @@
 'use strict';
 
+import { tokenService } from '@/services';
+
 interface IHttpOptions{
     url?:      string;
     method?:   'GET'|'POST'|'PUT'|'DELETE';
@@ -14,7 +16,7 @@ class HttpService{
     async makeRequest<T>(opt: IHttpOptions={ method: 'GET' }): Promise<T>{
         opt.headers = opt.headers || {};
         
-        opt.headers.Authorization = `Bearer ${ this._getToken() }`;
+        opt.headers.Authorization = `Bearer ${ tokenService.getAuthToken() }`;
 
         let response: Response = await fetch(<string>opt.url, opt);
             response           = await response.json();
@@ -46,15 +48,6 @@ class HttpService{
         opt.method = 'DELETE';
 
         return this.makeRequest<T>(opt);
-    }
-
-    /*
-        ===============
-        PRIVATE METHODS
-        ===============
-    */
-    private _getToken(): string{
-        return localStorage.getItem('jwt') || '';
     }
 }
 

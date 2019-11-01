@@ -1,18 +1,18 @@
 'use strict';
 
-import Vue    from 'vue';
+import Vue               from 'vue';
 import Router, { Route } from 'vue-router';
 
 import store                   from '@/store';
-import { User }                from '@/models';
 import { IClient, IUserToken } from '@/interfaces';
-import { clientService, userService }       from '@/services';
 
 import Home      from '@/views/Home.vue';
 import OrgHome   from '@/views/OrgHome.vue';
 import OrgUsers  from '@/views/OrgUsers.vue';
 import OrgEvents from '@/views/OrgEvents.vue';
 import OrgEvent  from '@/views/OrgEvent.vue';
+
+import { clientService, userService, tokenService } from '@/services';
 
 Vue.use(Router);
 
@@ -77,48 +77,27 @@ async function beforeEnterGuard(to: Route, from: Route, next: Function): Promise
 
     store.dispatch('openConnection');
 
-    let user = getLocalStorageUser();
-    if(user){
-        store.commit('setUser', user);
-    }
-    else{
-        // try and get anon token
-        user = await userService.createAnonymousUser(<number>client.id);
+    const userToken: IUserToken|undefined = tokenService.getToken();
+    if(userToken){
+        store.commit('setUser', userToken.user);
 
-        store.commit('setUser', user);
-
-        const token: IUserToken|void = await userService.authenticateAnonymous(user.username);
-        if(token){
-            store.dispatch('saveUserToken', JSON.stringify(token));
-        }
+        return next();
     }
+
+
+    const anonToken: IUserToken|undefined = tokenService.getAnonymousToken(client.slug);
+    if(anonToken){
+        store.commit('setUser', anonToken.user);
+
+        return next();
+    }
+
+    const anonUser = await userService.createAnonymousUser(<number>client.id);
     
-    next();
-}
+    const anonUserToken: IUserToken|undefined = await userService.authenticateAnonymous(client.slug, anonUser.username);
+    if(anonUserToken){
+        store.commit('setUser', anonUserToken.user);
 
-function getLocalStorageUser(): User|void{
-    const token: IUserToken|void = getUserToken();
-
-    if(!token) return;
-
-    return new User(token.data);
-}
-
-function getUserToken(): IUserToken|void{
-    let token = localStorage.getItem('token');
-
-    if(!token) return;
-
-    try{
-        console.log(token);
-        const userToken: IUserToken = JSON.parse(token);
-
-        return userToken;
-    }
-    catch(e){
-        console.error('Error parsing user token from localStorage');
-        console.error(e);
-
-        return;
+        return next();
     }
 }
