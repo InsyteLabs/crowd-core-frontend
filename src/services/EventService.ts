@@ -132,6 +132,18 @@ class EventService{
 
         return messages;
     }
+
+    async addMessage(clientId: number, eventId: number, message: IEventMessage): Promise<IEventMessage>{
+        const url = `${ apiUrl }/clients/${ clientId }/events/${ eventId }/chat`;
+
+        const newMessage: IEventMessage = await http.post<IEventMessage>({
+            url,
+            headers: JSON_HEADERS,
+            body: JSON.stringify(message)
+        });
+
+        return newMessage;
+    }
 }
 
 export const eventService = new EventService();

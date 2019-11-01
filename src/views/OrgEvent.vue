@@ -50,6 +50,12 @@
                                 @deleteMessage="deleteMessageClick($event)">
                             </Message>
                         </li>
+                        <li>
+                            <div class="form-group">
+                                <textarea v-model="newMessage" rows="3" class="form-control form-control-sm mb-1" placeholder="Add Message"></textarea>
+                                <button @click="addMessageClick()" class="btn btn-sm btn-primary float-right">Send</button>
+                            </div>
+                        </li>
                     </ul>
                 </div>
             </div>
@@ -86,7 +92,8 @@ export default class OrgEvent extends Vue {
     isEditQuestion:   boolean             = false;
     question:         string              = '';
 
-    messages: IEventMessage[] = [];
+    messages:   IEventMessage[] = [];
+    newMessage: string          = '';
 
     async created(): Promise<void>{
         if(this.client){
@@ -184,6 +191,23 @@ export default class OrgEvent extends Vue {
         CHAT METHODS
         ============
     */
+    async addMessageClick(): Promise<void>{
+        if(!(this.event && this.user)) return;
+        if(!this.newMessage)           return;
+
+        const message: IEventMessage = {
+            eventId: <number>this.event.id,
+            userId:  <number>this.user.id,
+            text:    this.newMessage,
+            hidden:  false
+        }
+
+        await eventService.addMessage(<number>this.client.id, <number>this.event.id, message);
+
+        this._loadChat();
+        this.newMessage = '';
+    }
+
     editMessageClick(message: IEventMessage): void{
         console.log(message);
         const notification: IAppMessage = {
