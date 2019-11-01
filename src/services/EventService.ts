@@ -119,6 +119,19 @@ class EventService{
         
         return updatedQuestion;
     }
+
+    /*
+        ==================
+        EVENT CHAT METHODS
+        ==================
+    */
+    async getMessages(clientId: number, eventId: number): Promise<any>{
+        const url = `${ apiUrl }/clients/${ clientId }/events/${ eventId }/chat`;
+
+        const messages: any = await http.get<any>({ url });
+
+        return messages;
+    }
 }
 
 export const eventService = new EventService();

@@ -6,7 +6,7 @@
                     <h2 class="text-center">{{ event.title }}</h2>
                     <hr>
                 </div>
-                <div v-if="!(isAskQuestion || isEditQuestion)" class="col-12">
+                <div v-if="!(isAskQuestion || isEditQuestion)" class="col-md-7">
                     <div class="row mb-1">
                         <div class="col">
                             <h4>Q&amp;A</h4>
@@ -28,7 +28,7 @@
                         </li>
                     </ul>
                 </div>
-                <div v-if="isAskQuestion || isEditQuestion" class="col-12">
+                <div v-else class="col-md-7">
                     <div class="form-group">
                         <label for="question">Your Question</label>
                         <div class="input-group">
@@ -37,6 +37,15 @@
                     </div>
                     <button @click="saveQuestionClick()" class="btn btn-primary mr-1">Save</button>
                     <button @click="cancelQuestionClick()" class="btn btn-danger">Cancel</button>
+                </div>
+
+                <div class="col-md-5">
+                    <h4>Chat</h4>
+                    <ul v-if="messages && messages.length" class="messages">
+                        <li v-for="message of messages" :key="message.id">
+                            {{ message.text }}
+                        </li>
+                    </ul>
                 </div>
             </div>
         </div>
@@ -66,8 +75,13 @@ export default class OrgEvent extends Vue {
     isEditQuestion:   boolean             = false;
     question:         string              = '';
 
+    messages: any[] = [];
+
     async created(): Promise<void>{
-        this.client && this._loadEvent();
+        if(this.client){
+            await this._loadEvent();
+            await this._loadChat();
+        }
     }
 
     askQuestionClick(): void{
@@ -206,12 +220,21 @@ export default class OrgEvent extends Vue {
             eventSlug: this.$route.params.eventSlug
         });
     }
+
+    private async _loadChat(): Promise<void>{
+        if(!(this.client && this.event)) return;
+
+        const messages = await eventService.getMessages(<number>this.client.id, <number>this.event.id);
+
+        this.messages = messages;
+    }
 }
 </script>
 
 <style scoped lang="sass">
 
-.questions
+.questions,
+.messages
     list-style-type: none
     margin: 0
     padding: 0
