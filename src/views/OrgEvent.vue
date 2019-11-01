@@ -219,15 +219,16 @@ export default class OrgEvent extends Vue {
         this.$store.dispatch('addAppMessage', notification);
     }
 
-    deleteMessageClick(message: IEventMessage): void{
-        console.log(message);
-        const notification: IAppMessage = {
-            text: `User wants to delete message ${ message.id }`,
-            autoClose: true,
-            type: AppMessageType.INFO
-        }
+    async deleteMessageClick(message: IEventMessage): Promise<void>{
+        if(!(this.client && this.event)) return;
 
-        this.$store.dispatch('addAppMessage', notification);
+        await eventService.deleteMessage(
+            <number>this.client.id,
+            <number>this.event.id,
+            <number>message.id
+        );
+
+        this._loadChat();
     }
 
 

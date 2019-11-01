@@ -144,6 +144,14 @@ class EventService{
 
         return newMessage;
     }
+
+    async deleteMessage(clientId: number, eventId: number, id: number): Promise<IEventMessage>{
+        const url = `${ apiUrl }/clients/${ clientId }/events/${ eventId }/chat/${ id }`;
+
+        const deletedMessage: IEventMessage = await http.delete<IEventMessage>({ url });
+
+        return deletedMessage;
+    }
 }
 
 export const eventService = new EventService();
