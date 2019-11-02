@@ -66,6 +66,9 @@ export default class App extends Vue{
             return;
         }
 
+        await this.$store.dispatch('loadClientById', token.user.clientId);
+
+
         this.$router.push({
             name: 'org-home',
             params: {

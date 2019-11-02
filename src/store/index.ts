@@ -243,6 +243,22 @@ const store = new Vuex.Store({
 
 
         /*
+            ==============
+            CLIENT METHODS
+            ==============
+        */
+        async loadClientById({ commit, dispatch }, clientId: number): Promise<IClient>{
+            const client: IClient = await clientService.getClient(clientId);
+
+            commit('setClient', client);
+
+            dispatch('openConnection');
+
+            return client;
+        },
+
+
+        /*
             ===================
             APP MESSAGE METHODS
             ===================
