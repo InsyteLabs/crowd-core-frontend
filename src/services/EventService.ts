@@ -145,6 +145,18 @@ class EventService{
         return newMessage;
     }
 
+    async updateMessage(clientId: number, eventId: number, message: IEventMessage): Promise<IEventMessage>{
+        const url = `${ apiUrl }/clients/${ clientId }/events/${ eventId }/chat/${ message.id }`;
+
+        const newMessage: IEventMessage = await http.put<IEventMessage>({
+            url,
+            headers: JSON_HEADERS,
+            body: JSON.stringify(message)
+        });
+
+        return newMessage;
+    }
+
     async deleteMessage(clientId: number, eventId: number, id: number): Promise<IEventMessage>{
         const url = `${ apiUrl }/clients/${ clientId }/events/${ eventId }/chat/${ id }`;
 

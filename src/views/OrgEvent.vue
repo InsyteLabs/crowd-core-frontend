@@ -50,13 +50,11 @@
                                 @deleteMessage="deleteMessageClick($event)">
                             </Message>
                         </li>
-                        <li>
-                            <div class="form-group">
-                                <textarea v-model="newMessage" rows="3" class="form-control form-control-sm mb-1" placeholder="Add Message"></textarea>
-                                <button @click="addMessageClick()" class="btn btn-sm btn-primary float-right">Send</button>
-                            </div>
-                        </li>
                     </ul>
+                    <div class="form-group">
+                        <textarea v-model="newMessage" rows="3" class="form-control form-control-sm mb-1" placeholder="Add Message"></textarea>
+                        <button @click="addMessageClick()" class="btn btn-sm btn-primary float-right">Send</button>
+                    </div>
                 </div>
             </div>
         </div>
@@ -208,15 +206,12 @@ export default class OrgEvent extends Vue {
         this.newMessage = '';
     }
 
-    editMessageClick(message: IEventMessage): void{
-        console.log(message);
-        const notification: IAppMessage = {
-            text: `User wants to edit message ${ message.id }`,
-            autoClose: true,
-            type: AppMessageType.INFO
-        }
+    async editMessageClick(message: IEventMessage): Promise<void>{
+        if(!(this.event && this.client)) return;
+        
+        await eventService.updateMessage(<number>this.client.id, <number>this.event.id, message);
 
-        this.$store.dispatch('addAppMessage', notification);
+        this._loadChat();
     }
 
     async deleteMessageClick(message: IEventMessage): Promise<void>{
