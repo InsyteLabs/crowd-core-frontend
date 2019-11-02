@@ -131,7 +131,9 @@ export default class EventForm extends Vue {
             description: this.description,
             startTime:   new Date(this.start),
             endTime:     new Date(this.end),
-            questions:   [],
+
+            questions: [],
+            messages:  [],
 
             settings: <IEventSettings>{
                 password:        this.password,

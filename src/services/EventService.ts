@@ -12,6 +12,12 @@ const JSON_HEADERS = {
 }
 
 class EventService{
+
+    /*
+        =============
+        EVENT METHODS
+        =============
+    */
     async getEvents(clientId: number): Promise<ClientEvent[]>{
 
         const url = `${ apiUrl }/clients/${ clientId }/events`;
@@ -25,6 +31,12 @@ class EventService{
         const url = `${ apiUrl }/clients/${ clientId }/events/${ slug }`;
 
         const event: ClientEvent = await http.get<ClientEvent>({ url });
+
+        const questions: IEventQuestion[] = await this.getQuestions(<number>event.id),
+              messages:  IEventMessage[]  = await this.getMessages(clientId, <number>event.id);
+
+        event.questions = questions;
+        event.messages  = messages;
 
         return new ClientEvent(event);
     }
@@ -50,6 +62,9 @@ class EventService{
             body: JSON.stringify(event)
         });
 
+        updatedEvent.questions = event.questions;
+        updatedEvent.messages  = event.messages;
+
         return new ClientEvent(updatedEvent);
     }
 
@@ -59,6 +74,20 @@ class EventService{
         const deletedEvent: ClientEvent = await http.delete<ClientEvent>({ url });
 
         return new ClientEvent(deletedEvent);
+    }
+
+
+    /*
+        ================
+        QUESTION METHODS
+        ================
+    */
+    async getQuestions(eventId: number): Promise<IEventQuestion[]>{
+        const url = `${ apiUrl }/events/${ eventId }/questions`;
+
+        const questions: IEventQuestion[] = await http.get({ url });
+        
+        return questions;
     }
 
     async getQeustion(eventId: number, questionId: number): Promise<IEventQuestion>{

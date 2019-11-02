@@ -41,8 +41,8 @@
 
                 <div class="col-md-5">
                     <h4>Chat</h4>
-                    <ul v-if="messages && messages.length" class="messages">
-                        <li v-for="message of messages" :key="message.id">
+                    <ul v-if="event.messages && event.messages.length" class="messages">
+                        <li v-for="message of event.messages" :key="message.id">
                             <Message
                                 :message="message"
                                 
@@ -90,14 +90,10 @@ export default class OrgEvent extends Vue {
     isEditQuestion:   boolean             = false;
     question:         string              = '';
 
-    messages:   IEventMessage[] = [];
-    newMessage: string          = '';
+    newMessage: string = '';
 
     async created(): Promise<void>{
-        if(this.client){
-            await this._loadEvent();
-            await this._loadChat();
-        }
+        if(this.client) await this._loadEvent();
     }
 
     
@@ -202,7 +198,6 @@ export default class OrgEvent extends Vue {
 
         await eventService.addMessage(<number>this.client.id, <number>this.event.id, message);
 
-        this._loadChat();
         this.newMessage = '';
     }
 
@@ -210,8 +205,6 @@ export default class OrgEvent extends Vue {
         if(!(this.event && this.client)) return;
         
         await eventService.updateMessage(<number>this.client.id, <number>this.event.id, message);
-
-        this._loadChat();
     }
 
     async deleteMessageClick(message: IEventMessage): Promise<void>{
@@ -222,8 +215,6 @@ export default class OrgEvent extends Vue {
             <number>this.event.id,
             <number>message.id
         );
-
-        this._loadChat();
     }
 
 
@@ -266,14 +257,6 @@ export default class OrgEvent extends Vue {
             clientId: this.client.id,
             eventSlug: this.$route.params.eventSlug
         });
-    }
-
-    private async _loadChat(): Promise<void>{
-        if(!(this.client && this.event)) return;
-
-        const messages: IEventMessage[] = await eventService.getMessages(<number>this.client.id, <number>this.event.id);
-
-        this.messages = messages;
     }
 }
 </script>

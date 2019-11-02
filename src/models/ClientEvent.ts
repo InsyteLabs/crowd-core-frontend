@@ -1,6 +1,6 @@
 'use strict';
 
-import { IEventQuestion, IEventSettings } from '@/interfaces';
+import { IEventQuestion, IEventSettings, IEventMessage } from '@/interfaces';
 
 export class ClientEvent{
     id?: number;
@@ -14,6 +14,7 @@ export class ClientEvent{
     active?:     boolean;
 
     questions: IEventQuestion[];
+    messages:  IEventMessage[];
     settings:  IEventSettings;
 
     constructor(event: any){
@@ -28,6 +29,7 @@ export class ClientEvent{
         this.active      = event.active;
 
         this.questions = event.questions || [];
-        this.settings = event.settings   || {};
+        this.messages  = event.messages  || [];
+        this.settings  = event.settings  || {};
     }
 }

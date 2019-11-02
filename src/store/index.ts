@@ -8,7 +8,7 @@ import {
 } from '@/services';
 
 import {
-    IClient, IUserToken, IClientEventDescriptor, IWebSocketMessage, IAppMessage, IEventQuestion
+    IClient, IUserToken, IClientEventDescriptor, IWebSocketMessage, IAppMessage, IEventQuestion, IEventMessage
 } from '@/interfaces';
 
 import { User, ClientEvent }    from '@/models';
@@ -121,6 +121,47 @@ const store = new Vuex.Store({
                 const idx = questions.findIndex(q => q.id === question.id);
                 if(~idx){
                     questions.splice(idx, 1);
+                }
+            }
+        },
+
+
+        /*
+            ==================
+            EVENT CHAT METHODS
+            ==================
+        */
+        addMessage(state, message: IEventMessage): void{
+            const { eventId }: { eventId: number } = message;
+
+            if(state.event && state.event.id === eventId){
+                const { messages }: { messages: IEventMessage[] } = state.event;
+
+                messages.push(message);
+            }
+
+        },
+        updateMessage(state, message: IEventMessage): void{
+            const { eventId }: { eventId: number } = message;
+
+            if(state.event && state.event.id === eventId){
+                const { messages }: { messages: IEventMessage[] } = state.event;
+
+                const idx = messages.findIndex(m => m.id === message.id);
+                if(~idx){
+                    messages.splice(idx, 1, message);
+                }
+            }
+        },
+        deleteMessage(state, message: IEventMessage): void{
+            const { eventId }: { eventId: number } = message;
+
+            if(state.event && state.event.id === eventId){
+                const { messages }: { messages: IEventMessage[] } = state.event;
+
+                const idx = messages.findIndex(m => m.id === message.id);
+                if(~idx){
+                    messages.splice(idx, 1);
                 }
             }
         },
@@ -359,6 +400,40 @@ const store = new Vuex.Store({
                     console.log(deletedQuestion);
 
                     commit('deleteQuestion', deletedQuestion);
+
+                    break;
+
+                
+                /*
+
+                */
+                case 'message-created':
+                    const newMessage: IEventMessage = msg.data;
+
+                    console.log('MESSAGE CREATED');
+                    console.log(newMessage);
+
+                    commit('addMessage', newMessage);
+
+                    break;
+                
+                case 'message-updated':
+                    const updatedMessage: IEventMessage = msg.data;
+
+                    console.log('MESSAGE UPDATED');
+                    console.log(updatedMessage);
+
+                    commit('updateMessage', updatedMessage);
+
+                    break;
+
+                case 'message-deleted':
+                    const deletedMessage: IEventMessage = msg.data;
+
+                    console.log('MESSAGE DELETED');
+                    console.log(deletedMessage);
+
+                    commit('deleteMessage', deletedMessage);
 
                     break;
 

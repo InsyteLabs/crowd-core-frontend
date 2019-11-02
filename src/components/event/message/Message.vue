@@ -3,7 +3,18 @@
         <div class="row">
             <div class="col-12">
                 <textarea v-if="isEditMessage" v-model="messageText" class="form-control form-control-sm mb-1" rows="2"></textarea>
-                <p v-else>{{ message.text }}</p>
+                <div v-else>
+                    <p class="mb-0">{{ message.text }}</p>
+                    <small class="ml-2">
+                        <i>
+                            - {{
+                                message.user.isAnonymous
+                                    ? 'Anonymous'
+                                    : message.user.username
+                            }}
+                        </i>
+                    </small>
+                </div>
             </div>
             <div v-if="isEditMessage" class="col-12">
                 <div class="text-left">

@@ -21,7 +21,6 @@
                         <th>Start</th>
                         <th>End</th>
                         <th>Active</th>
-                        <th># Questions</th>
                         <th>Manage</th>
                         <th>View</th>
                     </tr>
@@ -40,7 +39,6 @@
                                     : 'No'
                             }}
                         </td>
-                        <td>{{ event.questions.length || 0 }}</td>
                         <td class="no-wrap">
                             <button @click="onEditEventClick(event)" class="btn btn-sm btn-warning mr-1">
                                 <svg class="btn-icon pencil" aria-hidden="true" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
