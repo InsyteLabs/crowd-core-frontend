@@ -73,6 +73,15 @@ const store = new Vuex.Store({
             if(~idx){
                 state.events.splice(idx, 1, event);
             }
+
+            if(state.event){
+                if(state.event.id === event.id){
+                    event.questions = state.event.questions;
+                    event.messages  = state.event.messages;
+
+                    state.event = event;
+                }
+            }
         },
         deleteEvent(state, event: ClientEvent): void{
             if(!(state.events && Array.isArray(state.events))) return;
