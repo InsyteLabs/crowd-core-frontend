@@ -7,10 +7,10 @@ class TokenService{
     private TOKEN_MAP_KEY:  string = 'anonymous-token-map';
     private USER_TOKEN_KEY: string = 'token';
 
-    private LAST_TOKEN!: IUserToken;
+    private LAST_TOKEN: IUserToken|null = null;
 
-    getAuthToken(): string{
-        return this.LAST_TOKEN ? this.LAST_TOKEN.jwt : '';
+    getAuthToken(): IUserToken|null{
+        return this.LAST_TOKEN;
     }
 
     
@@ -61,6 +61,12 @@ class TokenService{
 
             return;
         }
+    }
+
+    deleteToken(){
+        localStorage.removeItem('token');
+
+        this.LAST_TOKEN = null;
     }
 
 

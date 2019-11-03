@@ -34,9 +34,9 @@ class UserService{
         return new User(newUser);
     }
 
-    async createAnonymousUser(clientId: number): Promise<User>{
-        const url = `${ apiUrl }/clients/${ clientId }/users/anonymous`;
-
+    async createAnonymousUser(clientSlug: string): Promise<User>{
+        const url = `${ apiUrl }/clients/${ clientSlug }/users/anonymous`;
+        
         const newUser: User = await http.post<User>({ url });
 
         return new User(newUser);

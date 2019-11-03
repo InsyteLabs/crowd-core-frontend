@@ -1,10 +1,10 @@
 <template>
     <nav :class="{ hidden: !visible }" id="nav">
-        <router-link v-if="!client" to="/">HOME</router-link>
+        <router-link v-if="!(client && client.id)" to="/">HOME</router-link>
         
-        <router-link v-if="client" :to="'/' + client.slug">HOME</router-link>
-        <router-link v-if="client" :to="'/' + client.slug + '/users'">USERS</router-link>
-        <router-link v-if="client" :to="'/' + client.slug + '/events'">EVENTS</router-link>
+        <router-link v-if="client && client.slug" :to="'/' + client.slug">HOME</router-link>
+        <router-link v-if="client && client.slug" :to="'/' + client.slug + '/users'">USERS</router-link>
+        <router-link v-if="client && client.slug" :to="'/' + client.slug + '/events'">EVENTS</router-link>
     </nav>
 </template>
 

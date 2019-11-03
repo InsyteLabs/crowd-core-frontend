@@ -405,7 +405,9 @@ const store = new Vuex.Store({
 
                 
                 /*
-
+                    ==========
+                    EVENT CHAT
+                    ==========
                 */
                 case 'message-created':
                     const newMessage: IEventMessage = msg.data;
@@ -519,9 +521,19 @@ const store = new Vuex.Store({
 
                 store.commit('setSocketTimer', timer);
             }
-            else{
-                console.log('Connection already open');
+        },
+
+        reopenConnection(store): void{
+            const socket: WebSocket = store.getters.socket;
+
+            if(socket){
+                socket.close();
+                store.commit('setSocket', null);
+
+                clearInterval(store.getters.socketTimer);
             }
+
+            store.dispatch('openConnection');
         },
 
         testConnection(store): void{

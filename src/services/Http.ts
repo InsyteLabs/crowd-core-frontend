@@ -1,6 +1,21 @@
 'use strict';
 
+/*
+    On 401
+
+    If user is anonymous, delete the token but keep ref to the username
+    so that unlimited users are not created.
+
+    Then redirect to login page. Login page will check if there is an anonymous
+    token for the current client. If so, it should attempt the re-auth for the
+    anon token.
+*/
+
+import router from '@/router';
+
 import { tokenService } from '@/services';
+import { IUserToken }   from '@/interfaces';
+import { User }         from '@/models';
 
 interface IHttpOptions{
     url?:      string;
@@ -14,12 +29,36 @@ interface IHttpOptions{
 
 class HttpService{
     async makeRequest<T>(opt: IHttpOptions={ method: 'GET' }): Promise<T>{
-        opt.headers = opt.headers || {};
-        
-        opt.headers.Authorization = `Bearer ${ tokenService.getAuthToken() }`;
+        const userToken: IUserToken|null = tokenService.getAuthToken();
+
+        if(userToken){
+            opt.headers = opt.headers || {};
+
+            opt.headers.Authorization = `Bearer ${ userToken.jwt }`;
+        }
 
         let response: Response = await fetch(<string>opt.url, opt);
-            response           = await response.json();
+
+        if(response.status === 401){
+            if(userToken){
+                const user: User = userToken.user;
+
+                if(user.isAnonymous){
+                    // attempt to refresh the token
+                }
+                else{
+                    tokenService.deleteToken();
+                }
+            }
+
+            if(!router.currentRoute.path.includes('login')){
+                router.push({ name: 'login' });
+            }
+        }
+
+
+        response = await response.json();
+
 
         const data = <unknown>response;
 

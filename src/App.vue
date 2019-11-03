@@ -9,8 +9,11 @@
 
         <Navigation :visible="navigationVisible"></Navigation>
 
-        <div v-show="loginFormVisible" class="login-form">
-            <LoginForm @login="onLoginClick($event);"></LoginForm>
+        <div v-show="userProfileVisible" class="profile">
+            <UserProfile
+                @login="onLoginClick()"
+                @logout="onLogoutClick()">
+            </UserProfile>
         </div>
 
         <div id="main" class="container-fluid" :class="{ compact: navigationVisible }">
@@ -24,28 +27,28 @@
 
 import { Vue, Component, Ref } from 'vue-property-decorator';
 
-import { userService, clientService } from '@/services';
+import { userService, clientService, tokenService } from '@/services';
 import { User }                       from './models';
 import { IClient, IUserToken }        from './interfaces';
 
 import Banner      from '@/components/Banner.vue';
 import Navigation  from '@/components/Navigation.vue';
 import AppMessages from '@/components/AppMessages.vue';
-import LoginForm   from '@/components/LoginForm.vue';
+import UserProfile from '@/components/UserProfile.vue';
 
 @Component({
     components: {
         Banner,
         Navigation,
         AppMessages,
-        LoginForm
+        UserProfile
     }
 })
 export default class App extends Vue{
     @Ref('messages') messages!: AppMessages;
 
     navigationVisible: boolean = true;
-    loginFormVisible:  boolean = false;
+    userProfileVisible:  boolean = false;
     loggedIn:          boolean = (this.user && this.user.id) ? true : false;
 
     async created(): Promise<void>{ }
@@ -55,26 +58,41 @@ export default class App extends Vue{
     }
 
     onUserClick(){
-        this.loginFormVisible = !this.loginFormVisible;
+        this.userProfileVisible = !this.userProfileVisible;
     }
 
-    async onLoginClick(o: any): Promise<any>{
-        let token: IUserToken|undefined = await userService.authenticate(o.username, o.password);
+    onLoginClick(): void{
+        this.userProfileVisible = false;
+        this.$router.push({ name: 'login' });
+    }
 
-        if(!token){
-            console.error('Incorrect username/password');
-            return;
+    async onLogoutClick(): Promise<void>{
+        tokenService.deleteToken();
+
+        this.$store.commit('setUser', null);
+
+        const orgSlug: string = this.$route.params.orgSlug;
+        if(orgSlug){
+            let userToken: IUserToken|void = tokenService.getAnonymousToken(orgSlug);
+
+            if(userToken){
+                userToken = await userService.authenticateAnonymous(orgSlug, userToken.user.username);
+            }
+            else{
+                const anonUser = await userService.createAnonymousUser(orgSlug);
+
+                userToken = await userService.authenticateAnonymous(orgSlug, anonUser.username);
+            }
+
+            userToken && this.$store.commit('setUser', userToken.user);
         }
 
-        await this.$store.dispatch('loadClientById', token.user.clientId);
+        this.userProfileVisible = false;
 
-
-        this.$router.push({
-            name: 'org-home',
-            params: {
-                orgSlug: this.client.slug
-            }
-        });
+        if(this.client){
+            const slug: string = this.client.slug;
+            this.$router.push({ name: 'org-home', params: { orgSlug: slug } });
+        }
     }
 
 
@@ -116,8 +134,8 @@ export default class App extends Vue{
         width: calc(100% - 250px)
         margin: 2rem 0 2rem 250px
 
-.login-form
-    width: 575px
+.profile
+    width: 500px
     max-width: 90%
     position: absolute
     right: 5px

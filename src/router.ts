@@ -7,6 +7,7 @@ import store                   from '@/store';
 import { IClient, IUserToken } from '@/interfaces';
 
 import Home      from '@/views/Home.vue';
+import Login     from '@/views/Login.vue';
 import OrgHome   from '@/views/OrgHome.vue';
 import OrgUsers  from '@/views/OrgUsers.vue';
 import OrgEvents from '@/views/OrgEvents.vue';
@@ -24,6 +25,11 @@ export default new Router({
             path: '/',
             name: 'home',
             component: Home
+        },
+        {
+            path: '/login',
+            name: 'login',
+            component: Login
         },
         {
             path: '/:orgSlug',
@@ -57,6 +63,28 @@ async function beforeEnterGuard(to: Route, from: Route, next: Function): Promise
 
     const orgSlug: string = to.params.orgSlug;
 
+    let userToken: IUserToken|undefined = tokenService.getToken();
+    if(!userToken){
+        userToken = tokenService.getAnonymousToken(orgSlug);
+
+        /*
+            Re-authenticate the anon user. Since anonymous users are almost always going
+            to be on a single page and may never return this shouldn't be a problem making
+            too many auth requests
+        */
+        if(userToken){
+            userToken = await userService.authenticateAnonymous(orgSlug, userToken.user.username);
+        }
+    }
+
+    if(!userToken){
+        const anonUser = await userService.createAnonymousUser(orgSlug);
+
+        userToken = await userService.authenticateAnonymous(orgSlug, anonUser.username);
+    }
+    userToken && store.commit('setUser', userToken.user);
+
+
     let client: IClient = store.getters.client;
     if(client){
         // Handle client switching /client-a -> /client-b
@@ -70,34 +98,11 @@ async function beforeEnterGuard(to: Route, from: Route, next: Function): Promise
         store.commit('setClient', client);
     }
 
-    if(!client){
-        console.log('CLIENT NOT FOUND');
-        return;
+    if(!(client && client.id)){
+        next('/login')
     }
 
     store.dispatch('openConnection');
 
-    const userToken: IUserToken|undefined = tokenService.getToken();
-    if(userToken){
-        store.commit('setUser', userToken.user);
-
-        return next();
-    }
-
-
-    const anonToken: IUserToken|undefined = tokenService.getAnonymousToken(client.slug);
-    if(anonToken){
-        store.commit('setUser', anonToken.user);
-
-        return next();
-    }
-
-    const anonUser = await userService.createAnonymousUser(<number>client.id);
-    
-    const anonUserToken: IUserToken|undefined = await userService.authenticateAnonymous(client.slug, anonUser.username);
-    if(anonUserToken){
-        store.commit('setUser', anonUserToken.user);
-
-        return next();
-    }
+    next()
 }
