@@ -143,7 +143,7 @@ export default class App extends Vue{
     max-width: 90%
     position: absolute
     right: 5px
-    top: 85px
+    top: $banner-height - 25px
     z-index: 10
 
 .nav

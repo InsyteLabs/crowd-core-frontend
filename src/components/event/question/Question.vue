@@ -66,8 +66,6 @@ export default class Question extends Vue {
 <style scoped lang="sass">
 
 .question
-    background-color: rgba(0,0,0,.075)
-    margin-bottom: 1rem
     padding: .4rem
 
     p

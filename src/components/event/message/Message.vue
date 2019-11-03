@@ -4,16 +4,16 @@
             <div class="col-12">
                 <textarea v-if="isEditMessage" v-model="messageText" class="form-control form-control-sm mb-1" rows="2"></textarea>
                 <div v-else>
-                    <p class="mb-0">{{ message.text }}</p>
-                    <small class="ml-2">
+                    <small class="m2-2">
                         <i>
-                            - {{
+                            {{
                                 message.user.isAnonymous
                                     ? 'Anonymous'
                                     : message.user.username
-                            }}
+                            }}:
                         </i>
                     </small>
+                    <p class="mb-0">{{ message.text }}</p>
                 </div>
             </div>
             <div v-if="isEditMessage" class="col-12">
@@ -96,8 +96,6 @@ export default class Message extends Vue {
 <style scoped lang="sass">
 
 .message
-    background-color: rgba(0,0,0,.075)
-    margin-bottom: 1rem
     padding: .4rem
 
 </style>
