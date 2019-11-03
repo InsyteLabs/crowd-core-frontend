@@ -7,7 +7,9 @@
             @userClick="onUserClick();">
         </Banner>
 
-        <Navigation :visible="navigationVisible"></Navigation>
+        <div class="nav" :class="{ hidden: !navigationVisible }">
+            <Navigation :visible="navigationVisible"></Navigation>
+        </div>
 
         <div v-show="userProfileVisible" class="profile">
             <UserProfile
@@ -28,8 +30,8 @@
 import { Vue, Component, Ref } from 'vue-property-decorator';
 
 import { userService, clientService, tokenService } from '@/services';
-import { User }                       from './models';
-import { IClient, IUserToken }        from './interfaces';
+import { User }                                     from '@/models';
+import { IClient, IUserToken }                      from '@/interfaces';
 
 import Banner      from '@/components/Banner.vue';
 import Navigation  from '@/components/Navigation.vue';
@@ -115,6 +117,7 @@ export default class App extends Vue{
 <style lang="sass">
 
 @import './style/bootstrap.min.css'
+@import './style/variables'
 @import './style/main'
 
 #app
@@ -125,6 +128,7 @@ export default class App extends Vue{
 
 #main
     margin: 2rem 0
+    padding-top: $banner-height
     width: 100%
     z-index: 0
 
@@ -141,4 +145,21 @@ export default class App extends Vue{
     right: 5px
     top: 85px
     z-index: 10
+
+.nav
+    z-index: 1
+    position: fixed
+    height: 100%
+    width: 250px
+    padding-top: $banner-height
+    background-color: $gray
+    color: white
+
+    left: 0
+    top: 0
+
+    transition: all .2s ease-in-out
+
+    &.hidden
+        left: -250px
 </style>

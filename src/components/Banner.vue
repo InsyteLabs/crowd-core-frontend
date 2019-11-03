@@ -137,13 +137,13 @@
 
         <ul>
             <li @click="userClick()" class="clickable">
-                <svg class="menu-icon" aria-hidden="true" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512">
+                <svg class="menu-icon user" aria-hidden="true" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512">
                     <path fill="currentColor" d="M313.6 288c-28.7 0-42.5 16-89.6 16-47.1 0-60.8-16-89.6-16C60.2 288 0 348.2 0 422.4V464c0 26.5 21.5 48 48 48h352c26.5 0 48-21.5 48-48v-41.6c0-74.2-60.2-134.4-134.4-134.4zM416 464c0 8.8-7.2 16-16 16H48c-8.8 0-16-7.2-16-16v-41.6C32 365.9 77.9 320 134.4 320c19.6 0 39.1 16 89.6 16 50.4 0 70-16 89.6-16 56.5 0 102.4 45.9 102.4 102.4V464zM224 256c70.7 0 128-57.3 128-128S294.7 0 224 0 96 57.3 96 128s57.3 128 128 128zm0-224c52.9 0 96 43.1 96 96s-43.1 96-96 96-96-43.1-96-96 43.1-96 96-96z"></path>
                 </svg>
             </li>
         </ul>
         <div @click="toggleNav()" id="menu" class="clickable">
-            <svg aria-hidden="true" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512">
+            <svg class="menu-icon hamburger" aria-hidden="true" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512">
                 <path fill="currentColor" d="M442 114H6a6 6 0 0 1-6-6V84a6 6 0 0 1 6-6h436a6 6 0 0 1 6 6v24a6 6 0 0 1-6 6zm0 160H6a6 6 0 0 1-6-6v-24a6 6 0 0 1 6-6h436a6 6 0 0 1 6 6v24a6 6 0 0 1-6 6zm0 160H6a6 6 0 0 1-6-6v-24a6 6 0 0 1 6-6h436a6 6 0 0 1 6 6v24a6 6 0 0 1-6 6z"></path>
             </svg>
         </div>
@@ -168,50 +168,54 @@ export default class Banner extends Vue{
 
 #banner
     z-index: 2
-    position: relative
-    display: block
+    position: fixed
+    top: 0
     width: 100%
     color: white
-    height: 80px
+    height: $banner-height
     background-color: $dark-gray
 
-    #logo
-        position: absolute
-        top: 50%
-        left: 1.2rem
-        transform: translateY(-50%)
+#logo
+    position: absolute
+    top: 50%
+    left: 1.2rem
+    transform: translateY(-50%)
 
-    #logo-vector
-        width: 165px
-        color: white
+#logo-vector
+    height: $banner-height - 20px
 
-    #menu
-        position: absolute
-        top: 50%
-        right: 1.2rem
-        transform: translateY(-50%)
+    color: white
 
-        width: 35px
-        color: white
+ul
+    list-style-type: none
+    margin: 0
+    padding: 0
+    float: right
+    position: relative
+    top: 50%
+    transform: translateY(-50%)
+    margin-right: 80px
 
-        svg
-            width: 100%
-
-    ul
-        list-style-type: none
+    li
         margin: 0
         padding: 0
-        float: right
-        position: relative
-        top: 50%
-        transform: translateY(-50%)
-        margin-right: 80px
 
-        li
-            margin: 0
-            padding: 0
+#menu
+    position: absolute
+    top: 50%
+    right: 1.2rem
+    transform: translateY(-50%)
 
-    .menu-icon
-        height: 40px
+    width: 35px
+    color: white
+
+    svg
+        width: 100%
+
+.menu-icon
+    height: 35px
+
+    &.user
+        height: 32px
 
 </style>
