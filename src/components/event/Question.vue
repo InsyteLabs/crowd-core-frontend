@@ -38,8 +38,8 @@
 'use strict';
 
 import { Vue, Component, Prop, Emit } from 'vue-property-decorator';
-import { User }                       from '../../../models';
-import { IEventQuestion }             from '../../../interfaces';
+import { User }                       from '@/models';
+import { IEventQuestion }             from '@/interfaces';
 
 @Component
 export default class Question extends Vue {

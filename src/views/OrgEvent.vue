@@ -65,8 +65,8 @@
 
 import { Vue, Component, Watch }  from 'vue-property-decorator';
 
-import Question from '@/components/event/question/Question.vue';
-import Message  from '@/components/event/message/Message.vue';
+import Question from '@/components/event/Question.vue';
+import Message  from '@/components/event/Message.vue';
 
 import { eventService }      from '@/services';
 import { User, ClientEvent } from '@/models';

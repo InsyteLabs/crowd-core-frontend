@@ -71,7 +71,7 @@ export default class AppMessages extends Vue {
 .app-messages
     z-index: 1001
     position: fixed
-    top: 85px
+    top: 75px
     right: 5px
 
 ul
