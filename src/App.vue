@@ -135,8 +135,8 @@ export default class App extends Vue{
     transition: width .2s ease-in-out, margin .2s ease-in-out
     
     &.compact
-        width: calc(100% - 250px)
-        margin: 2rem 0 2rem 250px
+        width: calc(100% - #{$nav-width})
+        margin: 2rem 0 2rem $nav-width
 
 .profile
     width: 500px
@@ -150,7 +150,7 @@ export default class App extends Vue{
     z-index: 1
     position: fixed
     height: 100%
-    width: 250px
+    width: $nav-width
     padding-top: $banner-height
     background-color: $gray
     color: white
@@ -161,5 +161,5 @@ export default class App extends Vue{
     transition: all .2s ease-in-out
 
     &.hidden
-        left: -250px
+        left: -$nav-width
 </style>
