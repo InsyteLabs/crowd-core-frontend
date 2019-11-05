@@ -1,12 +1,15 @@
 'use strict';
 
 import { IEventQuestionStats } from './IEventQuestionStats'
+import { ISparseUser }         from '../ISparseUser';
 
 export interface IEventQuestion{
     id?:     number;
     eventId: number;
-    userId:  number;
     text:    string;
     hidden:  boolean;
     stats?:  IEventQuestionStats
+
+    userId: number;
+    user?:  ISparseUser;
 }

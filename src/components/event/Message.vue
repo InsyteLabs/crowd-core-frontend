@@ -4,7 +4,7 @@
             <div class="col-12">
                 <textarea v-if="isEditMessage" v-model="messageText" class="form-control form-control-sm mb-1" rows="2"></textarea>
                 <div v-else>
-                    <small class="m2-2">
+                    <small>
                         <i>
                             {{
                                 message.user.isAnonymous

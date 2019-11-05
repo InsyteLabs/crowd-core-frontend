@@ -9,3 +9,4 @@ export * from './IRole';
 export * from './IClient';
 export * from './IWebSocketMessage';
 export * from './IAppMessage';
+export * from './ISparseUser';
