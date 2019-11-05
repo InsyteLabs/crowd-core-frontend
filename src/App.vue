@@ -12,6 +12,7 @@
         </div>
 
         <div v-show="userProfileVisible" class="profile">
+            <div @click="onUserClick();" class="profile-bg"></div>
             <UserProfile
                 @login="onLoginClick()"
                 @logout="onLogoutClick()">
@@ -139,12 +140,20 @@ export default class App extends Vue{
         margin: 2rem 0 2rem $nav-width
 
 .profile
+    position: fixed
     width: 500px
     max-width: 90%
-    position: absolute
     right: 5px
-    top: $banner-height - 25px
+    top: $banner-height + 5px
     z-index: 10
+
+.profile-bg
+    position: fixed
+    top: 0
+    left: 0
+    width: 100%
+    height: 100%
+    background-color: rgba(0, 0, 0, .5)
 
 .nav
     z-index: 1
