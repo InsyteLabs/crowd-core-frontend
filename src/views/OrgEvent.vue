@@ -271,6 +271,6 @@ export default class OrgEvent extends Vue {
     li
         margin: 0 0 1rem
         padding: 0
-        background-color: rgb(244, 244, 244)
-        border: 1px solid rgba(0, 0, 0, .125)
+        background-color: #F8F8F8
+        border: 1px solid rgba(0, 0, 0, .05)
 </style>
