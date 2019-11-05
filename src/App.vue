@@ -66,7 +66,15 @@ export default class App extends Vue{
 
     onLoginClick(): void{
         this.userProfileVisible = false;
-        this.$router.push({ name: 'login' });
+
+        let path: string = this.$route.path,
+            to:   string = '';
+
+        if(path){
+            to = encodeURIComponent(path);
+        }
+
+        this.$router.push(`/login${ to ? '?to='+to : '' }`);
     }
 
     async onLogoutClick(): Promise<void>{
@@ -91,11 +99,6 @@ export default class App extends Vue{
         }
 
         this.userProfileVisible = false;
-
-        if(this.client){
-            const slug: string = this.client.slug;
-            this.$router.push({ name: 'org-home', params: { orgSlug: slug } });
-        }
     }
 
 

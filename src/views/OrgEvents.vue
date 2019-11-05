@@ -29,7 +29,7 @@
                     <tr v-for="event of events" :key="event.id">
                         <td>{{ event.title }}</td>
                         <td>{{ event.slug }}</td>
-                        <td>{{ event.description }}</td>
+                        <td>{{ event.description | truncate(65) }}</td>
                         <td>{{ event.startTime | dateTime }}</td>
                         <td>{{ event.endTime | dateTime }}</td>
                         <td>

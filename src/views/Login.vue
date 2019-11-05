@@ -211,14 +211,25 @@ export default class Login extends Vue {
             this.message  = 'Authentication Successfull'
 
             this.$store.commit('setUser', userToken.user);
+
             const client: IClient = await this.$store.dispatch('loadClientById', userToken.user.clientId);
 
-            this.$router.push({
-                name: 'org-home',
-                params: {
-                    orgSlug: client.slug
+            if(this.$route.query.hasOwnProperty('to')){
+                const path = decodeURIComponent(<string>this.$route.query.to);
+
+                // Don't allow redirects off site
+                if(path.startsWith('/')){
+                    this.$router.push(path);
                 }
-            });
+            }
+            else{
+                this.$router.push({
+                    name: 'org-home',
+                    params: {
+                        orgSlug: client.slug
+                    }
+                });
+            }
 
             this.$store.dispatch('reopenConnection');
         }
