@@ -40,19 +40,33 @@ class HttpService{
         let response: Response = await fetch(<string>opt.url, opt);
 
         if(response.status === 401){
+            const path:   string = router.currentRoute.path,
+                  domain: string = path.replace(/^\//, '').split('/')[0];
+
+            let anonymous: boolean = false;
+
             if(userToken){
-                const user: User = userToken.user;
+                const user: User   = userToken.user,
+                      path: string = router.currentRoute.path;
 
                 if(user.isAnonymous){
-                    // attempt to refresh the token
+                    anonymous = true;
                 }
                 else{
                     tokenService.deleteToken();
                 }
             }
 
+            let querystring = `?anonymous=${ anonymous }`;
+            if(domain){
+                querystring += `&domain=${ encodeURIComponent(domain) }`;
+            }
+            if(path){
+                querystring += `&to=${ encodeURIComponent(path) }`;
+            }
+
             if(!router.currentRoute.path.includes('login')){
-                router.push({ name: 'login' });
+                router.push(`/login${ querystring }`);
             }
         }
 

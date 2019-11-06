@@ -99,10 +99,10 @@ async function beforeEnterGuard(to: Route, from: Route, next: Function): Promise
     }
 
     if(!(client && client.id)){
-        next('/login')
+        return next('/login');
     }
 
     store.dispatch('openConnection');
 
-    next()
+    next();
 }

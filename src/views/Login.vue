@@ -189,12 +189,37 @@ export default class Login extends Vue {
     username: string = '';
     password: string = '';
 
-    created(): void{
+    async created(): Promise<void>{
         const userToken: IUserToken|null = tokenService.getAuthToken();
 
         if(userToken){
             this.$store.commit('setUser', userToken.user);
         }
+
+        let anonymousQs: string|(string|null)[] = this.$route.query.anonymous,
+            domainQs:    string|(string|null)[] = this.$route.query.domain,
+            toQs:        string|(string|null)[] = this.$route.query.to;
+
+        const anonymous = <string>anonymousQs === 'true' ? true : false,
+              domain    = decodeURIComponent(<string>domainQs),
+              to        = decodeURIComponent(<string>toQs);
+
+        if(anonymous){
+            const anonToken: IUserToken|undefined = tokenService.getAnonymousToken(domain);
+
+            if(!anonToken) return;
+
+            const refreshedToken = await userService.authenticateAnonymous(domain, anonToken.user.username);
+
+            if(refreshedToken && refreshedToken.user){
+                this.$store.commit('setUser', anonToken.user);
+            }
+
+            if(to){
+                this.$router.push(to);
+            }
+        }
+
     }
 
     async onLoginClick(): Promise<void>{
