@@ -4,16 +4,17 @@ import Vue  from 'vue';
 import Vuex from 'vuex';
 
 import {
-    userService, clientService, eventService, tokenService
+    userService, clientService
 } from '@/services';
 
 import {
-    IClient, IUserToken, IClientEventDescriptor, IWebSocketMessage, IAppMessage, IEventQuestion, IEventMessage
+    IClient, IWebSocketMessage, IAppMessage, IEventQuestion, IEventMessage
 } from '@/interfaces';
 
 import { User, ClientEvent }    from '@/models';
 import { AppMessageType }       from '@/constants';
-import { sortQuestionsByScore } from '@/utilities';
+
+import { eventModule } from './modules';
 
 
 Vue.use(Vuex);
@@ -21,19 +22,21 @@ Vue.use(Vuex);
 const SOCKET_INTERVAAL: number = 10000; // 10 seconds
 
 const store = new Vuex.Store({
+
+    modules: {
+        eventModule
+    },
+
     state: {
         client:      <IClient|null>     null,
         users:       <User[]>           [],
         user:        <User|null>        null,
         socket:      <WebSocket|null>   null,
         socketTimer: <number|null>      null,
-        events:      <ClientEvent[]>    [],
-        event:       <ClientEvent|null> null,
         appMessages: <IAppMessage[]>    []
     },
+
     getters: {
-        events(state):      ClientEvent[]    { return state.events      },
-        event(state):       ClientEvent|null { return state.event       },
         client(state):      IClient|null     { return state.client      },
         users(state):       User[]           { return state.users       },
         user(state):        User|null        { return state.user        },
@@ -41,141 +44,8 @@ const store = new Vuex.Store({
         socket(state):      WebSocket|null   { return state.socket      },
         socketTimer(state): number|null      { return state.socketTimer }
     },
+
     mutations: {
-        /*
-            =============
-            EVENT METHODS
-            =============
-        */
-        setEvents(state, events: ClientEvent[]): void{
-            state.events = events;
-        },
-        setEvent(state, event: ClientEvent): void{
-            state.event = event;
-
-            event.questions = event.questions.sort(sortQuestionsByScore);
-        },
-        addEvent(state, event: ClientEvent): void{
-            if(!(state.events && Array.isArray(state.events))){
-                state.events = [ event ];
-                return;
-            }
-
-            state.events.push(event);
-        },
-        updateEvent(state, event: ClientEvent): void{
-            if(!state.events || !Array.isArray(state.events)){
-                state.events = [ event ];
-                return;
-            }
-
-            const idx = state.events.findIndex(e => e.id === event.id);
-            if(~idx){
-                state.events.splice(idx, 1, event);
-            }
-
-            if(state.event){
-                if(state.event.id === event.id){
-                    event.questions = state.event.questions;
-                    event.messages  = state.event.messages;
-
-                    state.event = event;
-                }
-            }
-        },
-        deleteEvent(state, event: ClientEvent): void{
-            if(!(state.events && Array.isArray(state.events))) return;
-
-            const idx = state.events.findIndex(e => e.id === event.id);
-            if(~idx){
-                state.events.splice(idx, 1);
-            }
-        },
-
-
-        /*
-            ======================
-            EVENT QUESTION METHODS
-            ======================
-        */
-        addQuestion(state, question: IEventQuestion): void{
-            const { eventId }: { eventId: number } = question;
-
-            if(state.event && state.event.id === eventId){
-                state.event.questions.push(question);
-
-                state.event.questions = state.event.questions.sort(sortQuestionsByScore);
-            }
-        },
-        updateQuestion(state, question: IEventQuestion): void{
-            const { eventId }: { eventId: number } = question;
-
-            if(state.event && state.event.id === eventId){
-                const { questions }: { questions: IEventQuestion[] } = state.event;
-
-                const idx = questions.findIndex(q => q.id === question.id);
-                if(~idx){
-                    questions.splice(idx, 1, question);
-
-                    state.event.questions = state.event.questions.sort(sortQuestionsByScore);
-                }
-            }
-        },
-        deleteQuestion(state, question: IEventQuestion): void{
-            const { eventId }: { eventId: number } = question;
-
-            if(state.event && state.event.id === eventId){
-                const { questions }: { questions: IEventQuestion[] } = state.event;
-
-                const idx = questions.findIndex(q => q.id === question.id);
-                if(~idx){
-                    questions.splice(idx, 1);
-                }
-            }
-        },
-
-
-        /*
-            ==================
-            EVENT CHAT METHODS
-            ==================
-        */
-        addMessage(state, message: IEventMessage): void{
-            const { eventId }: { eventId: number } = message;
-
-            if(state.event && state.event.id === eventId){
-                const { messages }: { messages: IEventMessage[] } = state.event;
-
-                messages.push(message);
-            }
-
-        },
-        updateMessage(state, message: IEventMessage): void{
-            const { eventId }: { eventId: number } = message;
-
-            if(state.event && state.event.id === eventId){
-                const { messages }: { messages: IEventMessage[] } = state.event;
-
-                const idx = messages.findIndex(m => m.id === message.id);
-                if(~idx){
-                    messages.splice(idx, 1, message);
-                }
-            }
-        },
-        deleteMessage(state, message: IEventMessage): void{
-            const { eventId }: { eventId: number } = message;
-
-            if(state.event && state.event.id === eventId){
-                const { messages }: { messages: IEventMessage[] } = state.event;
-
-                const idx = messages.findIndex(m => m.id === message.id);
-                if(~idx){
-                    messages.splice(idx, 1);
-                }
-            }
-        },
-        
-
         /*
             ==============
             CLIENT METHODS
@@ -205,23 +75,27 @@ const store = new Vuex.Store({
             state.users.push(user);
         },
         updateUser(state, user: User): void{
-            if(!state.users || !Array.isArray(state.users)){
+            const users: User[] = state.users;
+
+            if(!users || !Array.isArray(users)){
                 state.users = [ user ];
                 return;
             }
 
-            const idx = state.users.findIndex(u => u.id === user.id);
+            const idx = users.findIndex(u => u.id === user.id);
             if(~idx){
-                state.users.splice(idx, 1, user);
+                users.splice(idx, 1, user);
             }
 
         },
         deleteUser(state, user: User): void{
-            if(!(state.users && Array.isArray(state.users))) return;
+            const users: User[] = state.users;
 
-            const idx = state.users.findIndex(u => u.id === user.id);
+            if(!(users && Array.isArray(users))) return;
+
+            const idx = users.findIndex(u => u.id === user.id);
             if(~idx){
-                state.users.splice(idx, 1);
+                users.splice(idx, 1);
             }
         },
 
@@ -255,29 +129,8 @@ const store = new Vuex.Store({
             state.socketTimer = timer;
         }
     },
+
     actions: {
-        /*
-            =============
-            EVENT METHODS
-            =============
-        */
-        async loadEvents({ commit }, clientId: number): Promise<ClientEvent[]>{
-            const events: ClientEvent[] = await eventService.getEvents(clientId);
-
-            commit('setEvents', events);
-
-            return events;
-        },
-        
-        async loadEvent({ commit }, descriptor: IClientEventDescriptor): Promise<ClientEvent>{
-            const event: ClientEvent = await eventService.getEvent(descriptor.clientId, descriptor.eventSlug);
-
-            store.commit('setEvent', event);
-
-            return event;
-        },
-
-
         /*
             ============
             USER METHDOS
