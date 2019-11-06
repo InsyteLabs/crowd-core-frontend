@@ -70,11 +70,7 @@ class HttpService{
             }
         }
 
-
-        response = await response.json();
-
-
-        const data = <unknown>response;
+        const data = <unknown>(await response.json());
 
         return <T>data;
     }

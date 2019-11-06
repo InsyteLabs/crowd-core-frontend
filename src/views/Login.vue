@@ -158,13 +158,17 @@
                         <h5><i>{{ message }}</i></h5>
                     </div>
                     <div v-if="user" class="col-12">
-                        <i>Signed in as: 
+                        Signed in as:
+                        <i> 
                             {{
                                 user.isAnonymous
                                     ? 'Anonymous'
                                     : user.username
                             }}
                         </i>
+                        <span v-if="user.isDisabled">
+                            <i>(Account Disabled)</i>
+                        </span>
                     </div>
                 </div>
                 <button type="submit" role="submit" class="btn btn-primary">Login</button>
