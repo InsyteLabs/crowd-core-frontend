@@ -157,8 +157,14 @@ import { Vue, Component, Emit } from 'vue-property-decorator';
 
 @Component
 export default class Banner extends Vue{
-    @Emit('toggleNav') toggleNav(){ }
-    @Emit('userClick') userClick(){ }
+
+    /*
+        ==============
+        EVENT EMITTERS
+        ==============
+    */
+    @Emit('toggleNav') toggleNav(): void{ }
+    @Emit('userClick') userClick(): void{ }
 }
 </script>
 

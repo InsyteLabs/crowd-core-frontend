@@ -54,6 +54,12 @@ import { User } from '@/models';
 export default class UserList extends Vue {
     @Prop() users!: User[];
 
+    
+    /*
+        ==============
+        EVENT EMITTERS
+        ==============
+    */
     @Emit('deleteUser')
     deleteUser(user: User): void{ }
 

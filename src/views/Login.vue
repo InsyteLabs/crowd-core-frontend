@@ -197,7 +197,7 @@ export default class Login extends Vue {
         const userToken: IUserToken|null = tokenService.getAuthToken();
 
         if(userToken){
-            this.$store.commit('setUser', userToken.user);
+            this.$store.commit('user/setUser', userToken.user);
         }
 
         let anonymousQs: string|(string|null)[] = this.$route.query.anonymous,
@@ -216,7 +216,7 @@ export default class Login extends Vue {
             const refreshedToken = await userService.authenticateAnonymous(domain, anonToken.user.username);
 
             if(refreshedToken && refreshedToken.user){
-                this.$store.commit('setUser', anonToken.user);
+                this.$store.commit('user/setUser', anonToken.user);
             }
 
             if(to){
@@ -239,9 +239,9 @@ export default class Login extends Vue {
             this.password = '';
             this.message  = 'Authentication Successfull'
 
-            this.$store.commit('setUser', userToken.user);
+            this.$store.commit('user/setUser', userToken.user);
 
-            const client: IClient = await this.$store.dispatch('loadClientById', userToken.user.clientId);
+            const client: IClient = await this.$store.dispatch('client/loadClientById', userToken.user.clientId);
 
             if(this.$route.query.hasOwnProperty('to')){
                 const path = decodeURIComponent(<string>this.$route.query.to);
@@ -260,13 +260,12 @@ export default class Login extends Vue {
                 });
             }
 
-            this.$store.dispatch('reopenConnection');
+            this.$store.dispatch('ws/reopenConnection');
         }
         else{
             this.message = 'Incorrect username / password'
         }
     }
-
 
 
     /*
@@ -275,11 +274,11 @@ export default class Login extends Vue {
         =======
     */
     get user(): User|null{
-        return this.$store.getters.user;
+        return this.$store.getters['user/user'];
     }
 
     get client(): IClient|null{
-        return this.$store.getters.client;
+        return this.$store.getters['client/client'];
     }
 
 }

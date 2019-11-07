@@ -78,13 +78,13 @@
 
 import { Vue, Component, Ref, Watch } from 'vue-property-decorator';
 
-import ModalWindow from '@/components/ModalWindow.vue';
-import EventForm   from '@/components/event/EventForm.vue';
-
 import { escapeRegex }                 from '@/utilities';
 import { eventService, clientService } from '@/services';
 import { IClient }                     from '@/interfaces';
 import { User, ClientEvent }           from '@/models';
+
+import ModalWindow from '@/components/ModalWindow.vue';
+import EventForm   from '@/components/event/EventForm.vue';
 
 @Component({
     components: {
@@ -99,12 +99,6 @@ export default class OrgEvents extends Vue {
     selectedEvent: ClientEvent|null = null;
     newEvent:      boolean          = true;
     filter:        string           = '';
-
-    async created(): Promise<void>{
-        if(this.client && this.user){
-            this._loadEvents();
-        }
-    }
 
     onCreateEventClick(): void{
         this.newEvent      = true;
@@ -129,9 +123,7 @@ export default class OrgEvents extends Vue {
     }
 
     async onCreateEvent(event: ClientEvent): Promise<void>{
-        if(!this.client){
-            return console.error('Cannot create event without client reference');
-        }
+        if(!this.client) return;
 
         const newEvent = await eventService.createEvent(<number>this.client.id, event);
 
@@ -146,16 +138,6 @@ export default class OrgEvents extends Vue {
         this.eventModal.close();
     }
 
-    /*
-        ========
-        WATCHERS
-        ========
-    */
-    @Watch('client')
-    clientWatcher(client: IClient): void{
-        if(client) this._loadEvents();
-    }
-
 
     /*
         =======
@@ -163,15 +145,15 @@ export default class OrgEvents extends Vue {
         =======
     */
     get user(): User|null{
-        return this.$store.getters.user;
+        return this.$store.getters['user/user'];
     }
 
     get client(): IClient|null{
-        return this.$store.getters.client;
+        return this.$store.getters['client/client'];
     }
 
     get events(): ClientEvent[]{
-        const events: ClientEvent[] = this.$store.getters.events;
+        const events: ClientEvent[] = this.$store.getters['event/events'];
 
         if(!this.filter) return events;
 
@@ -189,6 +171,27 @@ export default class OrgEvents extends Vue {
 
 
     /*
+        ========
+        WATCHERS
+        ========
+    */
+    @Watch('client')
+    clientWatcher(client: IClient): void{
+        if(client) this._loadEvents();
+    }
+
+
+    /*
+        ===============
+        LIFECYCLE HOOKS
+        ===============
+    */
+    async created(): Promise<void>{
+        await this._loadEvents();
+    }
+
+
+    /*
         ===============
         PRIVATE METHODS
         ===============
@@ -196,7 +199,7 @@ export default class OrgEvents extends Vue {
     async _loadEvents(): Promise<void>{
         if(!this.client) return;
 
-        this.$store.dispatch('loadEvents', this.client.id);
+        this.$store.dispatch('event/loadEvents', this.client.id);
     }
 }
 </script>

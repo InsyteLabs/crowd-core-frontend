@@ -50,11 +50,10 @@ import UserProfile from '@/components/UserProfile.vue';
 export default class App extends Vue{
     @Ref('messages') messages!: AppMessages;
 
-    navigationVisible: boolean = true;
-    userProfileVisible:  boolean = false;
-    loggedIn:          boolean = (this.user && this.user.id) ? true : false;
+    navigationVisible:  boolean = true;
+    userProfileVisible: boolean = false;
+    loggedIn:           boolean = (this.user && this.user.id) ? true : false;
 
-    async created(): Promise<void>{ }
 
     onToggleNav(){
         this.navigationVisible = !this.navigationVisible;
@@ -80,7 +79,7 @@ export default class App extends Vue{
     async onLogoutClick(): Promise<void>{
         tokenService.deleteToken();
 
-        this.$store.commit('setUser', null);
+        this.$store.commit('user/setUser', null);
 
         const orgSlug: string = this.$route.params.orgSlug;
         if(orgSlug){
@@ -95,7 +94,7 @@ export default class App extends Vue{
                 userToken = await userService.authenticateAnonymous(orgSlug, anonUser.username);
             }
 
-            userToken && this.$store.commit('setUser', userToken.user);
+            userToken && this.$store.commit('user/setUser', userToken.user);
         }
 
         this.userProfileVisible = false;
@@ -107,12 +106,12 @@ export default class App extends Vue{
         GETTERS
         =======
     */
-    get client(): IClient{
-        return this.$store.getters.client;
+    get client(): IClient|null{
+        return this.$store.getters['client/client'];
     }
 
-    get user(): User{
-        return this.$store.getters.user;
+    get user(): User|null{
+        return this.$store.getters['user/user'];
     }
 }
 

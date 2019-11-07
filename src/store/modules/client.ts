@@ -26,7 +26,7 @@ export const clientModule: Module<any, any> = {
 
             commit('setClient', client);
 
-            dispatch('openConnection');
+            dispatch('ws/openConnection', null, { root: true });
 
             return client;
         },
@@ -36,7 +36,7 @@ export const clientModule: Module<any, any> = {
 
             commit('setClient', client);
 
-            dispatch('openConnection');
+            dispatch('ws/openConnection', null, { root: true });
 
             return client;
         }

@@ -106,8 +106,9 @@
 
 import { Vue, Component, Prop, Emit, Watch } from 'vue-property-decorator';
 
-import { User }           from '@/models';
-import { IRole, IClient } from '@/interfaces';
+import { User }                        from '@/models';
+import { IRole, IClient, IAppMessage } from '@/interfaces';
+import { AppMessageType }              from '@/constants';
 
 @Component
 export default class UserForm extends Vue {
@@ -127,7 +128,15 @@ export default class UserForm extends Vue {
     disabledComment: string = '';
 
     save(): void{
-        if(this.password && this.password !== this.passwordConfirm) return;
+        if(this.password && this.password !== this.passwordConfirm){
+            const errorMessage: IAppMessage = {
+                text: 'Passwords do not match',
+                type: AppMessageType.ERROR
+            }
+            this.$store.dispatch('app/addAppMessage', errorMessage);
+
+            return;
+        }
 
         const user: User = {
             clientId:        null,
@@ -138,6 +147,7 @@ export default class UserForm extends Vue {
             password:        this.password,
             isDisabled:      this.disabled === 'yes' ? true : false,
             disabledComment: this.disabledComment,
+
             roles: this.roles.filter(r => r.checked).map(r => <number>r.id)
         }
 
@@ -161,15 +171,17 @@ export default class UserForm extends Vue {
 
 
     /*
-        ==============
-        EVENT EMITTERS
-        ==============
+        =======
+        GETTERS
+        =======
     */
-    @Emit('createUser')
-    createUser(user: User): void{ }
+    get client(): IClient|null{
+        return this.$store.getters['client/client'];
+    }
 
-    @Emit('updateUser')
-    updateUser(user: User): void{ }
+    get currentUser(): User|null{
+        return this.$store.getters['user/user'];
+    }
 
 
     /*
@@ -184,17 +196,15 @@ export default class UserForm extends Vue {
 
 
     /*
-        =======
-        GETTERS
-        =======
+        ==============
+        EVENT EMITTERS
+        ==============
     */
-    get client(): IClient{
-        return this.$store.getters.client;
-    }
+    @Emit('createUser')
+    createUser(user: User): void{ }
 
-    get currentUser(): User{
-        return this.$store.getters.user;
-    }
+    @Emit('updateUser')
+    updateUser(user: User): void{ }
 
 
     /*

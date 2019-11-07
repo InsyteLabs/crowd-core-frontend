@@ -15,17 +15,18 @@ import { User }                       from '@/models';
 
 @Component
 export default class Home extends Vue {
+
     /*
         =======
         GETTERS
         =======
     */
-    get user(): User{
-        return this.$store.getters.user;
+    get user(): User|null{
+        return this.$store.getters['user/user'];
     }
 
-    get client(): IClient{
-        return this.$store.getters.client;
+    get client(): IClient|null{
+        return this.$store.getters['user/user'];
     }
 }
 </script>

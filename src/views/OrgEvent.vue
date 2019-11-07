@@ -65,9 +65,6 @@
 
 import { Vue, Component, Watch }  from 'vue-property-decorator';
 
-import Question from '@/components/event/Question.vue';
-import Message  from '@/components/event/Message.vue';
-
 import { eventService }      from '@/services';
 import { User, ClientEvent } from '@/models';
 import { AppMessageType }    from '@/constants';
@@ -75,6 +72,9 @@ import { AppMessageType }    from '@/constants';
 import {
     IClient, IEventQuestion, IEventQuestionStats, IEventMessage, IAppMessage
 } from '../interfaces';
+
+import Question from '@/components/event/Question.vue';
+import Message  from '@/components/event/Message.vue';
 
 @Component({
     components: {
@@ -90,11 +90,6 @@ export default class OrgEvent extends Vue {
     question:         string              = '';
 
     newMessage: string = '';
-
-    async created(): Promise<void>{
-        if(this.client) await this._loadEvent();
-    }
-
     
     /*
         ================
@@ -120,9 +115,7 @@ export default class OrgEvent extends Vue {
         if(this.isAskQuestion){
             let newQuestion = await eventService.createEventQuestion(this.client.id, question);
     
-            if(newQuestion && newQuestion.id){
-                // this.event.questions.push(newQuestion);
-    
+            if(newQuestion && newQuestion.id){    
                 this.cancelQuestionClick();
             }
         }
@@ -136,8 +129,6 @@ export default class OrgEvent extends Vue {
             const idx = this.event.questions.findIndex(i => i.id === updatedQuestion.id);
 
             if(~idx){
-                // this.event.questions.splice(idx, 1, updatedQuestion);
-
                 this.selectedQuestion = null;
                 this.cancelQuestionClick();
             }
@@ -173,6 +164,7 @@ export default class OrgEvent extends Vue {
 
     async vote(questionId: number, val: number): Promise<void>{
         if(!this.event)                      return;
+        if(!(this.user && this.user.id))     return;
         if(!(this.client && this.client.id)) return;
 
         const updatedQuestion = await eventService.createQuestionVote(this.client.id, <number>this.event.id, questionId, <number>this.user.id, val);
@@ -185,8 +177,10 @@ export default class OrgEvent extends Vue {
         ============
     */
     async addMessageClick(): Promise<void>{
-        if(!(this.event && this.user)) return;
-        if(!this.newMessage)           return;
+        if(!(this.event && this.event.id))   return;
+        if(!(this.user && this.user.id))     return;
+        if(!(this.client && this.client.id)) return;
+        if(!this.newMessage)                 return;
 
         const message: IEventMessage = {
             eventId: <number>this.event.id,
@@ -222,16 +216,15 @@ export default class OrgEvent extends Vue {
         GETTERS
         =======
     */
-    get client(): IClient{
-        return this.$store.getters.client;
+    get user(): User|null{
+        return this.$store.getters['user/user'];
     }
 
-    get user(): User{
-        return this.$store.getters.user;
+    get client(): IClient|null{
+        return this.$store.getters['client/client'];
     }
-
-    get event(): ClientEvent{
-        return this.$store.getters.event;
+    get event(): ClientEvent|null{
+        return this.$store.getters['event/event'];
     }
 
 
@@ -245,6 +238,15 @@ export default class OrgEvent extends Vue {
 
     }
 
+    /*
+        ===============
+        LIFECYCLE HOOKS
+        ===============
+    */
+    async created(): Promise<void>{
+        await this._loadEvent();
+    }
+
 
     /*
         ===============
@@ -252,8 +254,10 @@ export default class OrgEvent extends Vue {
         ===============
     */
     private async _loadEvent(): Promise<void>{
-        await this.$store.dispatch('loadEvent', {
-            clientId: this.client.id,
+        if(!(this.client && this.client.id)) return;
+
+        await this.$store.dispatch('event/loadEvent', {
+            clientId:  this.client.id,
             eventSlug: this.$route.params.eventSlug
         });
     }

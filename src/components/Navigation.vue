@@ -15,17 +15,23 @@
 
 import { Vue, Component } from 'vue-property-decorator';
 
-import { IClient } from '../interfaces';
-import { User }    from '../models';
+import { IClient } from '@/interfaces';
+import { User }    from '@/models';
 
 @Component
 export default class Navigation extends Vue {
-    get user(): User{
-        return this.$store.getters.user;
+
+    /*
+        =======
+        GETTERS
+        =======
+    */
+    get user(): User|null{
+        return this.$store.getters['user/user'];
     }
 
-    get client(): IClient{
-        return this.$store.getters.client;
+    get client(): IClient|null{
+        return this.$store.getters['client/client'];
     }
 }
 </script>

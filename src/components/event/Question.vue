@@ -61,10 +61,22 @@ import { IEventQuestion }             from '@/interfaces';
 export default class Question extends Vue {
     @Prop() question!: IEventQuestion;
 
-    get user(): User{
-        return this.$store.getters.user;
+
+    /*
+        =======
+        GETTERS
+        =======
+    */
+    get user(): User|null{
+        return this.$store.getters['user/user'];
     }
 
+
+    /*
+        ==============
+        EVENT EMITTERS
+        ==============
+    */
     @Emit('editQuestion')
     editQuestion(question: IEventQuestion){ }
 

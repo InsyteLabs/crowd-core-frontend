@@ -42,9 +42,10 @@ import { escapeRegex }    from '@/utilities';
 import { userService }    from '@/services';
 import { User }           from '@/models';
 import { IRole, IClient } from '@/interfaces';
-import UserList           from '@/components/user/UserList.vue';
-import UserForm           from '@/components/user/UserForm.vue';
-import ModalWindow        from '@/components/ModalWindow.vue';
+
+import UserList    from '@/components/user/UserList.vue';
+import UserForm    from '@/components/user/UserForm.vue';
+import ModalWindow from '@/components/ModalWindow.vue';
 
 @Component({
     components: {
@@ -61,11 +62,6 @@ export default class OrgUsers extends Vue {
     newUser:      boolean   = false;
     roles:        IRole[]   = [];
     filter:       string    = '';
-
-    async created(): Promise<void>{
-        this._loadUsers();
-        this._loadRoles();
-    }
 
     onAddUserClick(): void{
         this.newUser      = true;
@@ -110,21 +106,22 @@ export default class OrgUsers extends Vue {
         const deleted = await userService.deleteUser(this.client.id, user);
     }
 
+
     /*
         =======
         GETTERS
         =======
     */
-    get client(): IClient{
-        return this.$store.getters.client;
+    get client(): IClient|null{
+        return this.$store.getters['client/client'];
     }
 
-    get user(): User{
-        return this.$store.getters.user;
+    get user(): User|null{
+        return this.$store.getters['user/user'];
     }
 
     get users(): User[]{
-        const users: User[] = this.$store.getters.users;
+        const users: User[] = this.$store.getters['user/users'];
 
         if(!this.filter) return users;
 
@@ -149,13 +146,24 @@ export default class OrgUsers extends Vue {
 
     /*
         ===============
+        LIFECYCLE HOOKS
+        ===============
+    */
+    created(): void{
+        this._loadUsers();
+        this._loadRoles();
+    }
+
+
+    /*
+        ===============
         PRIVATE METHODS
         ===============
     */
     private async _loadUsers(): Promise<void>{
         if(!(this.client && this.client.id)) return;
 
-        this.$store.dispatch('loadUsers', this.client.id);
+        this.$store.dispatch('user/loadUsers', this.client.id);
     }
 
     private async _loadRoles(): Promise<IRole[]>{

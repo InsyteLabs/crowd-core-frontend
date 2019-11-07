@@ -68,15 +68,27 @@ import { User }         from '@/models';
 @Component
 export default class UserProfile extends Vue {
 
+    /*
+        =======
+        GETTERS
+        =======
+    */
+    get user(): User|null{
+        return this.$store.getters['user/user'];
+    }
+
+
+    /*
+        ==============
+        EVENT EMITTERS
+        ==============
+    */
     @Emit('login')
     login(): void{ }
 
     @Emit('logout')
     logout(): void{ }
 
-    get user(): User|null{
-        return this.$store.getters.user;
-    }
 }
 </script>
 

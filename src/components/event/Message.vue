@@ -55,9 +55,6 @@ export default class Message extends Vue {
     isEditMessage: boolean = false;
     messageText:   string  = '';
 
-    get user(): User{
-        return this.$store.getters.user;
-    }
 
     onEditMessageClick(): void{
         this.messageText = this.message.text;
@@ -84,6 +81,21 @@ export default class Message extends Vue {
     }
 
 
+    /*
+        =======
+        GETTERS
+        =======
+    */
+    get user(): User{
+        return this.$store.getters['user/user'];
+    }
+
+
+    /*
+        ==============
+        EVENT EMITTERS
+        ==============
+    */
     @Emit('editMessage')
     editMessage(message: IEventMessage): void{ }
 

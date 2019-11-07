@@ -98,6 +98,9 @@
 
 import { Vue, Component, Prop, Watch, Emit } from 'vue-property-decorator';
 
+import { IAppMessage }             from '@/interfaces';
+import { AppMessageType }          from '@/constants';
+
 import { ClientEvent }             from '@/models';
 import { IClient, IEventSettings } from '@/interfaces';
 import { dateTimeFilter }          from '@/filters/date-time';
@@ -120,7 +123,12 @@ export default class EventForm extends Vue {
 
     save(): void{
         if(!(this.client && this.client.id)){
-            console.error('Cannot save event, client not found');
+            const errorMessage: IAppMessage = {
+                text: 'Cannot save event, client not found',
+                type: AppMessageType.ERROR
+            }
+            this.$store.dispatch('app/addAppMessage', errorMessage);
+
             return;
         }
 
@@ -160,15 +168,13 @@ export default class EventForm extends Vue {
 
 
     /*
-        ==============
-        EVENT EMITTERS
-        ==============
+        =======
+        GETTERS
+        =======
     */
-    @Emit('createEvent')
-    createEvent(event: ClientEvent): void{ }
-
-    @Emit('updateEvent')
-    updateEvent(event: ClientEvent): void{ }
+    get client(): IClient|null{
+        return this.$store.getters['client/client'];
+    }
 
 
     /*
@@ -183,13 +189,15 @@ export default class EventForm extends Vue {
 
 
     /*
-        =======
-        GETTERS
-        =======
+        ==============
+        EVENT EMITTERS
+        ==============
     */
-    get client(): IClient{
-        return this.$store.getters.client;
-    }
+    @Emit('createEvent')
+    createEvent(event: ClientEvent): void{ }
+
+    @Emit('updateEvent')
+    updateEvent(event: ClientEvent): void{ }
 
 
     /*

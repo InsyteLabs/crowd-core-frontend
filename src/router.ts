@@ -82,7 +82,7 @@ async function beforeEnterGuard(to: Route, from: Route, next: Function): Promise
 
         userToken = await userService.authenticateAnonymous(orgSlug, anonUser.username);
     }
-    userToken && store.commit('setUser', userToken.user);
+    userToken && store.commit('user/setUser', userToken.user);
 
 
     let client: IClient = store.getters.client;
@@ -95,14 +95,19 @@ async function beforeEnterGuard(to: Route, from: Route, next: Function): Promise
     else {
         client = await clientService.getClientBySlug(orgSlug);
 
-        store.commit('setClient', client);
+        store.commit('client/setClient', client);
     }
 
     if(!(client && client.id)){
-        return next('/login');
+        let path = `/login?anonymous=true&to=${ encodeURIComponent(to.path) }`;
+
+        const domain: string = to.params.orgSlug;
+        domain && (path += `&domain=${ encodeURIComponent(domain) }`);
+
+        return next(path);
     }
 
-    store.dispatch('openConnection');
+    store.dispatch('ws/openConnection');
 
     next();
 }

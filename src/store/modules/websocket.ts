@@ -1,9 +1,10 @@
 'use strict';
 
 import { Module } from 'vuex';
+
 import { IWebSocketMessage, IEventQuestion, IEventMessage } from '@/interfaces';
-import { ClientEvent, User } from '@/models';
-import { AppMessageType } from '@/constants';
+import { ClientEvent, User }                                from '@/models';
+import { AppMessageType }                                   from '@/constants';
 
 const SOCKET_INTERVAL: number = 10000; // 10 seconds
 
@@ -52,7 +53,7 @@ export const websocketModule: Module<any, any> = {
                     console.log('EVENT CREATED');
                     console.log(newEvent);
 
-                    commit('addEvent', newEvent);
+                    commit('event/addEvent', newEvent, { root: true });
 
                     break;
                 case 'event-updated':
@@ -61,7 +62,7 @@ export const websocketModule: Module<any, any> = {
                     console.log('EVENT UPDATED');
                     console.log(updatedEvent);
 
-                    commit('updateEvent', updatedEvent);
+                    commit('event/updateEvent', updatedEvent, { root: true });
 
                     break;
                 case 'event-deleted':
@@ -70,7 +71,7 @@ export const websocketModule: Module<any, any> = {
                     console.log('EVENT DELETED');
                     console.log(deletedEvent);
 
-                    commit('deleteEvent', deletedEvent);
+                    commit('event/deleteEvent', deletedEvent, { root: true });
 
                     break;
 
@@ -86,7 +87,7 @@ export const websocketModule: Module<any, any> = {
                     console.log('QUESTION CREATED');
                     console.log(newQuestion);
 
-                    commit('addQuestion', newQuestion);
+                    commit('event/addQuestion', newQuestion, { root: true });
 
                     break;
                 case 'question-updated':
@@ -95,7 +96,7 @@ export const websocketModule: Module<any, any> = {
                     console.log('QUESTION UPDATED');
                     console.log(updatedQuestion);
 
-                    commit('updateQuestion', updatedQuestion);
+                    commit('event/updateQuestion', updatedQuestion, { root: true });
 
                     break;
                 case 'question-deleted':
@@ -104,7 +105,7 @@ export const websocketModule: Module<any, any> = {
                     console.log('QUESTION DELETED');
                     console.log(deletedQuestion);
 
-                    commit('deleteQuestion', deletedQuestion);
+                    commit('event/deleteQuestion', deletedQuestion, { root: true });
 
                     break;
 
@@ -120,7 +121,7 @@ export const websocketModule: Module<any, any> = {
                     console.log('MESSAGE CREATED');
                     console.log(newMessage);
 
-                    commit('addMessage', newMessage);
+                    commit('event/addMessage', newMessage, { root: true });
 
                     break;
                 
@@ -130,7 +131,7 @@ export const websocketModule: Module<any, any> = {
                     console.log('MESSAGE UPDATED');
                     console.log(updatedMessage);
 
-                    commit('updateMessage', updatedMessage);
+                    commit('event/updateMessage', updatedMessage, { root: true });
 
                     break;
 
@@ -140,7 +141,7 @@ export const websocketModule: Module<any, any> = {
                     console.log('MESSAGE DELETED');
                     console.log(deletedMessage);
 
-                    commit('deleteMessage', deletedMessage);
+                    commit('event/deleteMessage', deletedMessage, { root: true });
 
                     break;
 
@@ -156,7 +157,7 @@ export const websocketModule: Module<any, any> = {
                     console.log('USER CREATED');
                     console.log(newUser);
 
-                    commit('addUser', newUser);
+                    commit('user/addUser', newUser, { root: true });
 
                     break;
                 case 'user-updated':
@@ -165,7 +166,7 @@ export const websocketModule: Module<any, any> = {
                     console.log('USER UPDATED');
                     console.log(updatedUser);
 
-                    commit('updateUser', updatedUser);
+                    commit('user/updateUser', updatedUser, { root: true });
 
                     break;
                 case 'user-deleted':
@@ -174,7 +175,7 @@ export const websocketModule: Module<any, any> = {
                     console.log('USER DELETED');
                     console.log(deletedUser);
 
-                    commit('deleteUser', deletedUser);
+                    commit('user/deleteUser', deletedUser, { root: true });
 
                     break;
 
@@ -195,17 +196,17 @@ export const websocketModule: Module<any, any> = {
                 type: AppMessageType.INFO,
                 autoClose: true,
                 timeout: 3000
-            });
+            }, { root: true });
         },
 
-        openConnection(store): void{
-            if(!store.getters.client) return;
-            if(!window.WebSocket)     return;
+        openConnection({ commit, dispatch, getters, rootGetters }): void{
+            if(!rootGetters['client/client']) return;
+            if(!window.WebSocket)             return;
 
-            let socket: WebSocket|null = store.getters.socket;
+            let socket: WebSocket|null = getters.socket;
             
             if(!socket || ![socket.CONNECTING, socket.OPEN].includes(socket.readyState)){
-                socket = new WebSocket(`ws://localhost:8080/client/${ store.getters.client.slug }`);
+                socket = new WebSocket(`ws://localhost:8080/client/${ rootGetters['client/client'].slug }`);
 
                 socket.addEventListener('open', (ev) => {
                     console.group('$store.openConnection')
@@ -215,34 +216,34 @@ export const websocketModule: Module<any, any> = {
                 });
 
                 socket.addEventListener('message', (ev: MessageEvent) => {
-                    store.dispatch('handleMessage', ev.data);
+                    dispatch('handleMessage', ev.data);
                 });
 
-                store.commit('setSocket', socket);
+                commit('setSocket', socket);
 
-                clearInterval(store.getters.socketTimer);
+                clearInterval(getters.socketTimer);
 
-                const timer = setInterval(() => store.dispatch('testConnection'), SOCKET_INTERVAL);
+                const timer = setInterval(() => dispatch('testConnection'), SOCKET_INTERVAL);
 
-                store.commit('setSocketTimer', timer);
+                commit('setSocketTimer', timer);
             }
         },
 
-        reopenConnection(store): void{
-            const socket: WebSocket = store.getters.socket;
+        reopenConnection({ commit, dispatch, getters }): void{
+            const socket: WebSocket = getters.socket;
 
             if(socket){
                 socket.close();
-                store.commit('setSocket', null);
+                commit('setSocket', null);
 
-                clearInterval(store.getters.socketTimer);
+                clearInterval(getters.socketTimer);
             }
 
-            store.dispatch('openConnection');
+            dispatch('openConnection');
         },
 
-        testConnection(store): void{
-            const socket: WebSocket = store.getters.socket;
+        testConnection({ dispatch, getters }): void{
+            const socket: WebSocket = getters.socket;
 
             let err: string = '';
 
@@ -268,7 +269,7 @@ export const websocketModule: Module<any, any> = {
                 console.log('Reconnecting...');
                 console.groupEnd();
 
-                store.dispatch('openConnection');
+                dispatch('openConnection');
             }
         }
     }

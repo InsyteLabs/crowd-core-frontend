@@ -3,9 +3,6 @@
 import Vue  from 'vue';
 import Vuex from 'vuex';
 
-import { IAppMessage }    from '@/interfaces';
-import { AppMessageType } from '@/constants';
-
 import {
     appModule,
     userModule,
@@ -22,10 +19,22 @@ const store = new Vuex.Store({
             namespaced: true,
             ...appModule
         },
-        userModule,
-        clientModule,
-        eventModule,
-        websocketModule
+        user: {
+            namespaced: true,
+            ...userModule
+        },
+        client: {
+            namespaced: true,
+            ...clientModule
+        },
+        event: {
+            namespaced: true,
+            ...eventModule
+        },
+        ws: {
+            namespaced: true,
+            ...websocketModule
+        }
     }
 });
 

@@ -20,28 +20,9 @@ import { Vue, Component, Prop, Emit, Watch } from 'vue-property-decorator';
 
 @Component
 export default class ModalWindow extends Vue{
-
     @Prop({ default: 'medium' }) size!: string;
 
     modalActive: boolean = false;
-
-    get classObject(){
-        return {
-            active:    this.modalActive,
-            'size-sm': this.size === 'small',
-            'size-md': this.size === 'medium',
-            'size-lg': this.size === 'large',
-            'size-xl': this.size === 'extra-large'
-        }
-    }
-
-    created(): void{
-        document.addEventListener('keyup', this.keyupHandler);
-    }
-
-    destroyed(): void{
-        document.removeEventListener('keyup', this.keyupHandler);
-    }
 
     onModalBgClick(event: MouseEvent): void{
         const { target } = event;
@@ -77,11 +58,53 @@ export default class ModalWindow extends Vue{
         escape && this.close();
     }
 
+    /*
+        =======
+        GETTERS
+        =======
+    */
+    get classObject(){
+        return {
+            active:    this.modalActive,
+            'size-sm': this.size === 'small',
+            'size-md': this.size === 'medium',
+            'size-lg': this.size === 'large',
+            'size-xl': this.size === 'extra-large'
+        }
+    }
+
+
+    /*
+        ========
+        WATCHERS
+        ========
+    */
+    @Watch('modalActive')
+    modalActiveWatcher(active: boolean): void{ }
+
+
+    /*
+        ==============
+        EVENT EMITTERS
+        ==============
+    */
     @Emit('modalActiveStateChange')
     modalActiveStateChange(active: boolean): void{ }
 
-    @Watch('modalActive')
-    modalActiveWatcher(active: boolean): void{ }
+
+    /*
+        ===============
+        LIFECYCLE HOOKS
+        ===============
+    */
+    created(): void{
+        document.addEventListener('keyup', this.keyupHandler);
+    }
+
+    destroyed(): void{
+        document.removeEventListener('keyup', this.keyupHandler);
+    }
+
 }
 </script>
 

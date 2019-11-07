@@ -46,10 +46,22 @@ import { IClient }       from '@/interfaces';
 @Component
 export default class OrgHome extends Vue {
 
-    client: IClient|null = null;
+    /*
+        =======
+        GETTERS
+        =======
+    */
+    get client(): IClient|null{
+        return this.$store.getters['client/client']
+    }
 
+    /*
+        ===============
+        LIFECYCLE HOOKS
+        ===============
+    */
     async created(): Promise<void>{
-        this._loadClient();
+        if(!(this.client && this.client.id)) await this._loadClient();
     }
 
     /*
@@ -57,10 +69,10 @@ export default class OrgHome extends Vue {
         PRIVATE METHODS
         ===============
     */
-    private async _loadClient(): Promise<IClient>{
-        const client = await clientService.getClientBySlug(this.$route.params.orgSlug);
+    private async _loadClient(): Promise<void>{
+        const slug: string = this.$route.params.slug;
 
-        return this.client = client;
+        await this.$store.dispatch('client/loadClientBySlug', slug);
     }
 }
 </script>
