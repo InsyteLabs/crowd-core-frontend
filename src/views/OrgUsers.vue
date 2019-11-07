@@ -19,7 +19,7 @@
                 @deleteUser="onDeleteUserClick($event)">
             </UserList>
         </div>
-        <ModalWindow @modalActiveStateChange="onModalActiveStateChange($event)" ref="userModal">
+        <ModalWindow ref="userModal">
             <UserForm
                 ref="userForm"
                 :user="selectedUser"
@@ -109,11 +109,6 @@ export default class OrgUsers extends Vue {
 
         const deleted = await userService.deleteUser(this.client.id, user);
     }
-
-    onModalActiveStateChange(active: boolean): void{
-        
-    }
-
 
     /*
         =======

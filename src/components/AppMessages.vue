@@ -23,12 +23,12 @@ export default class AppMessages extends Vue {
     addMessage(message: IAppMessage): void{
         if(!message.type) message.type = this.DEFAULT_TYPE;
 
-        this.$store.dispatch('addAppMessage', message);
+        this.$store.dispatch('app/addAppMessage', message);
 
         if(message.autoClose){
             const timeout: number = message.timeout || this.DEFAULT_TIMEOUT;
 
-            setTimeout(() => this.$store.dispatch('removeAppMessage', message), timeout);
+            setTimeout(() => this.$store.dispatch('app/removeAppMessage', message), timeout);
         }
     }
 
@@ -57,11 +57,11 @@ export default class AppMessages extends Vue {
     }
 
     removeMessage(message: IAppMessage){
-        this.$store.dispatch('removeAppMessage', message);
+        this.$store.dispatch('app/removeAppMessage', message);
     }
 
     get messages(): IAppMessage[]{
-        return this.$store.getters.appMessages;
+        return this.$store.getters['app/appMessages'];
     }
 }
 </script>

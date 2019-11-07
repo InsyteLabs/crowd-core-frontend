@@ -190,7 +190,7 @@ export const websocketModule: Module<any, any> = {
             
             console.groupEnd();
 
-            dispatch('addAppMessage', {
+            dispatch('app/addAppMessage', {
                 text: `WS: ${ msg.type }`,
                 type: AppMessageType.INFO,
                 autoClose: true,

@@ -18,7 +18,10 @@ Vue.use(Vuex);
 
 const store = new Vuex.Store({
     modules: {
-        appModule,
+        app: {
+            namespaced: true,
+            ...appModule
+        },
         userModule,
         clientModule,
         eventModule,
