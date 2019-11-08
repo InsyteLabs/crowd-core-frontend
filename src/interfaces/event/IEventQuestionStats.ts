@@ -1,8 +1,10 @@
 'use strict';
 
 export interface IEventQuestionStats{
-    upvotes:   number;
-    downvotes: number;
-    votes:     number;
-    score:     number;
+    userVote:      number;
+    voteRequester: number;
+    upvotes:       number;
+    downvotes:     number;
+    votes:         number;
+    score:         number;
 }

@@ -3,11 +3,11 @@
 import { Module } from 'vuex';
 
 import { eventService }         from '@/services';
-import { ClientEvent }          from '@/models';
+import { ClientEvent, User }          from '@/models';
 import { sortQuestionsByScore } from '@/utilities';
 
 import {
-    IEventQuestion, IEventMessage, IClientEventDescriptor
+    IEventQuestion, IEventMessage, IClientEventDescriptor, IEventQuestionStats
 } from '@/interfaces';
 
 
@@ -103,6 +103,16 @@ export const eventModule: Module<any, any> = {
 
                 const idx = questions.findIndex(q => q.id === question.id);
                 if(~idx){
+                    const existing      = questions[idx],
+                          existingStats = <IEventQuestionStats>existing.stats;
+                    
+                    const newStats = <IEventQuestionStats>question.stats;
+
+                    if(newStats.voteRequester !== existingStats.voteRequester){
+                        newStats.userVote      = existingStats.userVote;
+                        newStats.voteRequester = existingStats.voteRequester;
+                    }
+
                     questions.splice(idx, 1, question);
 
                     state.event.questions = state.event.questions.sort(sortQuestionsByScore);
