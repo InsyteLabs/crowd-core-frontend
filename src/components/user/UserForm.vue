@@ -148,7 +148,7 @@ export default class UserForm extends Vue {
             isDisabled:      this.disabled === 'yes' ? true : false,
             disabledComment: this.disabledComment,
 
-            roles: this.roles.filter(r => r.checked).map(r => <number>r.id)
+            roles: this.roles.filter(r => r.checked).map(r => r.name)
         }
 
         if(this.newUser){

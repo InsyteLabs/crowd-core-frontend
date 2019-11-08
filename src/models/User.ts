@@ -10,7 +10,7 @@ export class User{
     email:            string;
     username:         string;
     password:         string;
-    roles:            (string|number)[];
+    roles:            string[];
     isDisabled?:      boolean;
     disabledComment?: string|null;
 
