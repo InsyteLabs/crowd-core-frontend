@@ -87,7 +87,7 @@ export const websocketModule: Module<any, any> = {
                     console.log('QUESTION CREATED');
                     console.log(newQuestion);
 
-                    commit('event/addQuestion', newQuestion, { root: true });
+                    dispatch('event/addQuestion', newQuestion, { root: true });
 
                     break;
                 case 'question-updated':
@@ -96,7 +96,7 @@ export const websocketModule: Module<any, any> = {
                     console.log('QUESTION UPDATED');
                     console.log(updatedQuestion);
 
-                    commit('event/updateQuestion', updatedQuestion, { root: true });
+                    dispatch('event/updateQuestion', updatedQuestion, { root: true });
 
                     break;
                 case 'question-deleted':
@@ -105,7 +105,7 @@ export const websocketModule: Module<any, any> = {
                     console.log('QUESTION DELETED');
                     console.log(deletedQuestion);
 
-                    commit('event/deleteQuestion', deletedQuestion, { root: true });
+                    dispatch('event/deleteQuestion', deletedQuestion, { root: true });
 
                     break;
 

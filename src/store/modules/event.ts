@@ -19,7 +19,11 @@ export const eventModule: Module<any, any> = {
 
     getters: {
         events: (state): ClientEvent[]    => state.events,
-        event:  (state): ClientEvent|null => state.event
+        event:  (state): ClientEvent|null => state.event,
+
+        user(state, getters, rootState, rootGetters): User|null{
+            return rootGetters['user/user'];
+        }
     },
 
     mutations: {
@@ -31,6 +35,7 @@ export const eventModule: Module<any, any> = {
         setEvents(state, events: ClientEvent[]): void{
             state.events = events || [];
         },
+
         addEvent(state, event: ClientEvent): void{
             if(!(state.events && Array.isArray(state.events))){
                 state.events = [ event ];
@@ -39,6 +44,7 @@ export const eventModule: Module<any, any> = {
 
             state.events.push(event);
         },
+
         setEvent(state, event: ClientEvent): void{
             if(!(event && event.id)) state.event = null;
 
@@ -47,6 +53,7 @@ export const eventModule: Module<any, any> = {
 
             state.event = event;
         },
+
         updateEvent(state, event: ClientEvent): void{
             const events: ClientEvent[] = state.events;
 
@@ -70,6 +77,7 @@ export const eventModule: Module<any, any> = {
                 }
             }
         },
+
         deleteEvent(state, event: ClientEvent): void{
             const events: ClientEvent[] = state.events;
 
@@ -86,7 +94,7 @@ export const eventModule: Module<any, any> = {
             EVENT QUESTION METHODS
             ======================
         */
-       addQuestion(state, question: IEventQuestion): void{
+        addQuestion(state, question: IEventQuestion): void{
             const { eventId }: { eventId: number } = question;
 
             if(state.event && state.event.id === eventId){
@@ -95,30 +103,19 @@ export const eventModule: Module<any, any> = {
                 state.event.questions = state.event.questions.sort(sortQuestionsByScore);
             }
         },
+
         updateQuestion(state, question: IEventQuestion): void{
-            const { eventId }: { eventId: number } = question;
-
-            if(state.event && state.event.id === eventId){
-                const { questions }: { questions: IEventQuestion[] } = state.event;
-
-                const idx = questions.findIndex(q => q.id === question.id);
-                if(~idx){
-                    const existing      = questions[idx],
-                          existingStats = <IEventQuestionStats>existing.stats;
-                    
-                    const newStats = <IEventQuestionStats>question.stats;
-
-                    if(newStats.voteRequester !== existingStats.voteRequester){
-                        newStats.userVote      = existingStats.userVote;
-                        newStats.voteRequester = existingStats.voteRequester;
+            if(state.event && (state.event.id === question.id)){
+                const questions: IEventQuestion[] = state.event.questions;
+                if(Array.isArray(questions)){
+                    const idx = questions.findIndex(q => q.id === question.id);
+                    if(~idx){
+                        state.event.questions.splice(idx, 1, question);
                     }
-
-                    questions.splice(idx, 1, question);
-
-                    state.event.questions = state.event.questions.sort(sortQuestionsByScore);
                 }
             }
         },
+
         deleteQuestion(state, question: IEventQuestion): void{
             const { eventId }: { eventId: number } = question;
 
@@ -148,6 +145,7 @@ export const eventModule: Module<any, any> = {
             }
 
         },
+
         updateMessage(state, message: IEventMessage): void{
             const { eventId }: { eventId: number } = message;
 
@@ -160,6 +158,7 @@ export const eventModule: Module<any, any> = {
                 }
             }
         },
+
         deleteMessage(state, message: IEventMessage): void{
             const { eventId }: { eventId: number } = message;
 
@@ -196,5 +195,51 @@ export const eventModule: Module<any, any> = {
 
             return event;
         },
+
+
+        /*
+            ======================
+            EVENT QUESTION METHODS
+            ======================
+        */
+        addQuestion({ commit, getters }, question: IEventQuestion): void{
+            if(question && question.stats && getters.user){
+                question.stats.voteRequester = getters.user.id;
+                question.stats.userVote      = 0;
+            }
+            commit('addQuestion', question);
+        },
+
+        updateQuestion({ commit, getters, state }, question: IEventQuestion): void{
+
+            const { eventId }: { eventId: number } = question;
+
+            if(getters.event && (getters.event.id === eventId) && getters.user){
+                const { questions }: { questions: IEventQuestion[] } = getters.event;
+
+                const idx = questions.findIndex(q => q.id === question.id);
+                if(~idx){
+                    const existing      = questions[idx],
+                          existingStats = <IEventQuestionStats>existing.stats;
+                    
+                    const newStats = <IEventQuestionStats>question.stats;
+                    
+                    if(newStats.voteRequester !== existingStats.voteRequester){
+                        newStats.userVote      = existingStats.userVote;
+                        newStats.voteRequester = getters.user.id;
+                    }
+
+                    questions.splice(idx, 1, question);
+
+                    state.event.questions = state.event.questions.sort(sortQuestionsByScore);
+                }
+            }
+            
+            commit('updateQuestion', question);
+        },
+
+        deleteQuestion({ commit, getters }, question: IEventQuestion): void{
+            commit('deleteQuestion', question);
+        }
     }
 }
