@@ -1,6 +1,6 @@
 <template>
     <div class="container-fluid p-0">
-        <nav id="nav">
+        <nav @click="shouldClose()" id="nav">
             <router-link v-if="!(client && client.id)" to="/">HOME</router-link>
             
             <router-link v-if="showHomeLink" :to="'/' + client.slug">HOME</router-link>
@@ -13,7 +13,7 @@
 <script lang="ts">
 'use strict';
 
-import { Vue, Component } from 'vue-property-decorator';
+import { Vue, Component, Emit } from 'vue-property-decorator';
 
 import { currentUserService, CurrentUserService } from '@/services';
 import { IClient }                                from '@/interfaces';
@@ -23,6 +23,10 @@ import { User }                                   from '@/models';
 export default class Navigation extends Vue {
 
     userService: CurrentUserService = currentUserService;
+
+    shouldClose(): void{
+        if(window.innerWidth <= 768) this.close();
+    }
 
     /*
         =======
@@ -62,6 +66,15 @@ export default class Navigation extends Vue {
             && !this.user.isAnonymous
         );
     }
+
+
+    /*
+        ==============
+        EVENT EMITTERS
+        ==============
+    */
+    @Emit('close')
+    close(): void{ }
 }
 </script>
 

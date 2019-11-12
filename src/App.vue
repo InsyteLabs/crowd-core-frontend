@@ -8,7 +8,7 @@
         </Banner>
 
         <div class="nav" :class="{ hidden: !navigationVisible }">
-            <Navigation :visible="navigationVisible"></Navigation>
+            <Navigation :visible="navigationVisible" @close="navigationVisible = false"></Navigation>
         </div>
 
         <div v-show="userProfileVisible" class="profile">
@@ -19,7 +19,7 @@
             </UserProfile>
         </div>
 
-        <div id="main" class="container-fluid" :class="{ compact: navigationVisible }">
+        <div id="main" :class="{ compact: navigationVisible }">
             <router-view />
         </div>
     </div>
@@ -50,7 +50,7 @@ import UserProfile from '@/components/user/UserProfile.vue';
 export default class App extends Vue{
     @Ref('messages') messages!: AppMessages;
 
-    navigationVisible:  boolean = true;
+    navigationVisible:  boolean = false;
     userProfileVisible: boolean = false;
     loggedIn:           boolean = (this.user && this.user.id) ? true : false;
 
@@ -65,7 +65,7 @@ export default class App extends Vue{
 
             return this.$router.push('/login');
         }
-        
+
         this.userProfileVisible = !this.userProfileVisible;
     }
 
@@ -130,22 +130,59 @@ export default class App extends Vue{
 @import './style/main'
 
 #app
+    width: 100%
+    max-width: 100%
     position: relative
     font-family: "Avenir", Helvetica, Arial, sans-serif
     -webkit-font-smoothing: antialiased
     -moz-osx-font-smoothing: grayscale
 
 #main
-    margin: 2rem 0
-    padding-top: $banner-height
+    padding-top: 0
+    padding-bottom: calc(1rem + #{ $banner-height })
+    padding-top: 1rem
     width: 100%
     z-index: 0
 
     transition: width .2s ease-in-out, margin .2s ease-in-out
-    
+
     &.compact
-        width: calc(100% - #{$nav-width})
-        margin: 2rem 0 2rem $nav-width
+        width: 100%
+
+    @media screen and (min-width: 768px)
+        padding-top: calc(1rem + #{ $banner-height })
+        padding-bottom: 1rem
+
+        &.compact
+            width: calc(100% - #{$nav-width})
+            margin: 0 0 0 $nav-width
+
+.nav
+    z-index: 1
+    position: fixed
+    height: 100%
+    width: 100%
+    padding-top: 30%
+    text-align: center
+    background-color: $gray
+    color: white
+
+    left: 0
+    top: 0
+
+    transition: all .2s ease-in-out
+
+    &.hidden
+        left: -100%
+
+    @media screen and (min-width: 768px)
+        width: $nav-width
+        text-align: left
+        padding-top: $banner-height
+
+        &.hidden
+            left: -$nav-width
+
 
 .profile
     position: fixed
@@ -162,21 +199,4 @@ export default class App extends Vue{
     width: 100%
     height: 100%
     background-color: rgba(0, 0, 0, .5)
-
-.nav
-    z-index: 1
-    position: fixed
-    height: 100%
-    width: $nav-width
-    padding-top: $banner-height
-    background-color: $gray
-    color: white
-
-    left: 0
-    top: 0
-
-    transition: all .2s ease-in-out
-
-    &.hidden
-        left: -$nav-width
 </style>

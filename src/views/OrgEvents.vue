@@ -12,45 +12,45 @@
                     </div>
                 </div>
             </div>
-            <table class="table table-sm table-striped">
-                <thead>
-                    <tr class="no-wrap">
-                        <th>Title</th>
-                        <th>Slug</th>
-                        <th>Description</th>
-                        <th>Start</th>
-                        <th>End</th>
-                        <th>Active</th>
-                        <th class="text-center">Manage</th>
-                        <th>View</th>
-                    </tr>
-                </thead>
-                <tbody v-if="events && events.length">
-                    <tr v-for="event of events" :key="event.id">
-                        <td>{{ event.title }}</td>
-                        <td>{{ event.slug }}</td>
-                        <td>{{ event.description | truncate(65) }}</td>
-                        <td>{{ event.startTime | dateTime }}</td>
-                        <td>{{ event.endTime | dateTime }}</td>
-                        <td>
-                            {{
-                                event.active
-                                    ? 'Yes'
-                                    : 'No'
-                            }}
-                        </td>
-                        <td class="no-wrap text-center">
-                            <EditButton @click="onEditEventClick(event)"></EditButton>
-                            <DeleteButton @click="onDeleteEventClick(event)"></DeleteButton>
-                        </td>
-                        <td>
-                            <router-link :to="{ name: 'org-event', params: { slug: client.slug, eventSlug: event.slug } }">
-                                <button class="btn btn-sm btn-primary">View</button>
-                            </router-link>
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
+            <div class="table-responsive">
+                <table class="table table-sm table-striped">
+                    <thead>
+                        <tr class="no-wrap">
+                            <th>Title</th>
+                            <th>Description</th>
+                            <th>Start</th>
+                            <th>End</th>
+                            <th>Active</th>
+                            <th class="text-center">Manage</th>
+                            <th>View</th>
+                        </tr>
+                    </thead>
+                    <tbody v-if="events && events.length">
+                        <tr v-for="event of events" :key="event.id" class="no-wrap">
+                            <td>{{ event.title }}</td>
+                            <td>{{ event.description | truncate(65) }}</td>
+                            <td>{{ event.startTime | dateTime }}</td>
+                            <td>{{ event.endTime | dateTime }}</td>
+                            <td>
+                                {{
+                                    event.active
+                                        ? 'Yes'
+                                        : 'No'
+                                }}
+                            </td>
+                            <td class="no-wrap text-center">
+                                <EditButton @click="onEditEventClick(event)"></EditButton>
+                                <DeleteButton @click="onDeleteEventClick(event)"></DeleteButton>
+                            </td>
+                            <td>
+                                <router-link :to="{ name: 'org-event', params: { slug: client.slug, eventSlug: event.slug } }">
+                                    <button class="btn btn-sm btn-primary">View</button>
+                                </router-link>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
         </div>
         <ModalWindow ref="eventModal">
             <EventForm

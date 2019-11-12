@@ -6,7 +6,7 @@
                 <p class="mb-0">{{ event.description }}</p>
             </div>
             <div class="row">
-                <div class="col-md-7">
+                <div class="col-md-7 mb-3">
                     <div class="card p-3">
                         <div v-show="!(isAskQuestion || isEditQuestion)">
                             <h4>Question &amp; Answer</h4>
@@ -36,7 +36,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="col-md-5">
+                <div class="col-md-5 mb-3">
                     <div class="card p-3">
                         <h4>Event Chat</h4>
                         <ul v-if="event.messages && event.messages.length" class="messages">

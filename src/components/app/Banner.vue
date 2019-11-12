@@ -175,11 +175,14 @@ export default class Banner extends Vue{
 #banner
     z-index: 2
     position: fixed
-    top: 0
+    bottom: 0
     width: 100%
     color: white
     height: $banner-height
     background-color: $dark-gray
+
+    @media screen and (min-width: 768px)
+        top: 0
 
 #logo
     position: absolute
