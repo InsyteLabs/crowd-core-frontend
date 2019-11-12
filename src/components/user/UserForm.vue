@@ -118,14 +118,15 @@ export default class UserForm extends Vue {
     @Prop() roles!:   IRole[];
 
     // Form fields
-    firstName:       string = '';
-    lastName:        string = '';
-    email:           string = '';
-    username:        string = '';
-    password:        string = '';
-    passwordConfirm: string = '';
-    disabled:        string = 'no';
-    disabledComment: string = '';
+    firstName:       string  = '';
+    lastName:        string  = '';
+    email:           string  = '';
+    username:        string  = '';
+    isAnonymous:     boolean = false;
+    password:        string  = '';
+    passwordConfirm: string  = '';
+    disabled:        string  = 'no';
+    disabledComment: string  = '';
 
     save(): void{
         if(this.password && this.password !== this.passwordConfirm){
@@ -145,6 +146,7 @@ export default class UserForm extends Vue {
             email:           this.email,
             username:        this.username,
             password:        this.password,
+            isAnonymous:     this.isAnonymous,
             isDisabled:      this.disabled === 'yes' ? true : false,
             disabledComment: this.disabledComment,
 
@@ -219,6 +221,7 @@ export default class UserForm extends Vue {
         this.lastName        = this.user.lastName;
         this.email           = this.user.email;
         this.username        = this.user.username;
+        this.isAnonymous     = this.user.isAnonymous || false;
         this.disabled        = this.user.isDisabled ? 'yes' : 'no';
         this.disabledComment = this.user.disabledComment || '';
 
@@ -234,6 +237,7 @@ export default class UserForm extends Vue {
         this.username        = '';
         this.password        = '';
         this.passwordConfirm = '';
+        this.isAnonymous     = false;
         this.disabled        = 'no';
         this.disabledComment = '';
 

@@ -10,9 +10,11 @@ export class User{
     email:            string;
     username:         string;
     password:         string;
-    roles:            string[];
+    isAnonymous:      boolean;
     isDisabled?:      boolean;
     disabledComment?: string|null;
+
+    roles:            string[];
 
     constructor(u: any){
         this.id              = u.id;
@@ -22,8 +24,10 @@ export class User{
         this.email           = u.email;
         this.username        = u.username;
         this.password        = u.password;
-        this.roles           = u.roles;
+        this.isAnonymous     = u.isAnonymous;
         this.isDisabled      = u.isDisabled;
         this.disabledComment = u.disabledComment;
+
+        this.roles           = u.roles;
     }
 }

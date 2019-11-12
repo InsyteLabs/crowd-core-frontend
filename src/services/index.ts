@@ -4,3 +4,4 @@ export * from './UserService';
 export * from './ClientService';
 export * from './EventService';
 export * from './TokenService';
+export * from './CurrentUserService';
