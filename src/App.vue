@@ -60,6 +60,12 @@ export default class App extends Vue{
     }
 
     onUserClick(){
+        if(!(this.user && this.user.id)){
+            if(this.$route.path.includes('login')) return;
+
+            return this.$router.push('/login');
+        }
+        
         this.userProfileVisible = !this.userProfileVisible;
     }
 
