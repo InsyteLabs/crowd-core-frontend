@@ -1,6 +1,14 @@
 <template>
     <div class="home container-fluid">
         <h1>Application Home</h1>
+        <div class="row">
+            <span class="mr-1">
+                <EditButton @click="onBtnClick()"></EditButton>
+            </span>
+            <span>
+                <DeleteButton @click="onDelClick()"></DeleteButton>
+            </span>
+        </div>
     </div>
 </template>
 
@@ -15,6 +23,10 @@ import { User }                       from '@/models';
 
 @Component
 export default class Home extends Vue {
+
+    onBtnClick(){
+        console.log('clicked');
+    }
 
     /*
         =======

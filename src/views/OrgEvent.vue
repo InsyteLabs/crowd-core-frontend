@@ -8,7 +8,7 @@
             <div class="row">
                 <div class="col-md-7">
                     <div class="card p-3">
-                        <div v-if="!(isAskQuestion || isEditQuestion)">
+                        <div v-show="!(isAskQuestion || isEditQuestion)">
                             <h4>Question &amp; Answer</h4>
                             <ul v-if="event.questions && event.questions.length" class="questions">
                                 <li v-for="question of event.questions" :key="question.id">
@@ -24,7 +24,7 @@
                             </ul>
                             <button @click="askQuestionClick()" class="btn btn-primary">Ask Question</button>
                         </div>
-                        <div v-else>
+                        <div v-show="isAskQuestion || isEditQuestion">
                             <div class="form-group">
                                 <label for="question">Your Question</label>
                                 <div class="input-group">
@@ -32,7 +32,7 @@
                                 </div>
                             </div>
                             <button @click="saveQuestionClick()" class="btn btn-primary mr-1">Save</button>
-                            <button @click="cancelQuestionClick()" class="btn btn-danger">Cancel</button>
+                            <button @click="cancelQuestionClick()" class="btn">Cancel</button>
                         </div>
                     </div>
                 </div>
