@@ -62,11 +62,14 @@
 
 import { Vue, Component, Emit } from 'vue-property-decorator';
 
-import { tokenService } from '@/services';
-import { User }         from '@/models';
+import { tokenService }                           from '@/services';
+import { currentUserService, CurrentUserService } from '@/services';
+import { User }                                   from '@/models';
 
 @Component
 export default class UserProfile extends Vue {
+
+    userService: CurrentUserService = currentUserService;
 
     /*
         =======
@@ -74,7 +77,7 @@ export default class UserProfile extends Vue {
         =======
     */
     get user(): User|null{
-        return this.$store.getters['user/user'];
+        return this.userService.user;
     }
 
 

@@ -37,11 +37,13 @@
 'use strict';
 
 import { Vue, Component, Ref } from 'vue-property-decorator';
+import { Route }               from 'vue-router';
 
-import { escapeRegex }    from '@/utilities';
-import { userService }    from '@/services';
-import { User }           from '@/models';
-import { IRole, IClient } from '@/interfaces';
+import { userService, currentUserService } from '@/services';
+import { Role }                            from '@/constants';
+import { User }                            from '@/models';
+import { IRole, IClient }                  from '@/interfaces';
+import { escapeRegex }                     from '@/utilities';
 
 import UserList    from '@/components/user/UserList.vue';
 import UserForm    from '@/components/user/UserForm.vue';
@@ -52,6 +54,11 @@ import ModalWindow from '@/components/ui/ModalWindow.vue';
         UserList,
         UserForm,
         ModalWindow
+    },
+    beforeRouteEnter(to: Route, from: Route, next: Function){
+        if(!currentUserService.canViewUsers){ return next('/login') }
+        
+        next();
     }
 })
 export default class OrgUsers extends Vue {

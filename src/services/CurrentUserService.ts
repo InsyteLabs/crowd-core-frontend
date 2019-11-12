@@ -1,16 +1,13 @@
 'use strict';
 
-import { tokenService } from './TokenService';
-import { User }         from '@/models';
-import { IUserToken }   from '@/interfaces';
-import { Role }         from '@/constants';
+import store    from '@/store';
+import { User } from '@/models';
+import { Role } from '@/constants';
 
-class CurrentUserService{
+export class CurrentUserService{
 
-    get user(): User|undefined{
-        const token: IUserToken|undefined = tokenService.getToken();
-
-        return token ? token.user : undefined;
+    get user(): User|null{
+        return store.getters['user/user'];
     }
 
     get isAdmin(): boolean{
@@ -35,6 +32,12 @@ class CurrentUserService{
         if(!this.user) return true;
 
         return !!this.user.isAnonymous;
+    }
+
+    get canViewUsers(): boolean{
+        if(!this.user) return false;
+        
+        return this.isAdmin || this.isSubAdmin;
     }
 }
 
