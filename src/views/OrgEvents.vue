@@ -83,7 +83,7 @@ import { eventService, clientService } from '@/services';
 import { IClient }                     from '@/interfaces';
 import { User, ClientEvent }           from '@/models';
 
-import ModalWindow from '@/components/ModalWindow.vue';
+import ModalWindow from '@/components/ui/ModalWindow.vue';
 import EventForm   from '@/components/event/EventForm.vue';
 
 @Component({

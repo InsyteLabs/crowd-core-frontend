@@ -34,10 +34,10 @@ import { userService, clientService, tokenService } from '@/services';
 import { User }                                     from '@/models';
 import { IClient, IUserToken }                      from '@/interfaces';
 
-import Banner      from '@/components/Banner.vue';
-import Navigation  from '@/components/Navigation.vue';
-import AppMessages from '@/components/AppMessages.vue';
-import UserProfile from '@/components/UserProfile.vue';
+import Banner      from '@/components/app/Banner.vue';
+import Navigation  from '@/components/app/Navigation.vue';
+import AppMessages from '@/components/app/AppMessages.vue';
+import UserProfile from '@/components/user/UserProfile.vue';
 
 @Component({
     components: {

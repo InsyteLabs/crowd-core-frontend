@@ -45,7 +45,7 @@ import { IRole, IClient } from '@/interfaces';
 
 import UserList    from '@/components/user/UserList.vue';
 import UserForm    from '@/components/user/UserForm.vue';
-import ModalWindow from '@/components/ModalWindow.vue';
+import ModalWindow from '@/components/ui/ModalWindow.vue';
 
 @Component({
     components: {
