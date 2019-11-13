@@ -5,6 +5,7 @@ import { Module } from 'vuex';
 import { IWebSocketMessage, IEventQuestion, IEventMessage } from '@/interfaces';
 import { ClientEvent, User }                                from '@/models';
 import { AppMessageType }                                   from '@/constants';
+import conf                                                 from '@/conf';
 
 const SOCKET_INTERVAL: number = 10000; // 10 seconds
 
@@ -206,7 +207,7 @@ export const websocketModule: Module<any, any> = {
             let socket: WebSocket|null = getters.socket;
             
             if(!socket || ![socket.CONNECTING, socket.OPEN].includes(socket.readyState)){
-                socket = new WebSocket(`ws://localhost:8080/client/${ rootGetters['client/client'].slug }`);
+                socket = new WebSocket(`${ conf.wsUrl }/websocket/${ rootGetters['client/client'].slug }`);
 
                 socket.addEventListener('open', (ev) => {
                     console.group('$store.openConnection')
