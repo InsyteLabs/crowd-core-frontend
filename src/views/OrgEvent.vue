@@ -281,5 +281,5 @@ export default class OrgEvent extends Vue {
 
 .questions-move,
 .messages-move
-    transition: transform .5s 
+    transition: transform .75s
 </style>
