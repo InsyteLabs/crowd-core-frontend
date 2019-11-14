@@ -8,9 +8,9 @@
             <div class="row">
                 <div class="col-md-7 mb-3">
                     <div class="card p-3">
-                        <div v-show="!(isAskQuestion || isEditQuestion)">
+                        <div v-show="!(isAskQuestion || isEditQuestion)" class="questions">
                             <h4>Question &amp; Answer</h4>
-                            <ul v-if="event.questions && event.questions.length" class="questions">
+                            <transition-group v-if="event.questions && event.questions.length" name="questions" tag="ul">
                                 <li v-for="question of event.questions" :key="question.id">
                                     <Question
                                         :question="question"
@@ -21,7 +21,7 @@
                                         @downvote="onDownvoteQuestionClick($event)">
                                     </Question>
                                 </li>
-                            </ul>
+                            </transition-group>
                             <button @click="askQuestionClick()" class="btn btn-primary">Ask Question</button>
                         </div>
                         <div v-show="isAskQuestion || isEditQuestion">
@@ -37,9 +37,9 @@
                     </div>
                 </div>
                 <div class="col-md-5 mb-3">
-                    <div class="card p-3">
+                    <div class="card p-3 messages">
                         <h4>Event Chat</h4>
-                        <ul v-if="event.messages && event.messages.length" class="messages">
+                        <transition-group v-if="event.messages && event.messages.length" name="messages" tag="ul">
                             <li v-for="message of event.messages" :key="message.id">
                                 <Message
                                     :message="message"
@@ -48,7 +48,7 @@
                                     @deleteMessage="deleteMessageClick($event)">
                                 </Message>
                             </li>
-                        </ul>
+                        </transition-group>
                         <div class="form-group mb-0">
                             <textarea v-model="newMessage" rows="3" class="form-control form-control-sm mb-1" placeholder="Add Message"></textarea>
                             <button @click="addMessageClick()" class="btn btn-sm btn-primary">Add Message</button>
@@ -268,13 +268,18 @@ export default class OrgEvent extends Vue {
 
 .questions,
 .messages
-    list-style-type: none
-    margin: 0
-    padding: 0
-
-    li
-        margin: 0 0 1rem
+    ul
+        list-style-type: none
+        margin: 0
         padding: 0
-        background-color: #F8F8F8
-        border: 1px solid rgba(0, 0, 0, .05)
+
+        li
+            margin: 0 0 1rem
+            padding: 0
+            background-color: #F8F8F8
+            border: 1px solid rgba(0, 0, 0, .05)
+
+.questions-move,
+.messages-move
+    transition: transform .5s 
 </style>
