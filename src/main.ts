@@ -31,7 +31,9 @@ Vue.component('Button',       Button);
 Vue.component('EditButton',   EditButton);
 Vue.component('DeleteButton', DeleteButton);
 
-Vue.config.productionTip = false
+Vue.config.productionTip = false;
+
+Vue.prototype.$showMessages = process.env.NODE_ENV !== 'production';
 
 new Vue({
     router,

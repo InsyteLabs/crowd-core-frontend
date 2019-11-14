@@ -1,6 +1,6 @@
 <template>
     <div class="app-messages">
-        <ul>
+        <ul v-if="showMessages">
             <li :class="'app-message ' + message.type" v-for="message of messages" :key="message.id">
                 <span @click="removeMessage(message)" class="app-message-close clickable">&times;</span> {{ message.text }}
             </li>
@@ -62,6 +62,10 @@ export default class AppMessages extends Vue {
 
     get messages(): IAppMessage[]{
         return this.$store.getters['app/appMessages'];
+    }
+
+    get showMessages(): boolean{
+        return (<any>this.$root).$showMessages
     }
 }
 </script>
