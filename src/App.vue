@@ -50,7 +50,7 @@ import UserProfile from '@/components/user/UserProfile.vue';
 export default class App extends Vue{
     @Ref('messages') messages!: AppMessages;
 
-    navigationVisible:  boolean = false;
+    navigationVisible:  boolean = window.innerWidth >= 768;
     userProfileVisible: boolean = false;
     loggedIn:           boolean = (this.user && this.user.id) ? true : false;
 
