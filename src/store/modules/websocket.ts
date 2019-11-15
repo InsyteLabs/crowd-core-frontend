@@ -7,7 +7,7 @@ import { ClientEvent, User }                                from '@/models';
 import { AppMessageType }                                   from '@/constants';
 import conf                                                 from '@/conf';
 
-const SOCKET_INTERVAL: number = 1000; // 1 second
+const SOCKET_INTERVAL: number = 3000; // 3 seconds
 
 export const websocketModule: Module<any, any> = {
     state: {
