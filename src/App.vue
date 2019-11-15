@@ -154,10 +154,8 @@ export default class App extends Vue{
 
         this.lastInterval = now;
 
-        if(offBy > 1000){
+        if(offBy > 500){
             this.$store.dispatch('ws/openConnection');
-
-            alert('Page died, re-opning connection');
         }
     }
 
