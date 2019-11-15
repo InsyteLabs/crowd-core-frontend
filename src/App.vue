@@ -146,11 +146,11 @@ export default class App extends Vue{
         LIFECYCLE HOOKS
         ===============
     */
-    // mounted(): void{
-    //     window.addEventListener('focus', () => {
-    //         this.$store.dispatch('ws/openConnection');
-    //     });
-    // }
+    mounted(): void{
+        window.addEventListener('focus', () => {
+            this.$store.dispatch('ws/openConnection');
+        });
+    }
 }
 
 </script>
