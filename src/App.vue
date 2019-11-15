@@ -26,6 +26,14 @@
         <div v-show="showSpinner" id="spinner">
             <HttpSpinner></HttpSpinner>
         </div>
+
+        <div id="socket-status" :class="{ connected: socketConnected }">
+            Status: {{
+                socketConnected
+                    ? 'Connected'
+                    : 'Not Conncted'
+            }}
+        </div>
     </div>
 </template>
 
@@ -127,6 +135,22 @@ export default class App extends Vue{
     get showSpinner(): boolean{
         return this.$store.getters['pendingHttpCount'] > 0;
     }
+
+    get socketConnected(): boolean{
+        return this.$store.getters['ws/connected'];
+    }
+
+
+    /*
+        ===============
+        LIFECYCLE HOOKS
+        ===============
+    */
+    // mounted(): void{
+    //     window.addEventListener('focus', () => {
+    //         this.$store.dispatch('ws/openConnection');
+    //     });
+    // }
 }
 
 </script>
@@ -222,4 +246,23 @@ export default class App extends Vue{
         bottom: 10px
         width: 60px
         height: 60px
+
+#socket-status
+    position: fixed
+    z-index: 1000
+    cursor: default
+    padding: 3px 5px
+    font-size: .7rem
+    border-radius: 3px
+    bottom: 0
+    left: 50%
+    transform: translateX(-50%)
+    color: white
+    background-color: red
+
+    &.connected
+        background-color: green
+
+    @media screen and (min-width: 768px)
+        font-size: .8rem
 </style>

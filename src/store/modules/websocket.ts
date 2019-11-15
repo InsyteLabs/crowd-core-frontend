@@ -17,7 +17,16 @@ export const websocketModule: Module<any, any> = {
 
     getters: {
         socket:      (state): WebSocket|null => state.socket,
-        socketTimer: (state): number|null    => state.socketTimer
+        socketTimer: (state): number|null    => state.socketTimer,
+
+        connected(state): boolean{
+            if(!state.socket) return false;
+
+            return [
+                WebSocket.CONNECTING,
+                WebSocket.OPEN
+            ].includes(state.socket.readyState)
+        }
     },
 
     mutations: {
