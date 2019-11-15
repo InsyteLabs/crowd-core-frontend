@@ -64,6 +64,7 @@ export default class App extends Vue{
 
     navigationVisible:  boolean = window.innerWidth >= 768;
     userProfileVisible: boolean = false;
+    lastInterval:       number  = Date.now();
     loggedIn:           boolean = (this.user && this.user.id) ? true : false;
 
 
@@ -140,17 +141,40 @@ export default class App extends Vue{
         return this.$store.getters['ws/connected'];
     }
 
+    
+    /*
+        =======
+        HELPERS
+        =======
+    */
+    heartbeat(): void{
+        const now:   number = Date.now(),
+              diff:  number = now - this.lastInterval,
+              offBy: number = diff - 1000;
+
+        this.lastInterval = now;
+
+        if(offBy > 100){
+            this.$store.dispatch('ws/openConnection');
+
+            alert('Page died, re-opning connection');
+        }
+    }
+
 
     /*
         ===============
         LIFECYCLE HOOKS
         ===============
     */
-    mounted(): void{
+    created(): void{
         window.addEventListener('focus', () => {
             this.$store.dispatch('ws/openConnection');
         });
+
+        setInterval(this.heartbeat, 1000);
     }
+
 }
 
 </script>
