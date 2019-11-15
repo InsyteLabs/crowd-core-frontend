@@ -114,7 +114,7 @@ export default class ModalWindow extends Vue{
 
 .__modal-window__
     position: fixed
-    z-index: 1000
+    z-index: 900
     top: -100%
     left: 0
     width: 100%

@@ -26,10 +26,12 @@ filters.forEach(f => {
 import Button       from '@/components/ui/Button.vue';
 import EditButton   from '@/components/ui/EditButton.vue';
 import DeleteButton from '@/components/ui/DeleteButton.vue';
+import HttpSpinner  from '@/components/ui/HttpSpinner.vue';
 
 Vue.component('Button',       Button);
 Vue.component('EditButton',   EditButton);
 Vue.component('DeleteButton', DeleteButton);
+Vue.component('HttpSpinner',  HttpSpinner);
 
 Vue.config.productionTip = false;
 

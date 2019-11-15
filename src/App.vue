@@ -22,6 +22,10 @@
         <div id="main" :class="{ compact: navigationVisible }">
             <router-view />
         </div>
+
+        <div v-show="showSpinner" id="spinner">
+            <HttpSpinner></HttpSpinner>
+        </div>
     </div>
 </template>
 
@@ -119,6 +123,10 @@ export default class App extends Vue{
     get user(): User|null{
         return this.$store.getters['user/user'];
     }
+
+    get showSpinner(): boolean{
+        return this.$store.getters['pendingHttpCount'] > 0;
+    }
 }
 
 </script>
@@ -199,4 +207,19 @@ export default class App extends Vue{
     width: 100%
     height: 100%
     background-color: rgba(0, 0, 0, .5)
+
+#spinner
+    z-index: 1000
+    position: fixed
+    background-color: rgba($dark-gray, .75)
+    width: 45px
+    height: 45px
+    bottom: $banner-height + 10px
+    right: 10px
+    border-radius: 3px
+
+    @media screen and (min-width: 768px)
+        bottom: 10px
+        width: 60px
+        height: 60px
 </style>

@@ -12,6 +12,7 @@
 */
 
 import router from '@/router';
+import store  from '@/store';
 
 import { tokenService } from '@/services';
 import { IUserToken }   from '@/interfaces';
@@ -29,6 +30,8 @@ interface IHttpOptions{
 
 class HttpService{
     async makeRequest<T>(opt: IHttpOptions={ method: 'GET' }): Promise<T>{
+        store.commit('incrementPendingHttpCount');
+
         const userToken: IUserToken|null = tokenService.getAuthToken();
 
         if(userToken){
@@ -38,6 +41,8 @@ class HttpService{
         }
 
         let response: Response = await fetch(<string>opt.url, opt);
+
+        store.commit('decrementPendingHttpCount');
 
         if(response.status === 401){
             const path:   string = router.currentRoute.path,
