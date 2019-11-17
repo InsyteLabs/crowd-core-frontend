@@ -8,7 +8,7 @@
             <div class="row">
                 <div class="col-md-7 mb-3">
                     <div class="card p-3">
-                        <div v-show="!(isAskQuestion || isEditQuestion)" class="questions">
+                        <div class="questions">
                             <h4>Question &amp; Answer</h4>
                             <transition-group v-if="event.questions && event.questions.length" name="questions" tag="ul">
                                 <li v-for="question of event.questions" :key="question.id">
@@ -22,17 +22,13 @@
                                     </Question>
                                 </li>
                             </transition-group>
-                            <button @click="askQuestionClick()" class="btn btn-primary">Ask Question</button>
                         </div>
-                        <div v-show="isAskQuestion || isEditQuestion">
-                            <div class="form-group">
+                        <div>
+                            <div class="form-group mb-0">
                                 <label for="question">Your Question</label>
-                                <div class="input-group">
-                                    <textarea v-model="question" rows="4" class="form-control" placeholder="Question text"></textarea>
-                                </div>
+                                <textarea v-model="question" rows="3" class="form-control form-control-sm mb-1" placeholder="Question text"></textarea>
+                                <button @click="saveQuestionClick()" class="btn btn-sm btn-primary mr-1">Ask Question</button>
                             </div>
-                            <button @click="saveQuestionClick()" class="btn btn-primary mr-1">Save</button>
-                            <button @click="cancelQuestionClick()" class="btn">Cancel</button>
                         </div>
                     </div>
                 </div>
@@ -114,10 +110,6 @@ export default class OrgEvent extends Vue {
 
         if(this.isAskQuestion){
             let newQuestion = await eventService.createEventQuestion(this.client.id, question);
-    
-            if(newQuestion && newQuestion.id){    
-                this.cancelQuestionClick();
-            }
         }
         else{
             if(!this.selectedQuestion) return;
@@ -130,15 +122,9 @@ export default class OrgEvent extends Vue {
 
             if(~idx){
                 this.selectedQuestion = null;
-                this.cancelQuestionClick();
             }
         }
-    }
-
-    cancelQuestionClick(): void{
-        this.question       = '';
-        this.isAskQuestion  = false;
-        this.isEditQuestion = false;
+        this.question = '';
     }
 
     onEditQuestionClick(question: IEventQuestion): void{
