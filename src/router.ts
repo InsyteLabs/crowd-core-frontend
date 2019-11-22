@@ -7,11 +7,6 @@ import store                   from '@/store';
 import { IClient, IUserToken, IJWTPayload } from '@/interfaces';
 
 import Home      from '@/views/Home.vue';
-import Login     from '@/views/Login.vue';
-import OrgHome   from '@/views/OrgHome.vue';
-import OrgUsers  from '@/views/OrgUsers.vue';
-import OrgEvents from '@/views/OrgEvents.vue';
-import OrgEvent  from '@/views/OrgEvent.vue';
 
 import { clientService, userService, tokenService } from '@/services';
 
@@ -31,30 +26,30 @@ export default new Router({
         {
             path: '/login',
             name: 'login',
-            component: Login
+            component: () => import(/* webpackChunkName: "Login" */ '@/views/Login.vue')
         },
         {
             path: '/:orgSlug',
             name: 'org-home',
-            component: OrgHome,
+            component: () => import(/* webpackChunkName: "OrgHome" */ '@/views/OrgHome.vue'),
             beforeEnter: beforeEnterGuard
         },
         {
             path: '/:orgSlug/users',
             name: 'org-users',
-            component: OrgUsers,
+            component: () => import(/* webpackChunkName: "OrgUsers" */ '@/views/OrgUsers.vue'),
             beforeEnter: beforeEnterGuard
         },
         {
             path: '/:orgSlug/events',
             name: 'org-events',
-            component: OrgEvents,
+            component: () => import(/* webpackChunkName: "OrgEvents" */ '@/views/OrgEvents.vue'),
             beforeEnter: beforeEnterGuard
         },
         {
             path: '/:orgSlug/events/:eventSlug',
             name: 'org-event',
-            component: OrgEvent,
+            component: () => import(/* webpackChunkName: "OrgEvent" */ '@/views/OrgEvent.vue'),
             beforeEnter: beforeEnterGuard
         }
     ]
