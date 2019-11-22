@@ -4,7 +4,7 @@ import Vue               from 'vue';
 import Router, { Route } from 'vue-router';
 
 import store                   from '@/store';
-import { IClient, IUserToken } from '@/interfaces';
+import { IClient, IUserToken, IJWTPayload } from '@/interfaces';
 
 import Home      from '@/views/Home.vue';
 import Login     from '@/views/Login.vue';
@@ -14,6 +14,8 @@ import OrgEvents from '@/views/OrgEvents.vue';
 import OrgEvent  from '@/views/OrgEvent.vue';
 
 import { clientService, userService, tokenService } from '@/services';
+
+import { jwt } from '@/utilities';
 
 Vue.use(Router);
 
@@ -66,14 +68,15 @@ async function beforeEnterGuard(to: Route, from: Route, next: Function): Promise
     let userToken: IUserToken|undefined = tokenService.getToken();
     if(!userToken){
         userToken = tokenService.getAnonymousToken(orgSlug);
-
-        /*
-            Re-authenticate the anon user. Since anonymous users are almost always going
-            to be on a single page and may never return this shouldn't be a problem making
-            too many auth requests
-        */
+        
         if(userToken){
-            userToken = await userService.authenticateAnonymous(orgSlug, userToken.user.username);
+
+            const tokenPayload: IJWTPayload = jwt.decode(userToken.jwt),
+                  isExpired:    boolean     = jwt.isExpired(tokenPayload);
+
+            if(isExpired){
+                userToken = await userService.authenticateAnonymous(orgSlug, userToken.user.username);
+            }
         }
     }
 
