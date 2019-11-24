@@ -81,7 +81,7 @@ import Message  from '@/components/event/Message.vue';
 export default class OrgEvent extends Vue {
 
     selectedQuestion: IEventQuestion|null = null;
-    isAskQuestion:    boolean             = false;
+    isAskQuestion:    boolean             = true;
     isEditQuestion:   boolean             = false;
     question:         string              = '';
 
@@ -125,10 +125,13 @@ export default class OrgEvent extends Vue {
             }
         }
         this.question = '';
+        this.isAskQuestion = true;
+        this.isEditQuestion = false;
     }
 
     onEditQuestionClick(question: IEventQuestion): void{
         this.selectedQuestion = question;
+        this.isAskQuestion    = false;
         this.isEditQuestion   = true;
         this.question         = question.text;
     }
