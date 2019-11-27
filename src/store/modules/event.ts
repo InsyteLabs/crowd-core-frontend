@@ -13,13 +13,15 @@ import {
 
 export const eventModule: Module<any, any> = {
     state: {
-        events: <ClientEvent[]>    [],
-        event:  <ClientEvent|null> null
+        events:        <ClientEvent[]>    [],
+        event:         <ClientEvent|null> null,
+        submittedPass: <string>           ''
     },
 
     getters: {
-        events: (state): ClientEvent[]    => state.events,
-        event:  (state): ClientEvent|null => state.event,
+        events:        (state): ClientEvent[]    => state.events,
+        event:         (state): ClientEvent|null => state.event,
+        submittedPass: (state): string           => state.submittedPass,
 
         user(state, getters, rootState, rootGetters): User|null{
             return rootGetters['user/user'];
@@ -27,6 +29,11 @@ export const eventModule: Module<any, any> = {
     },
 
     mutations: {
+        updateSubmittedPass(state, pass: string): void{
+            state.submittedPass = pass;
+        },
+
+
         /*
             =============
             EVENT METHODS

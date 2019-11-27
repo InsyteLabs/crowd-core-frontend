@@ -1,53 +1,69 @@
 <template>
     <div class="org-event container-fluid">
         <div v-if="event">
-            <div class="card p-3 mb-3">
-                <h3>{{ event.title }}</h3>
-                <p class="mb-0">{{ event.description }}</p>
-            </div>
-            <div class="row">
-                <div class="col-md-7 mb-3">
-                    <div class="card p-3">
-                        <div class="questions">
-                            <h4>Question &amp; Answer</h4>
-                            <transition-group v-if="event.questions && event.questions.length" name="questions" tag="ul">
-                                <li v-for="question of event.questions" :key="question.id">
-                                    <Question
-                                        :question="question"
-                                        
-                                        @editQuestion="onEditQuestionClick($event)"
-                                        @deleteQuestion="onDeleteQuestionClick($event)"
-                                        @upvote="onUpvoteQuestionClick($event)"
-                                        @downvote="onDownvoteQuestionClick($event)">
-                                    </Question>
-                                </li>
-                            </transition-group>
+            <div v-if="(event.settings && event.settings.requirePassword) && submittedPass !== event.settings.password">
+                <div class="card p-3" style="max-width: 500px; margin: auto">
+                    <form @submit.prevent="onSubmitPasswordClick()">
+                        <h3 class="text-center mb-3">Event Password Required</h3>
+                        <div class="form-group">
+                            <label for="event-password">Password</label>
+                            <div class="input-group">
+                                <input v-model="password" type="password" id="event-password" class="form-control">
+                            </div>
                         </div>
-                        <div>
-                            <div class="form-group mb-0">
-                                <label for="question">Your Question</label>
-                                <textarea v-model="question" rows="3" class="form-control form-control-sm mb-1" placeholder="Question text"></textarea>
-                                <button @click="saveQuestionClick()" class="btn btn-sm btn-primary mr-1">Ask Question</button>
+                        <button type="submit" role="submit" class="btn btn-sm btn-primary">Submit</button>
+                    </form>
+                </div>
+            </div>
+            <div v-else>
+                <div class="card p-3 mb-3">
+                    <h3>{{ event.title }}</h3>
+                    <p class="mb-0">{{ event.description }}</p>
+                </div>
+                <div class="row">
+                    <div class="col-md-7 mb-3">
+                        <div class="card p-3">
+                            <div class="questions">
+                                <h4>Question &amp; Answer</h4>
+                                <transition-group v-if="event.questions && event.questions.length" name="questions" tag="ul">
+                                    <li v-for="question of event.questions" :key="question.id">
+                                        <Question
+                                            :question="question"
+                                            
+                                            @editQuestion="onEditQuestionClick($event)"
+                                            @deleteQuestion="onDeleteQuestionClick($event)"
+                                            @upvote="onUpvoteQuestionClick($event)"
+                                            @downvote="onDownvoteQuestionClick($event)">
+                                        </Question>
+                                    </li>
+                                </transition-group>
+                            </div>
+                            <div>
+                                <div class="form-group mb-0">
+                                    <label for="question">Your Question</label>
+                                    <textarea v-model="question" rows="3" class="form-control form-control-sm mb-1" placeholder="Question text"></textarea>
+                                    <button @click="saveQuestionClick()" class="btn btn-sm btn-primary mr-1">Ask Question</button>
+                                </div>
                             </div>
                         </div>
                     </div>
-                </div>
-                <div class="col-md-5 mb-3">
-                    <div class="card p-3 messages">
-                        <h4>Event Chat</h4>
-                        <transition-group v-if="event.messages && event.messages.length" name="messages" tag="ul">
-                            <li v-for="message of event.messages" :key="message.id">
-                                <Message
-                                    :message="message"
-                                    
-                                    @editMessage="editMessageClick($event)"
-                                    @deleteMessage="deleteMessageClick($event)">
-                                </Message>
-                            </li>
-                        </transition-group>
-                        <div class="form-group mb-0">
-                            <textarea v-model="newMessage" rows="3" class="form-control form-control-sm mb-1" placeholder="Add Message"></textarea>
-                            <button @click="addMessageClick()" class="btn btn-sm btn-primary">Add Message</button>
+                    <div class="col-md-5 mb-3">
+                        <div class="card p-3 messages">
+                            <h4>Event Chat</h4>
+                            <transition-group v-if="event.messages && event.messages.length" name="messages" tag="ul">
+                                <li v-for="message of event.messages" :key="message.id">
+                                    <Message
+                                        :message="message"
+                                        
+                                        @editMessage="editMessageClick($event)"
+                                        @deleteMessage="deleteMessageClick($event)">
+                                    </Message>
+                                </li>
+                            </transition-group>
+                            <div class="form-group mb-0">
+                                <textarea v-model="newMessage" rows="3" class="form-control form-control-sm mb-1" placeholder="Add Message"></textarea>
+                                <button @click="addMessageClick()" class="btn btn-sm btn-primary">Add Message</button>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -80,12 +96,23 @@ import Message  from '@/components/event/Message.vue';
 })
 export default class OrgEvent extends Vue {
 
+    // Question fields
     selectedQuestion: IEventQuestion|null = null;
     isAskQuestion:    boolean             = true;
     isEditQuestion:   boolean             = false;
     question:         string              = '';
 
+    // Message fields
     newMessage: string = '';
+
+    // Event settings
+    password: string = '';
+
+    onSubmitPasswordClick(){
+        const password: string = this.password;
+
+        this.$store.commit('event/updateSubmittedPass', password);
+    }
     
     /*
         ================
@@ -212,8 +239,13 @@ export default class OrgEvent extends Vue {
     get client(): IClient|null{
         return this.$store.getters['client/client'];
     }
+
     get event(): ClientEvent|null{
         return this.$store.getters['event/event'];
+    }
+
+    get submittedPass(): string{
+        return this.$store.getters['event/submittedPass'];
     }
 
 
