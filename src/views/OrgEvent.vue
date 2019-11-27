@@ -2,18 +2,7 @@
     <div class="org-event container-fluid">
         <div v-if="event">
             <div v-if="(event.settings && event.settings.requirePassword) && submittedPass !== event.settings.password">
-                <div class="card p-3" style="max-width: 500px; margin: auto">
-                    <form @submit.prevent="onSubmitPasswordClick()">
-                        <h3 class="text-center mb-3">Event Password Required</h3>
-                        <div class="form-group">
-                            <label for="event-password">Password</label>
-                            <div class="input-group">
-                                <input v-model="password" type="password" id="event-password" class="form-control">
-                            </div>
-                        </div>
-                        <button type="submit" role="submit" class="btn btn-sm btn-primary">Submit</button>
-                    </form>
-                </div>
+                <EventPasswordForm></EventPasswordForm>
             </div>
             <div v-else>
                 <div class="card p-3 mb-3">
@@ -85,13 +74,15 @@ import {
     IClient, IEventQuestion, IEventQuestionStats, IEventMessage, IAppMessage
 } from '../interfaces';
 
-import Question from '@/components/event/Question.vue';
-import Message  from '@/components/event/Message.vue';
+import Question          from '@/components/event/Question.vue';
+import Message           from '@/components/event/Message.vue';
+import EventPasswordForm from '@/components/event/EventPasswordForm.vue';
 
 @Component({
     components: {
         Question,
-        Message
+        Message,
+        EventPasswordForm
     }
 })
 export default class OrgEvent extends Vue {
@@ -105,15 +96,6 @@ export default class OrgEvent extends Vue {
     // Message fields
     newMessage: string = '';
 
-    // Event settings
-    password: string = '';
-
-    onSubmitPasswordClick(){
-        const password: string = this.password;
-
-        this.$store.commit('event/updateSubmittedPass', password);
-    }
-    
     /*
         ================
         QUESTION METHODS
