@@ -37,22 +37,8 @@
                         </div>
                     </div>
                     <div class="col-md-5 mb-3">
-                        <div class="card p-3 messages">
-                            <h4>Event Chat</h4>
-                            <transition-group v-if="event.messages && event.messages.length" name="messages" tag="ul">
-                                <li v-for="message of event.messages" :key="message.id">
-                                    <Message
-                                        :message="message"
-                                        
-                                        @editMessage="editMessageClick($event)"
-                                        @deleteMessage="deleteMessageClick($event)">
-                                    </Message>
-                                </li>
-                            </transition-group>
-                            <div class="form-group mb-0">
-                                <textarea v-model="newMessage" rows="3" class="form-control form-control-sm mb-1" placeholder="Add Message"></textarea>
-                                <button @click="addMessageClick()" class="btn btn-sm btn-primary">Add Message</button>
-                            </div>
+                        <div v-if="showChat">
+                            <EventChat></EventChat>
                         </div>
                     </div>
                 </div>
@@ -75,13 +61,13 @@ import {
 } from '../interfaces';
 
 import Question          from '@/components/event/Question.vue';
-import Message           from '@/components/event/Message.vue';
+import EventChat         from '@/components/event/EventChat.vue';
 import EventPasswordForm from '@/components/event/EventPasswordForm.vue';
 
 @Component({
     components: {
         Question,
-        Message,
+        EventChat,
         EventPasswordForm
     }
 })
@@ -93,8 +79,6 @@ export default class OrgEvent extends Vue {
     isEditQuestion:   boolean             = false;
     question:         string              = '';
 
-    // Message fields
-    newMessage: string = '';
 
     /*
         ================
@@ -170,46 +154,6 @@ export default class OrgEvent extends Vue {
 
 
     /*
-        ============
-        CHAT METHODS
-        ============
-    */
-    async addMessageClick(): Promise<void>{
-        if(!(this.event && this.event.id))   return;
-        if(!(this.user && this.user.id))     return;
-        if(!(this.client && this.client.id)) return;
-        if(!this.newMessage)                 return;
-
-        const message: IEventMessage = {
-            eventId: <number>this.event.id,
-            userId:  <number>this.user.id,
-            text:    this.newMessage,
-            hidden:  false
-        }
-
-        await eventService.addMessage(<number>this.client.id, <number>this.event.id, message);
-
-        this.newMessage = '';
-    }
-
-    async editMessageClick(message: IEventMessage): Promise<void>{
-        if(!(this.event && this.client)) return;
-        
-        await eventService.updateMessage(<number>this.client.id, <number>this.event.id, message);
-    }
-
-    async deleteMessageClick(message: IEventMessage): Promise<void>{
-        if(!(this.client && this.event)) return;
-
-        await eventService.deleteMessage(
-            <number>this.client.id,
-            <number>this.event.id,
-            <number>message.id
-        );
-    }
-
-
-    /*
         =======
         GETTERS
         =======
@@ -241,6 +185,17 @@ export default class OrgEvent extends Vue {
         const password = event.settings.password;
 
         return password !== this.submittedPass;
+    }
+
+    get showChat(): boolean{
+        if(!this.event) return false;
+
+        const event: ClientEvent|null = this.event;
+
+        if(!event.settings)            return false;
+        if(!event.settings.enableChat) return false;
+
+        return true;
     }
 
 
