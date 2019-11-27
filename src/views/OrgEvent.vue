@@ -1,7 +1,7 @@
 <template>
     <div class="org-event container-fluid">
         <div v-if="event">
-            <div v-if="(event.settings && event.settings.requirePassword) && submittedPass !== event.settings.password">
+            <div v-if="showPasswordForm">
                 <EventPasswordForm></EventPasswordForm>
             </div>
             <div v-else>
@@ -228,6 +228,19 @@ export default class OrgEvent extends Vue {
 
     get submittedPass(): string{
         return this.$store.getters['event/submittedPass'];
+    }
+
+    get showPasswordForm(): boolean{
+        if(!this.event) return false;
+
+        const event: ClientEvent|null = this.event;
+
+        if(!event.settings)                 return false;
+        if(!event.settings.requirePassword) return false;
+
+        const password = event.settings.password;
+
+        return password !== this.submittedPass;
     }
 
 

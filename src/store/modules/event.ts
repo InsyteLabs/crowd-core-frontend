@@ -15,7 +15,7 @@ export const eventModule: Module<any, any> = {
     state: {
         events:        <ClientEvent[]>    [],
         event:         <ClientEvent|null> null,
-        submittedPass: <string>           ''
+        submittedPass: <string|null>      null
     },
 
     getters: {
