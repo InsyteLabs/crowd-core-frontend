@@ -38,7 +38,7 @@ export const appModule: Module<any, any> = {
             commit('addAppMessage', message);
 
             if(message.autoClose){
-                setTimeout(() => commit('removeAppMessage', message), message.timeout || DEFAULT_TIMEOUT);
+                // setTimeout(() => commit('removeAppMessage', message), message.timeout || DEFAULT_TIMEOUT);
             }
         },
         

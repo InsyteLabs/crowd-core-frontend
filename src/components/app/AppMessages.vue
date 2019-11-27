@@ -75,24 +75,38 @@ export default class AppMessages extends Vue {
 .app-messages
     z-index: 1001
     position: fixed
-    top: 75px
-    right: 5px
+    width: 100%
+    top: 0
+    left: 0
+    overflow-y: scroll
+    max-height: 80%
+
+    @media screen and (min-width: 768px)
+        top: 75px
+        right: 5px
+        left: auto
+        width: auto
+
 
 ul
     list-style-type: none
-    width: 450px
-    max-width: 450px
     margin: 0
     padding: 0
+    width: 100%
+
+    @media screen and (min-width: 768px)
+        width: 425px
+        max-width: 425px
+
 
 li.app-message
     position: relative
-    margin: 0 0 5px
     background: black
     color: white
-    padding: .5rem .5rem .5rem 32px
-    font-size: 1.4rem
-    font-weight: semi-bold
+    margin: 0 0 3px
+    padding: .25rem .25rem .25rem 32px
+    font-size: 1rem
+    font-weight: regular
 
     &.info
         color: darken(blue, 25%)
@@ -117,6 +131,10 @@ li.app-message
         border: 1px solid red
         border-left: 4px solid red
         background-color: #f0a4a4
+
+    @media screen and (min-width: 768px)
+        margin: 0 0 5px
+        font-weight: semi-bold
 
 .app-message-close
     position: absolute
