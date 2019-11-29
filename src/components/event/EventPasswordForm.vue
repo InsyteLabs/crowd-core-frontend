@@ -1,6 +1,6 @@
 <template>
     <div class="container-fluid p-0">
-        <div class="card p-3" style="max-width: 500px; margin: auto">
+        <div class="password-form card p-3">
             <form @submit.prevent="onSubmitPasswordClick()">
                 <h3 class="text-center mb-3">Event Password Required</h3>
                 <div class="form-group mb-2">
@@ -57,8 +57,8 @@ export default class EventPasswordForm extends Vue {
 
 <style scoped lang="sass">
 
-.card
+.password-form
     width: 500px
-    max-width: 95%
+    max-width: 98%
     margin: 0 auto
 </style>
