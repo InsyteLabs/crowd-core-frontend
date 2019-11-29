@@ -1,6 +1,7 @@
 <template>
     <div class="org-event container-fluid">
-        <div v-if="event">            
+        <div v-if="event">
+
             <EventPasswordForm v-if="showPasswordForm"></EventPasswordForm>
 
             <div v-else-if="showLogin" class="login-card card text-center p-3">
@@ -30,6 +31,20 @@
                         <EventChat v-if="showChat"></EventChat>
                     </div>
                 </div>
+
+                <div class="clearfix">
+                    <div @click="onQRCodeClick()" class="qr-code clickable">
+                        <svg aria-hidden="true" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 512">
+                            <path fill="currentColor" d="M152 0H8C3.6 0 0 3.6 0 8v152c0 4.4 3.6 8 8 8h16c4.4 0 8-3.6 8-8V32h120c4.4 0 8-3.6 8-8V8c0-4.4-3.6-8-8-8zm0 480H32V352c0-4.4-3.6-8-8-8H8c-4.4 0-8 3.6-8 8v152c0 4.4 3.6 8 8 8h144c4.4 0 8-3.6 8-8v-16c0-4.4-3.6-8-8-8zM632 0H488c-4.4 0-8 3.6-8 8v16c0 4.4 3.6 8 8 8h120v128c0 4.4 3.6 8 8 8h16c4.4 0 8-3.6 8-8V8c0-4.4-3.6-8-8-8zm0 344h-16c-4.4 0-8 3.6-8 8v128H488c-4.4 0-8 3.6-8 8v16c0 4.4 3.6 8 8 8h144c4.4 0 8-3.6 8-8V352c0-4.4-3.6-8-8-8zM152 96h-48c-4.4 0-8 3.6-8 8v304c0 4.4 3.6 8 8 8h48c4.4 0 8-3.6 8-8V104c0-4.4-3.6-8-8-8zm336 320h48c4.4 0 8-3.6 8-8V104c0-4.4-3.6-8-8-8h-48c-4.4 0-8 3.6-8 8v304c0 4.4 3.6 8 8 8zM408 96h-48c-4.4 0-8 3.6-8 8v304c0 4.4 3.6 8 8 8h48c4.4 0 8-3.6 8-8V104c0-4.4-3.6-8-8-8zm-192 0h-16c-4.4 0-8 3.6-8 8v304c0 4.4 3.6 8 8 8h16c4.4 0 8-3.6 8-8V104c0-4.4-3.6-8-8-8zm64 0h-16c-4.4 0-8 3.6-8 8v304c0 4.4 3.6 8 8 8h16c4.4 0 8-3.6 8-8V104c0-4.4-3.6-8-8-8z"></path>
+                        </svg>
+                    </div>
+                </div>
+                <ModalWindow ref="qrModal">
+                    <img class="qr-image" :src="qrCodeDataUrl" alt="Event QR Code">
+                    <div class="text-center">
+                        <i>{{ currentURL }}</i>
+                    </div>
+                </ModalWindow>
             </div>
         </div>
     </div>
@@ -38,7 +53,8 @@
 <script lang="ts">
 'use strict';
 
-import { Vue, Component, Watch }  from 'vue-property-decorator';
+import { Vue, Component, Watch, Ref} from 'vue-property-decorator';
+import QRCode                        from 'qrcode';
 
 import { User, ClientEvent } from '@/models';
 import { IClient }           from '@/interfaces';
@@ -46,6 +62,7 @@ import { IClient }           from '@/interfaces';
 import EventQuestions    from '@/components/event/EventQuestions.vue';
 import EventChat         from '@/components/event/EventChat.vue';
 import EventPasswordForm from '@/components/event/EventPasswordForm.vue';
+import ModalWindow       from '../components/ui/ModalWindow.vue';
 
 @Component({
     components: {
@@ -55,6 +72,14 @@ import EventPasswordForm from '@/components/event/EventPasswordForm.vue';
     }
 })
 export default class OrgEvent extends Vue {
+    @Ref('qrModal') qrModal!: ModalWindow;
+
+    qrCodeDataUrl: string = '';
+    currentURL:    string = window.location.href;
+
+    onQRCodeClick(): void{
+        this.qrModal.open();
+    }
 
     onLoginBtnClick(): void{
         let url = '/login';
@@ -140,6 +165,14 @@ export default class OrgEvent extends Vue {
     */
     async created(): Promise<void>{
         await this._loadEvent();
+
+        if(this.event){
+            QRCode.toDataURL(window.location.href, {width: 850, margin: 1}, (err, url) => {
+                if(err) return;
+
+                this.qrCodeDataUrl = url;
+            });
+        }
     }
 
 
@@ -164,5 +197,14 @@ export default class OrgEvent extends Vue {
 .login-card
     width: 500px
     max-width: 500px
+    margin: 0 auto
+
+.qr-code
+    max-width: 50px
+    margin-bottom: 1rem
+    float: right
+.qr-image
+    max-width: 100%
+    display: block
     margin: 0 auto
 </style>
