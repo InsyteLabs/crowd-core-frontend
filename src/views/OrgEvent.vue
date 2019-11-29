@@ -2,6 +2,15 @@
     <div class="org-event container-fluid">
         <div v-if="event">            
             <EventPasswordForm v-if="showPasswordForm"></EventPasswordForm>
+
+            <div v-else-if="showLogin" class="login-card card text-center p-3">
+                <h3>Login Required</h3>
+                <p class="mb-0">
+                    You must be logged in to view this event
+                </p>
+                <button @click="onLoginBtnClick()" class="btn btn-block btn-primary mt-3">Login</Button>
+            </div>
+
             <div v-else>
                 <div v-if="isLocked" class="card p-3 mb-3">
                     <h3 class="mb-4"><b><u>WARNING:</u></b> This Event Has Been Locked</h3>
@@ -47,12 +56,27 @@ import EventPasswordForm from '@/components/event/EventPasswordForm.vue';
 })
 export default class OrgEvent extends Vue {
 
+    onLoginBtnClick(): void{
+        let url = '/login';
+
+        const path: string = this.$router.currentRoute.path;
+        if(path){
+            url += `?to=${ encodeURIComponent(path) }`;
+        }
+
+        this.$router.push(url);
+    }
+
 
     /*
         =======
         GETTERS
         =======
     */
+    get user(): User|null{
+        return this.$store.getters['user/user']
+    }
+
     get client(): IClient|null{
         return this.$store.getters['client/client'];
     }
@@ -96,6 +120,18 @@ export default class OrgEvent extends Vue {
         return !!this.event.settings.isLocked;
     }
 
+    get showLogin(): boolean{
+        if(!this.event)          return false;
+        if(!this.event.settings) return false;
+
+        if(this.event.settings.requireLogin){
+            if(!this.user)            return true;
+            if(this.user.isAnonymous) return true;
+        }
+
+        return false;
+    }
+
 
     /*
         ===============
@@ -125,4 +161,8 @@ export default class OrgEvent extends Vue {
 
 <style scoped lang="sass">
 
+.login-card
+    width: 500px
+    max-width: 500px
+    margin: 0 auto
 </style>
