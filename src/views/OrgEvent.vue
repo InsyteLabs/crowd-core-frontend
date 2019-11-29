@@ -196,7 +196,7 @@ export default class OrgEvent extends Vue {
 
 .login-card
     width: 500px
-    max-width: 500px
+    max-width: 95%
     margin: 0 auto
 
 .qr-code

@@ -58,6 +58,7 @@ export default class EventPasswordForm extends Vue {
 <style scoped lang="sass">
 
 .card
-    max-width: 500px
+    width: 500px
+    max-width: 95%
     margin: 0 auto
 </style>
