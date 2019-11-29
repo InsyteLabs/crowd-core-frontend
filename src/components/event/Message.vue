@@ -23,7 +23,7 @@
                 </div>
             </div>
             <div v-else class="col-12">
-                <div v-if="user && (message.user.id === user.id)" class="text-right">
+                <div v-if="user && (message.user.id === user.id) && !isLocked" class="text-right">
                     <EditButton @click="onEditMessageClick(message)" ></EditButton>
                     <DeleteButton @click="deleteMessage(message)"></DeleteButton>
                 </div>
@@ -37,7 +37,7 @@
 
 import { Vue, Component, Prop, Emit } from 'vue-property-decorator';
 
-import { User }          from '@/models';
+import { User, ClientEvent }          from '@/models';
 import { IEventMessage } from '@/interfaces';
 
 @Component
@@ -49,11 +49,15 @@ export default class Message extends Vue {
 
 
     onEditMessageClick(): void{
+        if(this.isLocked) return;
+
         this.messageText = this.message.text;
         this.isEditMessage = true;
     }
 
     onSaveMessageClick(): void{
+        if(this.isLocked) return;
+
         const message: IEventMessage = {
             id:      this.message.id,
             eventId: this.message.eventId,
@@ -80,6 +84,15 @@ export default class Message extends Vue {
     */
     get user(): User{
         return this.$store.getters['user/user'];
+    }
+
+    get isLocked(): boolean{
+        const event: ClientEvent|null = this.$store.getters['event/event'];
+
+        if(!event)          return false;
+        if(!event.settings) return false;
+
+        return !!event.settings.isLocked;
     }
 
 

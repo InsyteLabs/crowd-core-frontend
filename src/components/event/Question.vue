@@ -28,9 +28,8 @@
         <p>
             {{ question.text }}
 
-
             <span class="float-right mt-2">
-                <div v-if="user && (question.userId === user.id)" class="text-right">
+                <div v-if="user && (question.userId === user.id) && !isLocked" class="text-right">
                     <EditButton @click="editQuestion(question)"></EditButton>
                     <DeleteButton @click="deleteQuestion(question)"></DeleteButton>
                 </div>
@@ -46,7 +45,7 @@
 'use strict';
 
 import { Vue, Component, Prop, Emit } from 'vue-property-decorator';
-import { User }                       from '@/models';
+import { User, ClientEvent }                       from '@/models';
 import { IEventQuestion }             from '@/interfaces';
 
 @Component
@@ -61,6 +60,15 @@ export default class Question extends Vue {
     */
     get user(): User|null{
         return this.$store.getters['user/user'];
+    }
+
+    get isLocked(): boolean{
+        const event: ClientEvent|null = this.$store.getters['event/event'];
+
+        if(!event)          return false;
+        if(!event.settings) return false;
+
+        return !!event.settings.isLocked;
     }
 
 

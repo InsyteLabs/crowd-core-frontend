@@ -1,10 +1,12 @@
 <template>
     <div class="org-event container-fluid">
         <div v-if="event">
-            <div v-if="event.settings && event.settings.isLocked" class="card p-3 mb-3">
+            <div v-if="isLocked" class="card p-3 mb-3">
                 <h3 class="mb-4"><b><u>WARNING:</u></b> This Event Has Been Locked</h3>
                 <h5>You may view details about the event but you may not post new questions or chat messages</h5>
             </div>
+            <hr v-if="isLocked">
+            
             <div v-if="showPasswordForm">
                 <EventPasswordForm></EventPasswordForm>
             </div>
@@ -87,6 +89,13 @@ export default class OrgEvent extends Vue {
         if(!event.settings.enableChat) return false;
 
         return true;
+    }
+
+    get isLocked(): boolean{
+        if(!this.event)          return false;
+        if(!this.event.settings) return false;
+
+        return !!this.event.settings.isLocked;
     }
 
 

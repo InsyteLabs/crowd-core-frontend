@@ -19,8 +19,8 @@
             <div>
                 <div class="form-group mb-0">
                     <label for="question">Your Question</label>
-                    <textarea v-model="question" rows="3" class="form-control form-control-sm mb-1" placeholder="Question text"></textarea>
-                    <button @click="saveQuestionClick()" class="btn btn-sm btn-primary mr-1">Ask Question</button>
+                    <textarea v-model="question" rows="3" class="form-control form-control-sm mb-1" placeholder="Question text" :disabled="isLocked"></textarea>
+                    <button @click="saveQuestionClick()" class="btn btn-sm btn-primary mr-1" :disabled="isLocked">Ask Question</button>
                 </div>
             </div>
         </div>
@@ -57,6 +57,8 @@ export default class EventQuestions extends Vue {
         ================
     */
     askQuestionClick(): void{
+        if(this.isLocked) return;
+
         this.isAskQuestion = true;
     }
 
@@ -64,6 +66,7 @@ export default class EventQuestions extends Vue {
         if(!(this.user   && this.user.id))   return;
         if(!(this.client && this.client.id)) return;
         if(!(this.event  && this.event.id))  return;
+        if(this.isLocked)                    return;
 
         const question: IEventQuestion = {
             eventId: this.event.id,
@@ -94,6 +97,8 @@ export default class EventQuestions extends Vue {
     }
 
     onEditQuestionClick(question: IEventQuestion): void{
+        if(this.isLocked) return;
+
         this.selectedQuestion = question;
         this.isAskQuestion    = false;
         this.isEditQuestion   = true;
@@ -102,20 +107,26 @@ export default class EventQuestions extends Vue {
 
     async onDeleteQuestionClick(question: IEventQuestion): Promise<void>{
         if(!this.event)                      return;
+        if(this.isLocked)                    return;
         if(!(this.client && this.client.id)) return;
 
         const deleted = await eventService.deleteEventQuestion(this.client.id, question);
     }
 
     async onUpvoteQuestionClick(question: IEventQuestion): Promise<void>{
+        if(this.isLocked) return;
+
         this.vote(<number>question.id, 1);
     }
 
     async onDownvoteQuestionClick(question: IEventQuestion): Promise<void>{
+        if(this.isLocked) return;
+
         this.vote(<number>question.id, -1);
     }
 
     async vote(questionId: number, val: number): Promise<void>{
+        if(this.isLocked)                    return;
         if(!this.event)                      return;
         if(!(this.user && this.user.id))     return;
         if(!(this.client && this.client.id)) return;
@@ -139,6 +150,13 @@ export default class EventQuestions extends Vue {
 
     get event(): ClientEvent|null{
         return this.$store.getters['event/event'];
+    }
+
+    get isLocked(): boolean{
+        if(!this.event)          return false;
+        if(!this.event.settings) return false;
+
+        return !!this.event.settings.isLocked;
     }
 }
 </script>

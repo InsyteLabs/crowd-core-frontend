@@ -13,8 +13,8 @@
                 </li>
             </transition-group>
             <div class="form-group mb-0">
-                <textarea v-model="newMessage" rows="3" class="form-control form-control-sm mb-1" placeholder="Add Message"></textarea>
-                <button @click="addMessageClick()" class="btn btn-sm btn-primary">Add Message</button>
+                <textarea v-model="newMessage" rows="3" class="form-control form-control-sm mb-1" placeholder="Add Message" :disabled="isLocked"></textarea>
+                <button @click="addMessageClick()" class="btn btn-sm btn-primary" :disabled="isLocked">Add Message</button>
             </div>
         </div>
     </div>
@@ -47,6 +47,7 @@ export default class EventChat extends Vue {
     */
     async addMessageClick(): Promise<void>{
         if(!(this.event && this.event.id))   return;
+        if(this.isLocked)                    return;
         if(!(this.user && this.user.id))     return;
         if(!(this.client && this.client.id)) return;
         if(!this.newMessage)                 return;
@@ -64,12 +65,14 @@ export default class EventChat extends Vue {
     }
 
     async editMessageClick(message: IEventMessage): Promise<void>{
+        if(this.isLocked)                return;
         if(!(this.event && this.client)) return;
         
         await eventService.updateMessage(<number>this.client.id, <number>this.event.id, message);
     }
 
     async deleteMessageClick(message: IEventMessage): Promise<void>{
+        if(this.isLocked)                return;
         if(!(this.client && this.event)) return;
 
         await eventService.deleteMessage(
@@ -101,6 +104,13 @@ export default class EventChat extends Vue {
         if(!this.event) return [];
 
         return this.event.messages || [];
+    }
+
+    get isLocked(): boolean{
+        if(!this.event)          return false;
+        if(!this.event.settings) return false;
+
+        return !!this.event.settings.isLocked;
     }
 }
 </script>
