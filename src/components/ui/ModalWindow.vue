@@ -3,7 +3,7 @@
         <div class="__modal-dialog__">
             <div class="clearfix">
                 <span ref="modalClose" class="__modal-close__ clickable text-right mb-0">
-                    CLOSE <span class="times">&times;</span>
+                    CLOSE <span ref="modalCloseX" class="times">&times;</span>
                 </span>
             </div>
             <div class="__modal-body__">
@@ -30,6 +30,7 @@ export default class ModalWindow extends Vue{
         if(
                target === this.$refs.modalWindow
             || target === this.$refs.modalClose
+            || target === this.$refs.modalCloseX
         ){
             this.close();
         }
