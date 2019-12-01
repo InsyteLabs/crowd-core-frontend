@@ -24,19 +24,45 @@
                     <p class="mb-0">{{ event.description }}</p>
                 </div>
                 <div class="row">
-                    <div class="col-md-7 mb-3">
+                    <div v-show="showQuestionColumn" class="col-md-7 mb-3">
                         <EventQuestions></EventQuestions>
                     </div>
-                    <div class="col-md-5 mb-3">
+                    <div v-show="showChatColumn" class="col-md-5 mb-3">
                         <EventChat v-if="showChat"></EventChat>
+                        <div v-else>
+                            <div class="card p-3">
+                                <h4>Event Chat</h4>
+                                <ul>
+                                    <li class="p-3">
+                                        <h5 class="mb-0">
+                                            Chat Disabled for this Event
+                                        </h5>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
-                <div class="clearfix">
-                    <div @click="onQRCodeClick()" class="qr-code clickable">
-                        <svg aria-hidden="true" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 512">
-                            <path fill="currentColor" d="M152 0H8C3.6 0 0 3.6 0 8v152c0 4.4 3.6 8 8 8h16c4.4 0 8-3.6 8-8V32h120c4.4 0 8-3.6 8-8V8c0-4.4-3.6-8-8-8zm0 480H32V352c0-4.4-3.6-8-8-8H8c-4.4 0-8 3.6-8 8v152c0 4.4 3.6 8 8 8h144c4.4 0 8-3.6 8-8v-16c0-4.4-3.6-8-8-8zM632 0H488c-4.4 0-8 3.6-8 8v16c0 4.4 3.6 8 8 8h120v128c0 4.4 3.6 8 8 8h16c4.4 0 8-3.6 8-8V8c0-4.4-3.6-8-8-8zm0 344h-16c-4.4 0-8 3.6-8 8v128H488c-4.4 0-8 3.6-8 8v16c0 4.4 3.6 8 8 8h144c4.4 0 8-3.6 8-8V352c0-4.4-3.6-8-8-8zM152 96h-48c-4.4 0-8 3.6-8 8v304c0 4.4 3.6 8 8 8h48c4.4 0 8-3.6 8-8V104c0-4.4-3.6-8-8-8zm336 320h48c4.4 0 8-3.6 8-8V104c0-4.4-3.6-8-8-8h-48c-4.4 0-8 3.6-8 8v304c0 4.4 3.6 8 8 8zM408 96h-48c-4.4 0-8 3.6-8 8v304c0 4.4 3.6 8 8 8h48c4.4 0 8-3.6 8-8V104c0-4.4-3.6-8-8-8zm-192 0h-16c-4.4 0-8 3.6-8 8v304c0 4.4 3.6 8 8 8h16c4.4 0 8-3.6 8-8V104c0-4.4-3.6-8-8-8zm64 0h-16c-4.4 0-8 3.6-8 8v304c0 4.4 3.6 8 8 8h16c4.4 0 8-3.6 8-8V104c0-4.4-3.6-8-8-8z"></path>
-                        </svg>
+                <div class="clearfix pr-1">
+                    <div class="event-icons">
+                        <div @click="onQRCodeClick()" class="icon-btn qr-code">
+                            <svg class="icon" aria-hidden="true" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 512">
+                                <path fill="currentColor" d="M152 0H8C3.6 0 0 3.6 0 8v152c0 4.4 3.6 8 8 8h16c4.4 0 8-3.6 8-8V32h120c4.4 0 8-3.6 8-8V8c0-4.4-3.6-8-8-8zm0 480H32V352c0-4.4-3.6-8-8-8H8c-4.4 0-8 3.6-8 8v152c0 4.4 3.6 8 8 8h144c4.4 0 8-3.6 8-8v-16c0-4.4-3.6-8-8-8zM632 0H488c-4.4 0-8 3.6-8 8v16c0 4.4 3.6 8 8 8h120v128c0 4.4 3.6 8 8 8h16c4.4 0 8-3.6 8-8V8c0-4.4-3.6-8-8-8zm0 344h-16c-4.4 0-8 3.6-8 8v128H488c-4.4 0-8 3.6-8 8v16c0 4.4 3.6 8 8 8h144c4.4 0 8-3.6 8-8V352c0-4.4-3.6-8-8-8zM152 96h-48c-4.4 0-8 3.6-8 8v304c0 4.4 3.6 8 8 8h48c4.4 0 8-3.6 8-8V104c0-4.4-3.6-8-8-8zm336 320h48c4.4 0 8-3.6 8-8V104c0-4.4-3.6-8-8-8h-48c-4.4 0-8 3.6-8 8v304c0 4.4 3.6 8 8 8zM408 96h-48c-4.4 0-8 3.6-8 8v304c0 4.4 3.6 8 8 8h48c4.4 0 8-3.6 8-8V104c0-4.4-3.6-8-8-8zm-192 0h-16c-4.4 0-8 3.6-8 8v304c0 4.4 3.6 8 8 8h16c4.4 0 8-3.6 8-8V104c0-4.4-3.6-8-8-8zm64 0h-16c-4.4 0-8 3.6-8 8v304c0 4.4 3.6 8 8 8h16c4.4 0 8-3.6 8-8V104c0-4.4-3.6-8-8-8z"></path>
+                            </svg>
+                        </div>
+
+                        <div v-if="showChatIcons && columnToggle" @click="columnToggle = !columnToggle" class="icon-btn q-and-a">
+                            <svg class="icon" aria-hidden="true" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+                                <path fill="currentColor" d="M256 64c123.5 0 224 79 224 176S379.5 416 256 416c-28.3 0-56.3-4.3-83.2-12.8l-15.2-4.8-13 9.2c-23 16.3-58.5 35.3-102.6 39.6 12-15.1 29.8-40.4 40.8-69.6l7.1-18.7-13.7-14.6C47.3 313.7 32 277.6 32 240c0-97 100.5-176 224-176m0-32C114.6 32 0 125.1 0 240c0 47.6 19.9 91.2 52.9 126.3C38 405.7 7 439.1 6.5 439.5c-6.6 7-8.4 17.2-4.6 26 3.8 8.8 12.4 14.5 22 14.5 61.5 0 110-25.7 139.1-46.3 29 9.1 60.2 14.3 93 14.3 141.4 0 256-93.1 256-208S397.4 32 256 32z"></path>
+                            </svg>
+                        </div>
+                        
+                        <div v-if="showChatIcons && !columnToggle" @click="columnToggle = !columnToggle" class="icon-btn chat">
+                            <svg class="icon" aria-hidden="true" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512">
+                                <path fill="currentColor" d="M569.9 441.1c-.5-.4-22.6-24.2-37.9-54.9 27.5-27.1 44-61.1 44-98.2 0-80-76.5-146.1-176.2-157.9C368.4 72.5 294.3 32 208 32 93.1 32 0 103.6 0 192c0 37 16.5 71 44 98.2-15.3 30.7-37.3 54.5-37.7 54.9-6.3 6.7-8.1 16.5-4.4 25 3.6 8.5 12 14 21.2 14 53.5 0 96.7-20.2 125.2-38.8 9.1 2.1 18.4 3.7 28 4.8 31.5 57.5 105.5 98 191.8 98 20.8 0 40.8-2.4 59.8-6.8 28.5 18.5 71.6 38.8 125.2 38.8 9.2 0 17.5-5.5 21.2-14 3.6-8.5 1.9-18.3-4.4-25zM155.4 314l-13.2-3-11.4 7.4c-20.1 13.1-50.5 28.2-87.7 32.5 8.8-11.3 20.2-27.6 29.5-46.4L83 283.7l-16.5-16.3C50.7 251.9 32 226.2 32 192c0-70.6 79-128 176-128s176 57.4 176 128-79 128-176 128c-17.7 0-35.4-2-52.6-6zm289.8 100.4l-11.4-7.4-13.2 3.1c-17.2 4-34.9 6-52.6 6-65.1 0-122-25.9-152.4-64.3C326.9 348.6 416 278.4 416 192c0-9.5-1.3-18.7-3.3-27.7C488.1 178.8 544 228.7 544 288c0 34.2-18.7 59.9-34.5 75.4L493 379.7l10.3 20.7c9.4 18.9 20.8 35.2 29.5 46.4-37.1-4.2-67.5-19.4-87.6-32.4z"></path>
+                            </svg>
+                        </div>
                     </div>
                 </div>
                 <ModalWindow ref="qrModal">
@@ -74,8 +100,10 @@ import ModalWindow       from '../components/ui/ModalWindow.vue';
 export default class OrgEvent extends Vue {
     @Ref('qrModal') qrModal!: ModalWindow;
 
-    qrCodeDataUrl: string = '';
-    currentURL:    string = window.location.href;
+    qrCodeDataUrl: string  = '';
+    currentURL:    string  = window.location.href;
+    columnToggle:  boolean = false;
+    windowWidth:   number  = window.innerWidth;
 
     onQRCodeClick(): void{
         this.qrModal.open();
@@ -90,6 +118,10 @@ export default class OrgEvent extends Vue {
         }
 
         this.$router.push(url);
+    }
+
+    setWindowWidth(): void{
+        this.windowWidth = window.innerWidth;
     }
 
 
@@ -127,6 +159,18 @@ export default class OrgEvent extends Vue {
         return password !== this.submittedPass;
     }
 
+    get showQuestionColumn(): boolean{
+        if(!this.showChatIcons) return true;
+
+        return !this.columnToggle;
+    }
+
+    get showChatColumn(): boolean{
+        if(!this.showChatIcons) return true;
+
+        return this.columnToggle;
+    }
+
     get showChat(): boolean{
         if(!this.event) return false;
 
@@ -157,6 +201,10 @@ export default class OrgEvent extends Vue {
         return false;
     }
 
+    get showChatIcons(): boolean{
+        return this.windowWidth <= 768;
+    }
+
 
     /*
         ===============
@@ -173,6 +221,12 @@ export default class OrgEvent extends Vue {
                 this.qrCodeDataUrl = url;
             });
         }
+
+        window.addEventListener('resize', this.setWindowWidth);
+    }
+
+    destroyed(): void{
+        window.removeEventListener('resize', this.setWindowWidth)
     }
 
 
@@ -194,15 +248,52 @@ export default class OrgEvent extends Vue {
 
 <style scoped lang="sass">
 
+@import '../style/variables'
+
 .login-card
     width: 500px
     max-width: 98%
     margin: 0 auto
 
-.qr-code
-    width: 50px
-    margin-bottom: 1rem
-    float: right
+
+ul
+    list-style-type: none
+    margin: 0
+    padding: 0
+
+    li
+        margin: 0 0 1rem
+        padding: 0
+        background-color: #F8F8F8
+        border: 1px solid rgba(0, 0, 0, .05)
+
+.event-icons
+    .icon-btn
+        background-color: $purple
+        color: white
+        cursor: pointer
+        float: right
+        width: 50px
+        height: 50px
+        padding: .6rem
+        border-radius: 50%
+        margin-left: .5rem
+
+        &.qr-code
+            svg
+                width: 90%
+                top: 2px
+                left: 2px
+        &.q-and-a
+            svg
+                width: 90%
+                top: 1px
+                left: 2px
+        
+        svg
+            position: relative
+            width: 100%
+
 .qr-image
     max-width: 100%
     display: block
