@@ -200,7 +200,7 @@ export default class OrgEvent extends Vue {
     margin: 0 auto
 
 .qr-code
-    max-width: 50px
+    width: 50px
     margin-bottom: 1rem
     float: right
 .qr-image
