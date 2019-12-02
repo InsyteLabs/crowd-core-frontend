@@ -2,13 +2,16 @@
     <div class="question container-fluid">
         <div class="vote-buttons">
             <div class="upvote" :class="{ active: question.stats.userVote === 1}">
-                <small v-if="question.stats" class="score float-left"><em>{{ question.stats.upvotes }}</em></small>
+                <!-- <small v-if="question.stats" class="score float-left"><em>{{ question.stats.upvotes }}</em></small> -->
                 <svg @click="upvote(question)" class="vote-btn clickable up mb-1" aria-hidden="true" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512">
                     <path fill="currentColor" d="M272 480h-96c-13.3 0-24-10.7-24-24V256H48.2c-21.4 0-32.1-25.8-17-41L207 39c9.4-9.4 24.6-9.4 34 0l175.8 176c15.1 15.1 4.4 41-17 41H296v200c0 13.3-10.7 24-24 24z"></path>
                 </svg>
             </div>
+            <div v-if="question.stats" class="score text-center">
+                <small>{{ question.stats.score }}</small>
+            </div>
             <div class="downvote" :class="{ active: question.stats.userVote === -1 }">
-                <small v-if="question.stats" class="score float-left"><em>{{ question.stats.downvotes }}</em></small>
+                <!-- <small v-if="question.stats" class="score float-left"><em>{{ question.stats.downvotes }}</em></small> -->
                 <svg @click="downvote(question)" class="vote-btn clickable down" aria-hidden="true" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512">
                     <path fill="currentColor" d="M176 32h96c13.3 0 24 10.7 24 24v200h103.8c21.4 0 32.1 25.8 17 41L241 473c-9.4 9.4-24.6 9.4-34 0L31.3 297c-15.1-15.1-4.4-41 17-41H152V56c0-13.3 10.7-24 24-24z"></path>
                 </svg>
@@ -130,7 +133,7 @@ export default class Question extends Vue {
 
 .question
     position: relative
-    min-height: 75px
+    min-height: 80px
     padding: .4rem .4rem .1rem
     padding-left: 45px
 
@@ -153,8 +156,6 @@ export default class Question extends Vue {
     color: $purple
 
 .score
-    position: relative
-    top: 2px
-    margin-right: 3px
+    line-height: .8
 
 </style>
