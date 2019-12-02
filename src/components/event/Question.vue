@@ -25,12 +25,17 @@
             </i>
         </small>
 
-        <p>
+        <div v-if="isEditQuestion" class="mb-1">
+            <textarea v-model="questionText" rows="2" class="form-control form-control-sm mb-1"></textarea>
+            <button @click="onSaveMessageClick()" class="btn btn-sm btn-primary">Update</button>
+            <button @click="onCancelEditClick()" class="btn btn-sm">Cancel</button>
+        </div>
+        <p v-else>
             {{ question.text }}
 
             <span class="float-right mt-2">
                 <div v-if="user && (question.userId === user.id) && !isLocked" class="text-right">
-                    <EditButton @click="editQuestion(question)"></EditButton>
+                    <EditButton @click="onEditQuestionClick(question)"></EditButton>
                     <DeleteButton @click="deleteQuestion(question)"></DeleteButton>
                 </div>
             </span>
@@ -52,6 +57,34 @@ import { IEventQuestion }             from '@/interfaces';
 export default class Question extends Vue {
     @Prop() question!: IEventQuestion;
 
+    isEditQuestion: boolean = false;
+    questionText:   string  = '';
+
+    onEditQuestionClick(){
+        this.questionText   = this.question.text;
+        this.isEditQuestion = true;
+    }
+
+    onSaveMessageClick(): void{
+        const question: IEventQuestion = {
+            id:      this.question.id,
+            eventId: this.question.eventId,
+            userId:  this.question.userId,
+            text:    this.questionText,
+            hidden:  this.question.hidden
+        }
+
+        this.editQuestion(question);
+
+        this.isEditQuestion = false;
+        this.questionText   = '';
+    }
+    
+    onCancelEditClick(): void{
+        this.isEditQuestion = false;
+        this.questionText   = '';
+    }
+    
 
     /*
         =======
