@@ -8,8 +8,8 @@
                         <Question
                             :question="question"
                             
-                            @editQuestion="onEditQuestionClick($event)"
-                            @deleteQuestion="onDeleteQuestionClick($event)"
+                            @editQuestion="onEditQuestion($event)"
+                            @deleteQuestion="onDeleteQuestion($event)"
                             @upvote="onUpvoteQuestionClick($event)"
                             @downvote="onDownvoteQuestionClick($event)">
                         </Question>
@@ -20,7 +20,7 @@
                 <div class="form-group mb-0">
                     <label for="question">Your Question</label>
                     <textarea v-model="question" rows="3" class="form-control form-control-sm mb-1" placeholder="Question text" :disabled="isLocked"></textarea>
-                    <button @click="saveQuestionClick()" class="btn btn-sm btn-primary mr-1" :disabled="isLocked">Ask Question</button>
+                    <button @click="addQuestionClick()" class="btn btn-sm btn-primary mr-1" :disabled="isLocked">Ask Question</button>
                 </div>
             </div>
         </div>
@@ -45,10 +45,7 @@ import Question from '@/components/event/Question.vue';
 export default class EventQuestions extends Vue {
 
     // Question fields
-    selectedQuestion: IEventQuestion|null = null;
-    isAskQuestion:    boolean             = true;
-    isEditQuestion:   boolean             = false;
-    question:         string              = '';
+    question: string = '';
 
 
     /*
@@ -56,13 +53,7 @@ export default class EventQuestions extends Vue {
         QUESTION METHODS
         ================
     */
-    askQuestionClick(): void{
-        if(this.isLocked) return;
-
-        this.isAskQuestion = true;
-    }
-
-    async saveQuestionClick(): Promise<void>{
+    async addQuestionClick(): Promise<void>{
         if(!(this.user   && this.user.id))   return;
         if(!(this.client && this.client.id)) return;
         if(!(this.event  && this.event.id))  return;
@@ -75,37 +66,19 @@ export default class EventQuestions extends Vue {
             hidden:  false
         }
 
-        if(this.isAskQuestion){
-            let newQuestion = await eventService.createEventQuestion(this.client.id, question);
-        }
-        else{
-            if(!this.selectedQuestion) return;
+        let newQuestion = await eventService.createEventQuestion(this.client.id, question);
 
-            question.id = this.selectedQuestion.id;
-
-            let updatedQuestion = await eventService.updateEventQuestion(this.client.id, question);
-
-            const idx = this.event.questions.findIndex(i => i.id === updatedQuestion.id);
-
-            if(~idx){
-                this.selectedQuestion = null;
-            }
-        }
         this.question = '';
-        this.isAskQuestion = true;
-        this.isEditQuestion = false;
     }
 
-    onEditQuestionClick(question: IEventQuestion): void{
-        if(this.isLocked) return;
+    async onEditQuestion(question: IEventQuestion): Promise<void>{
+        if(this.isLocked)                    return;
+        if(!(this.client && this.client.id)) return;
 
-        this.selectedQuestion = question;
-        this.isAskQuestion    = false;
-        this.isEditQuestion   = true;
-        this.question         = question.text;
+        const updatedQuestion = await eventService.updateEventQuestion(this.client.id, question);
     }
 
-    async onDeleteQuestionClick(question: IEventQuestion): Promise<void>{
+    async onDeleteQuestion(question: IEventQuestion): Promise<void>{
         if(!this.event)                      return;
         if(this.isLocked)                    return;
         if(!(this.client && this.client.id)) return;
