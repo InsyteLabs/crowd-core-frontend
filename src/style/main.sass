@@ -44,7 +44,8 @@ a.btn,
         background-color: $purple
         border-color: $purple
 
-        &:hover
+        &:not(:disabled):not(.disabled):hover,
+        &:not(:disabled):not(.disabled):active
             background-color: darken($purple, 5%)
             border-color: darken($purple, 5%)
 
