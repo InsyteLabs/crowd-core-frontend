@@ -10,6 +10,7 @@ export class User{
     email:            string;
     username:         string;
     password:         string;
+    lastLogin?:       Date|null;
     isAnonymous:      boolean;
     isDisabled?:      boolean;
     disabledComment?: string|null;
@@ -24,6 +25,7 @@ export class User{
         this.email           = u.email;
         this.username        = u.username;
         this.password        = u.password;
+        this.lastLogin       = u.lastLogin ? new Date(u.lastLogin) : null;
         this.isAnonymous     = u.isAnonymous;
         this.isDisabled      = u.isDisabled;
         this.disabledComment = u.disabledComment;

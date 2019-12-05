@@ -8,6 +8,7 @@
                     <th>Username</th>
                     <th>Roles</th>
                     <th>Disabled</th>
+                    <th>Last Login</th>
                     <th class="text-center">Manage</th>
                 </thead>
                 <tbody v-if="users">
@@ -23,6 +24,7 @@
                                     : 'No'
                             }}
                         </td>
+                        <td>{{ user.lastLogin | dateTime }}</td>
                         <td class="no-wrap text-center">
                             <EditButton @click="editUser(user)"></EditButton>
                             <DeleteButton @click="deleteUser(user)"></DeleteButton>

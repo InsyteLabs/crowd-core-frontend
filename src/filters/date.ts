@@ -1,6 +1,8 @@
 'use strict';
 
 export function dateFilter(date: Date|string): string{
+    if(!date) return '';
+
     const d = new Date(date);
 
     if(d.toString() === 'Invalid Date') return '';

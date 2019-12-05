@@ -3,6 +3,8 @@
 import { dateFilter } from './date';
 
 export function dateTimeFilter(date: Date|string): string{
+    if(!date) return '';
+
     const d = new Date(date);
 
     if(d.toString() === 'Invalid Date') return '';
