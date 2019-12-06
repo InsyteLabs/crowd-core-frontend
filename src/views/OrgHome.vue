@@ -5,10 +5,10 @@
                 <thead>
                     <tr>
                         <th>ID</th>
-                        <th>Owner ID</th>
+                        <th>Owner</th>
                         <th>Name</th>
                         <th>Slug</th>
-                        <th>Client Types</th>
+                        <th>Client Type</th>
                         <th>Disabled</th>
                         <th>Disabled Comment</th>
                     </tr>
@@ -16,10 +16,10 @@
                 <tbody>
                     <tr>
                         <td>{{ client.id }}</td>
-                        <td>{{ client.ownerId }}</td>
+                        <td>{{ client.owner ? client.owner.firstName + ' ' + client.owner.lastName : '' }}</td>
                         <td>{{ client.name }}</td>
                         <td>{{ client.slug }}</td>
-                        <td>{{ client.types.join(', ') }}</td>
+                        <td>{{ client.type ? client.type.name : '' }}</td>
                         <td>
                             {{
                                 client.disabled

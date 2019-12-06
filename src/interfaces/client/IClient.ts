@@ -1,11 +1,14 @@
 'use strict';
 
+import { IClientType }  from './IClientType';
+import { IClientOwner } from './IClientOwner';
+
 export interface IClient{
     id?:             number;
-    ownerId:         number;
     name:            string;
     slug:            string;
-    types:           string[],
+    owner:           IClientOwner;
+    type:            IClientType,
     isDisabled:      boolean;
     disabledComment: string;
 }
