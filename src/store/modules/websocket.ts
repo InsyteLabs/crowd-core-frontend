@@ -216,7 +216,7 @@ export const websocketModule: Module<any, any> = {
             let socket: WebSocket|null = getters.socket;
             
             if(!socket || ![socket.CONNECTING, socket.OPEN].includes(socket.readyState)){
-                socket = new WebSocket(`${ conf.wsUrl }/websocket/${ rootGetters['client/client'].slug }`);
+                socket = new WebSocket(`${ conf.wsUrl }/websocket?channel=${ rootGetters['client/client'].slug }`);
 
                 socket.addEventListener('open', (ev) => {
                     console.group('$store.openConnection')
