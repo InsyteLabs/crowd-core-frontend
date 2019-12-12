@@ -40,6 +40,7 @@ import { Vue, Component, Ref } from 'vue-property-decorator';
 import { Route }               from 'vue-router';
 
 import { userService, currentUserService } from '@/services';
+import { SocketClient }                    from '@/socket-client';
 import { Role }                            from '@/constants';
 import { User }                            from '@/models';
 import { IRole, IClient }                  from '@/interfaces';
@@ -48,6 +49,7 @@ import { escapeRegex }                     from '@/utilities';
 import UserList    from '@/components/user/UserList.vue';
 import UserForm    from '@/components/user/UserForm.vue';
 import ModalWindow from '@/components/ui/ModalWindow.vue';
+import { ISocketMessage } from '../socket-client/interfaces';
 
 @Component({
     components: {
@@ -64,6 +66,8 @@ import ModalWindow from '@/components/ui/ModalWindow.vue';
 export default class OrgUsers extends Vue {
     @Ref('userModal') userModal!: ModalWindow;
     @Ref('userForm')  userForm!:  UserForm;
+
+    socket: SocketClient|null = null;
 
     selectedUser: User|null = null;
     newUser:      boolean   = false;
@@ -159,6 +163,28 @@ export default class OrgUsers extends Vue {
     created(): void{
         this._loadUsers();
         this._loadRoles();
+
+        if(this.client){
+            this.socket = new SocketClient(`${ process.env.VUE_APP_WS_URL }/websocket`, `client::${ this.client.slug };users`, '', '');
+
+            this.socket.subscribe((message: ISocketMessage) => {
+                switch(message.type){
+                    case SocketClient.USER_CREATED:
+                        this.$store.commit('user/addUser', <User>message.data);
+                        break;
+                    case SocketClient.USER_UPDATED:
+                        this.$store.commit('user/updateUser', <User>message.data);
+                        break;
+                    case SocketClient.USER_DELETED:
+                        this.$store.commit('user/deleteUser', <User>message.data);
+                        break;
+                }
+            });
+        }
+    }
+
+    destroyed(): void{
+        this.socket && this.socket.close();
     }
 
 
