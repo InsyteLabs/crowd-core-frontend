@@ -26,8 +26,6 @@ export const clientModule: Module<any, any> = {
 
             commit('setClient', client);
 
-            dispatch('ws/openConnection', null, { root: true });
-
             return client;
         },
 
@@ -35,8 +33,6 @@ export const clientModule: Module<any, any> = {
             const client: IClient = await clientService.getClientBySlug(slug);
 
             commit('setClient', client);
-
-            dispatch('ws/openConnection', null, { root: true });
 
             return client;
         }

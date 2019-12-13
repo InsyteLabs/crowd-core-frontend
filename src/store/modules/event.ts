@@ -112,7 +112,7 @@ export const eventModule: Module<any, any> = {
         },
 
         updateQuestion(state, question: IEventQuestion): void{
-            if(state.event && (state.event.id === question.id)){
+            if(state.event && (state.event.id === question.eventId)){
                 const questions: IEventQuestion[] = state.event.questions;
                 if(Array.isArray(questions)){
                     const idx = questions.findIndex(q => q.id === question.id);

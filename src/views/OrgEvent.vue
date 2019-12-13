@@ -83,12 +83,14 @@ import { Vue, Component, Watch, Ref} from 'vue-property-decorator';
 import QRCode                        from 'qrcode';
 
 import { User, ClientEvent } from '@/models';
-import { IClient }           from '@/interfaces';
+import { IClient, IEventMessage, IEventQuestion }           from '@/interfaces';
+import { SocketClient }      from '@/socket-client';
 
 import EventQuestions    from '@/components/event/EventQuestions.vue';
 import EventChat         from '@/components/event/EventChat.vue';
 import EventPasswordForm from '@/components/event/EventPasswordForm.vue';
 import ModalWindow       from '../components/ui/ModalWindow.vue';
+import { ISocketMessage } from '../socket-client/interfaces';
 
 @Component({
     components: {
@@ -99,6 +101,8 @@ import ModalWindow       from '../components/ui/ModalWindow.vue';
 })
 export default class OrgEvent extends Vue {
     @Ref('qrModal') qrModal!: ModalWindow;
+
+    socket: SocketClient|null = null;
 
     qrCodeDataUrl: string  = '';
     currentURL:    string  = window.location.href;
@@ -215,6 +219,8 @@ export default class OrgEvent extends Vue {
         await this._loadEvent();
 
         if(this.event){
+            this._startSocketConnection();
+
             QRCode.toDataURL(window.location.href, {width: 850, margin: 1}, (err, url) => {
                 if(err) return;
 
@@ -226,7 +232,13 @@ export default class OrgEvent extends Vue {
     }
 
     destroyed(): void{
-        window.removeEventListener('resize', this.setWindowWidth)
+        window.removeEventListener('resize', this.setWindowWidth);
+
+        if(this.socket){
+            this.socket.close();
+
+            this.socket = null;
+        }
     }
 
 
@@ -241,6 +253,42 @@ export default class OrgEvent extends Vue {
         await this.$store.dispatch('event/loadEvent', {
             clientId:  this.client.id,
             eventSlug: this.$route.params.eventSlug
+        });
+    }
+
+    private _startSocketConnection(): void{
+        if(!this.event)  return;
+        if(!this.client) return;
+
+        const baseUrl: string = `${ process.env.VUE_APP_WS_URL }/websocket`,
+              channel: string = `client::${ this.client.slug };events::${ this.event.id }`;
+        
+        this.socket = new SocketClient(baseUrl, channel);
+
+        this.socket.subscribe((message: ISocketMessage) => {
+            switch(message.type){
+                case SocketClient.EVENT_UPDATED:
+                    this.$store.commit('event/updateEvent', <ClientEvent>message.data);
+                    break;
+                case SocketClient.QUESTION_CREATED:
+                    this.$store.commit('event/addQuestion', <IEventQuestion>message.data);
+                    break;
+                case SocketClient.QUESTION_UPDATED:
+                    this.$store.commit('event/updateQuestion', <IEventQuestion>message.data);
+                    break;
+                case SocketClient.QUESTION_DELETED:
+                    this.$store.commit('event/deleteQuestion', <IEventQuestion>message.data);
+                    break;
+                case SocketClient.MESSAGE_CREATED:
+                    this.$store.commit('event/addMessage', <IEventMessage>message.data);
+                    break;
+                case SocketClient.MESSAGE_UPDATED:
+                    this.$store.commit('event/updateMessage', <IEventMessage>message.data);
+                    break;
+                case SocketClient.MESSAGE_DELETED:
+                    this.$store.commit('event/deleteMessage', <IEventMessage>message.data);
+                    break;
+            }
         });
     }
 }

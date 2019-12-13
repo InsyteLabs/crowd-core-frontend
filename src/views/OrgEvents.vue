@@ -74,9 +74,11 @@ import { escapeRegex }                 from '@/utilities';
 import { eventService, clientService } from '@/services';
 import { IClient }                     from '@/interfaces';
 import { User, ClientEvent }           from '@/models';
+import { SocketClient }                from '@/socket-client';
 
 import ModalWindow from '@/components/ui/ModalWindow.vue';
 import EventForm   from '@/components/event/EventForm.vue';
+import { ISocketMessage } from '../socket-client/interfaces';
 
 @Component({
     components: {
@@ -87,6 +89,8 @@ import EventForm   from '@/components/event/EventForm.vue';
 export default class OrgEvents extends Vue {
     @Ref('eventModal') eventModal!: ModalWindow;
     @Ref('eventForm')  eventForm!:  EventForm;
+
+    private socket: SocketClient|null = null;
 
     selectedEvent: ClientEvent|null = null;
     newEvent:      boolean          = true;
@@ -180,6 +184,10 @@ export default class OrgEvents extends Vue {
     */
     async created(): Promise<void>{
         await this._loadEvents();
+
+        if(this.client){
+            this._startSocketConnection();
+        }
     }
 
 
@@ -188,10 +196,33 @@ export default class OrgEvents extends Vue {
         PRIVATE METHODS
         ===============
     */
-    async _loadEvents(): Promise<void>{
+    private async _loadEvents(): Promise<void>{
         if(!this.client) return;
 
         this.$store.dispatch('event/loadEvents', this.client.id);
+    }
+
+    private _startSocketConnection(): void{
+        if(!this.client) return;
+
+        const baseUrl: string = `${ process.env.VUE_APP_WS_URL }/websocket`,
+              channel: string = `client::${ this.client.slug };events`;
+
+        this.socket = new SocketClient(baseUrl, channel);
+
+        this.socket.subscribe((message: ISocketMessage) => {
+            switch(message.type){
+                case SocketClient.EVENT_CREATED:
+                    this.$store.commit('event/addEvent', <ClientEvent>message.data);
+                    break;
+                case SocketClient.EVENT_UPDATED:
+                    this.$store.commit('event/updateEvent', <ClientEvent>message.data);
+                    break;
+                case SocketClient.EVENT_DELETED:
+                    this.$store.commit('event/deleteEvent', <ClientEvent>message.data);
+                    break;
+            }
+        });
     }
 }
 </script>

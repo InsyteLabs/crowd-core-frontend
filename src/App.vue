@@ -26,14 +26,6 @@
         <div v-show="showSpinner" id="spinner">
             <HttpSpinner></HttpSpinner>
         </div>
-
-        <div id="socket-status" :class="{ connected: socketConnected }">
-            Status: {{
-                socketConnected
-                    ? 'Connected'
-                    : 'Not Conncted'
-            }}
-        </div>
     </div>
 </template>
 
@@ -137,41 +129,13 @@ export default class App extends Vue{
         return this.$store.getters['pendingHttpCount'] > 0;
     }
 
-    get socketConnected(): boolean{
-        return this.$store.getters['ws/connected'];
-    }
-
-    
-    /*
-        =======
-        HELPERS
-        =======
-    */
-    heartbeat(): void{
-        const now:   number = Date.now(),
-              diff:  number = now - this.lastInterval,
-              offBy: number = diff - 1000;
-
-        this.lastInterval = now;
-
-        if(offBy > 500){
-            this.$store.dispatch('ws/openConnection');
-        }
-    }
-
 
     /*
         ===============
         LIFECYCLE HOOKS
         ===============
     */
-    created(): void{
-        window.addEventListener('focus', () => {
-            this.$store.dispatch('ws/openConnection');
-        });
-
-        setInterval(this.heartbeat, 1000);
-    }
+    created(): void{ }
 
 }
 
@@ -268,23 +232,4 @@ export default class App extends Vue{
         bottom: 10px
         width: 60px
         height: 60px
-
-#socket-status
-    position: fixed
-    z-index: 1000
-    cursor: default
-    padding: 3px 5px
-    font-size: .7rem
-    border-radius: 3px
-    bottom: 0
-    left: 50%
-    transform: translateX(-50%)
-    color: white
-    background-color: red
-
-    &.connected
-        background-color: green
-
-    @media screen and (min-width: 768px)
-        font-size: .8rem
 </style>

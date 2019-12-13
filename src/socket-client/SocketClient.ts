@@ -16,7 +16,7 @@ export class SocketClient{
 
     private _messageHandlers: Function[] = [];
 
-    constructor(baseUrl: string, channel: string, clientId: string, lastMessageId: string){
+    constructor(baseUrl: string, channel: string, clientId: string = '', lastMessageId: string = ''){
         this._baseUrl        = baseUrl;
         this._channel       = channel;
         this._clientId      = clientId;
@@ -115,6 +115,8 @@ export class SocketClient{
             this.close();
             this.open();
         }
+
+        this._lastInterval = now;
     }
 
     

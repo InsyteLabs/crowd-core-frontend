@@ -7,8 +7,7 @@ import {
     appModule,
     userModule,
     clientModule,
-    eventModule,
-    websocketModule
+    eventModule
 } from './modules';
 
 Vue.use(Vuex);
@@ -47,10 +46,6 @@ const store = new Vuex.Store({
         event: {
             namespaced: true,
             ...eventModule
-        },
-        ws: {
-            namespaced: true,
-            ...websocketModule
         }
     }
 });

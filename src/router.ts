@@ -105,7 +105,5 @@ async function beforeEnterGuard(to: Route, from: Route, next: Function): Promise
         return next(path);
     }
 
-    store.dispatch('ws/openConnection');
-
     next();
 }
