@@ -168,6 +168,10 @@ export default class OrgUsers extends Vue {
             this.socket = new SocketClient(`${ process.env.VUE_APP_WS_URL }/websocket`, `client::${ this.client.slug };users`, '', '');
 
             this.socket.subscribe((message: ISocketMessage) => {
+
+                console.log('[Socket Message Received]');
+                console.log(message);
+
                 switch(message.type){
                     case SocketClient.USER_CREATED:
                         this.$store.commit('user/addUser', <User>message.data);

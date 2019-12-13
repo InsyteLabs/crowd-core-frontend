@@ -10,12 +10,8 @@ export class SocketClient{
     private _lastMessageId: string = '';
 
     // Socket connection timer fields
-    private _timer:    number = 0;
-    private _interval: number = 3000; // 3 seconds
-
-    // Page suspended timer fields
-    private _pageTimer:    number = 0;
-    private _pageInterval: number = 1000; // 1 second
+    private _timer:        number = 0;
+    private _interval:     number = 3000; // 3 seconds
     private _lastInterval: number = Date.now();
 
     private _messageHandlers: Function[] = [];
@@ -43,33 +39,11 @@ export class SocketClient{
         }
     }
 
-    heartbeat(): void{
-        !this.isOpen() && this.open();
-    }
-
-    pageHeartbeat(): void{
-        const now:   number = Date.now(),
-              diff:  number = now - this._lastInterval,
-              offBy: number = diff - 1000;
-
-        if(offBy > 1000){
-            console.info(`[${ (new Date()).toLocaleString() }] Page timeout, re-connecting`);
-
-            this.close();
-            this.open();
-        }
-
-        this._lastInterval = now;
-    }
-
     open(): WebSocket{
         clearInterval(this._timer);
-        clearInterval(this._pageTimer)
 
         this._socket = new WebSocket(this.getConnectionUrl());
-
-        this._timer     = setInterval(this.heartbeat.bind(this), this._interval);
-        this._pageTimer = setInterval(this.pageHeartbeat.bind(this), this._pageInterval);
+        this._timer  = window.setInterval(this.heartbeat.bind(this), this._interval);
 
         this._socket.addEventListener('message', (e: MessageEvent) => {
             try{
@@ -109,7 +83,6 @@ export class SocketClient{
 
     close(): void{
         clearInterval(this._timer);
-        clearInterval(this._pageInterval);
 
         this._socket && this._socket.close();
         this._socket = null;
@@ -129,6 +102,22 @@ export class SocketClient{
         return true;
     }
 
+    heartbeat(): void{
+        if(this.isOpen()) return;
+
+        const now:   number = Date.now(),
+              diff:  number = now - this._lastInterval,
+              offBy: number = diff - this._interval;
+
+        if(offBy > 1000){
+            console.log(`[${ new Date().toLocaleString() }] Page timeout, re-connecting`);
+
+            this.close();
+            this.open();
+        }
+    }
+
+    
     /*
         ===============
         PRIVATE METHODS
