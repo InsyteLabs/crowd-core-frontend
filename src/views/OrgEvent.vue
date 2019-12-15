@@ -271,13 +271,13 @@ export default class OrgEvent extends Vue {
                     this.$store.commit('event/updateEvent', <ClientEvent>message.data);
                     break;
                 case SocketClient.QUESTION_CREATED:
-                    this.$store.commit('event/addQuestion', <IEventQuestion>message.data);
+                    this.$store.dispatch('event/addQuestion', <IEventQuestion>message.data);
                     break;
                 case SocketClient.QUESTION_UPDATED:
-                    this.$store.commit('event/updateQuestion', <IEventQuestion>message.data);
+                    this.$store.dispatch('event/updateQuestion', <IEventQuestion>message.data);
                     break;
                 case SocketClient.QUESTION_DELETED:
-                    this.$store.commit('event/deleteQuestion', <IEventQuestion>message.data);
+                    this.$store.dispatch('event/deleteQuestion', <IEventQuestion>message.data);
                     break;
                 case SocketClient.MESSAGE_CREATED:
                     this.$store.commit('event/addMessage', <IEventMessage>message.data);
