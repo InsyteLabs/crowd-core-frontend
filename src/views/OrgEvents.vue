@@ -190,6 +190,14 @@ export default class OrgEvents extends Vue {
         }
     }
 
+    async destroyed(): Promise<void>{
+        if(this.socket){
+            this.socket.close();
+
+            this.socket = null;
+        }
+    }
+
 
     /*
         ===============

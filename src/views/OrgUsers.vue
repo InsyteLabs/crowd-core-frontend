@@ -188,7 +188,11 @@ export default class OrgUsers extends Vue {
     }
 
     destroyed(): void{
-        this.socket && this.socket.close();
+        if(this.socket){
+            this.socket.close();
+
+            this.socket = null;
+        }
     }
 
 
