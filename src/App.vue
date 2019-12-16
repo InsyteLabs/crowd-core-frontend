@@ -204,11 +204,19 @@ export default class App extends Vue{
 
 .profile
     position: fixed
-    width: 500px
-    max-width: 90%
-    right: 5px
-    top: $banner-height + 5px
     z-index: 10
+    top: 16px
+    left: 16px
+    width: calc(100% - 32px)
+    max-height: 80%
+    overflow-y: auto
+
+    @media screen and (min-width: 760px)
+        left: inherit
+        right: 5px
+        top: $banner-height + 5px
+        width: 500px
+        max-width: 90%
 
 .profile-bg
     position: fixed
