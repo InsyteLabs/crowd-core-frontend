@@ -11,8 +11,8 @@
             <Navigation :visible="navigationVisible" @close="navigationVisible = false"></Navigation>
         </div>
 
+        <div v-show="userProfileVisible" @click="onUserClick();" class="profile-bg"></div>
         <div v-show="userProfileVisible" class="profile">
-            <div @click="onUserClick();" class="profile-bg"></div>
             <UserProfile
                 @login="onLoginClick()"
                 @logout="onLogoutClick()">
@@ -219,6 +219,7 @@ export default class App extends Vue{
 
 .profile-bg
     position: fixed
+    z-index: 9
     top: 0
     left: 0
     width: 100%
