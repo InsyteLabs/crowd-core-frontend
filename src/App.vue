@@ -143,7 +143,6 @@ export default class App extends Vue{
 
 <style lang="sass">
 
-@import './style/bootstrap.min.css'
 @import './style/variables'
 @import './style/main'
 
