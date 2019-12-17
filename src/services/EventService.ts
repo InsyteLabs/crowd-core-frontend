@@ -20,7 +20,7 @@ class EventService{
     */
     async getEvents(clientId: number): Promise<ClientEvent[]>{
 
-        const url = `${ apiUrl }/clients/${ clientId }/events`;
+        const url = `${ apiUrl }/events`;
 
         const events: ClientEvent[] = await http.get<ClientEvent[]>({ url });
 
@@ -28,7 +28,7 @@ class EventService{
     }
 
     async getEvent(clientId: number, slug: string): Promise<ClientEvent>{
-        const url = `${ apiUrl }/clients/${ clientId }/events/${ slug }`;
+        const url = `${ apiUrl }/events/${ slug }`;
 
         const event: ClientEvent = await http.get<ClientEvent>({ url });
 
@@ -42,7 +42,7 @@ class EventService{
     }
 
     async createEvent(clientId: number, event: ClientEvent): Promise<ClientEvent>{
-        const url = `${ apiUrl }/clients/${ clientId }/events`;
+        const url = `${ apiUrl }/events`;
 
         const newEvent: ClientEvent = await http.post<ClientEvent>({
             url,
@@ -54,7 +54,7 @@ class EventService{
     }
 
     async updateEvent(clientId: number, event: ClientEvent): Promise<ClientEvent>{
-        const url = `${ apiUrl }/clients/${ clientId }/events/${ event.id }`;
+        const url = `${ apiUrl }/events/${ event.id }`;
 
         const updatedEvent: ClientEvent = await http.put<ClientEvent>({
             url,
@@ -69,7 +69,7 @@ class EventService{
     }
 
     async deleteEvent(clientId: number, event: ClientEvent): Promise<ClientEvent>{
-        const url = `${ apiUrl }/clients/${ clientId }/events/${ event.id }`;
+        const url = `${ apiUrl }/events/${ event.id }`;
 
         const deletedEvent: ClientEvent = await http.delete<ClientEvent>({ url });
 
@@ -99,7 +99,7 @@ class EventService{
     }
 
     async createEventQuestion(clientId: number, question: IEventQuestion): Promise<IEventQuestion>{
-        const url = `${ apiUrl }/clients/${ clientId }/events/${ question.eventId }/questions`;
+        const url = `${ apiUrl }/events/${ question.eventId }/questions`;
 
         const newQuestion: IEventQuestion = await http.post<IEventQuestion>({
             url,
@@ -111,7 +111,7 @@ class EventService{
     }
 
     async updateEventQuestion(clientId: number, question: IEventQuestion): Promise<IEventQuestion>{
-        const url = `${ apiUrl }/clients/${ clientId }/events/${ question.eventId }/questions/${ question.id }`;
+        const url = `${ apiUrl }/events/${ question.eventId }/questions/${ question.id }`;
 
         const updatedQuestion: IEventQuestion = await http.put<IEventQuestion>({
             url,
@@ -123,7 +123,7 @@ class EventService{
     }
 
     async deleteEventQuestion(clientId: number, question: IEventQuestion): Promise<boolean>{
-        const url = `${ apiUrl }/clients/${ clientId }/events/${ question.eventId }/questions/${ question.id }`;
+        const url = `${ apiUrl }/events/${ question.eventId }/questions/${ question.id }`;
 
         const res: any = await http.delete<any>({ url });
 
@@ -131,7 +131,7 @@ class EventService{
     }
 
     async createQuestionVote(clientId: number, eventId: number, questionId: number, userId: number, value: number): Promise<IEventQuestion>{
-        const url = `${ apiUrl }/clients/${ clientId }/events/${ eventId }/questions/${ questionId }/votes`;
+        const url = `${ apiUrl }/events/${ eventId }/questions/${ questionId }/votes`;
 
         const body = {
             eventId,
@@ -155,7 +155,7 @@ class EventService{
         ==================
     */
     async getMessages(clientId: number, eventId: number): Promise<IEventMessage[]>{
-        const url = `${ apiUrl }/clients/${ clientId }/events/${ eventId }/chat`;
+        const url = `${ apiUrl }/events/${ eventId }/chat`;
 
         const messages: IEventMessage[] = await http.get<IEventMessage[]>({ url });
 
@@ -163,7 +163,7 @@ class EventService{
     }
 
     async addMessage(clientId: number, eventId: number, message: IEventMessage): Promise<IEventMessage>{
-        const url = `${ apiUrl }/clients/${ clientId }/events/${ eventId }/chat`;
+        const url = `${ apiUrl }/events/${ eventId }/chat`;
 
         const newMessage: IEventMessage = await http.post<IEventMessage>({
             url,
@@ -175,7 +175,7 @@ class EventService{
     }
 
     async updateMessage(clientId: number, eventId: number, message: IEventMessage): Promise<IEventMessage>{
-        const url = `${ apiUrl }/clients/${ clientId }/events/${ eventId }/chat/${ message.id }`;
+        const url = `${ apiUrl }/events/${ eventId }/chat/${ message.id }`;
 
         const newMessage: IEventMessage = await http.put<IEventMessage>({
             url,
@@ -187,7 +187,7 @@ class EventService{
     }
 
     async deleteMessage(clientId: number, eventId: number, id: number): Promise<IEventMessage>{
-        const url = `${ apiUrl }/clients/${ clientId }/events/${ eventId }/chat/${ id }`;
+        const url = `${ apiUrl }/events/${ eventId }/chat/${ id }`;
 
         const deletedMessage: IEventMessage = await http.delete<IEventMessage>({ url });
 
