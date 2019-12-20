@@ -1,36 +1,59 @@
 <template>
     <div class="org-home container-fluid">
-        <div v-if="client && client.id">
-            <table class="table table-bordered table-sm">
-                <thead>
-                    <tr>
-                        <th>ID</th>
-                        <th>Owner</th>
-                        <th>Name</th>
-                        <th>Slug</th>
-                        <th>Client Type</th>
-                        <th>Disabled</th>
-                        <th>Disabled Comment</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td>{{ client.id }}</td>
-                        <td>{{ client.owner ? client.owner.firstName + ' ' + client.owner.lastName : '' }}</td>
-                        <td>{{ client.name }}</td>
-                        <td>{{ client.slug }}</td>
-                        <td>{{ client.type ? client.type.name : '' }}</td>
-                        <td>
-                            {{
-                                client.disabled
-                                    ? 'Yes'
-                                    : 'No'
-                            }}
-                        </td>
-                        <td>{{ client.disabledComment }}</td>
-                    </tr>
-                </tbody>
-            </table>
+        <div v-if="client && client.id" class="row">
+            <div class="col-md-6">
+                <div class="card p-3 mb-3">
+                    <h3>Account Info</h3>
+                    <table class="table table-sm table-striped">
+                        <thead>
+                            <tr>
+                                <th>Account Name</th>
+                                <th>Slug</th>
+                                <th>Owner</th>
+                                <th>Status</th>
+                                <th>Status Comment</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>{{ client.name }}</td>
+                                <td>{{ client.slug }}</td>
+                                <td>{{ client.owner ? client.owner.firstName + ' ' + client.owner.lastName : '' }}</td>
+                                <td>
+                                    {{
+                                        client.disabled
+                                            ? 'Inactive'
+                                            : 'Active'
+                                    }}
+                                </td>
+                                <td>{{ client.disabledComment }}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="card p-3">
+                    <h3>Billing Info</h3>
+                    <table class="table table-sm table-striped">
+                        <thead>
+                            <tr>
+                                <th>Account Type</th>
+                                <th>Event Limit</th>
+                                <th>Event Viewer Limit</th>
+                                <th>Current Events</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>{{ client.type.name }}</td>
+                                <td>{{ client.type.maxEvents }}</td>
+                                <td>{{ client.type.maxEventViewers }}</td>
+                                <td></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
         </div>
     </div>
 </template>
