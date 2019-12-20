@@ -20,7 +20,7 @@
                 <div class="form-group">
                     <label for="slug">Slug</label>
                     <div class="input-group">
-                        <input v-model="slug" type="text" id="slug" class="form-control">
+                        <input @change="onSlugChange($event.target.value)" v-model="slug" type="text" id="slug" class="form-control">
                     </div>
                     <small v-if="slug"><i>{{ eventUrl }}</i></small>
                 </div>
@@ -107,6 +107,7 @@ import { IClient, IEventSettings } from '@/interfaces';
 import { dateTimeFilter }          from '@/filters/date-time';
 
 import { slugify } from '@/utilities';
+import { eventService } from '../../services';
 
 @Component
 export default class EventForm extends Vue {
@@ -124,7 +125,7 @@ export default class EventForm extends Vue {
     requireLogin:    boolean = false;
     enableChat:      boolean = false;
 
-    save(): void{
+    async save(): Promise<void>{
         if(!(this.client && this.client.id)){
             const errorMessage: IAppMessage = {
                 text: 'Cannot save event, client not found',
@@ -134,6 +135,10 @@ export default class EventForm extends Vue {
 
             return;
         }
+
+        const slugExists = await eventService.slugExists(this.slug);
+
+        if(slugExists) return;
 
         const event: ClientEvent = {
             clientId:    this.client.id,
@@ -170,8 +175,29 @@ export default class EventForm extends Vue {
         this._clearForm();
     }
 
-    onTitleKeyup(){
+    onTitleKeyup(title: string): void{
         this.slug = slugify(this.title);
+
+        this.onSlugChange(this.slug);
+    }
+
+    async onSlugChange(slug: string): Promise<void>{
+        const slugInput = <HTMLInputElement>document.getElementById('slug');
+
+        if(!slugInput) return;
+
+        const exists: boolean = await this.slugExists(slug);
+
+        if(exists){
+            slugInput.classList.add('is-invalid');
+        }
+        else{
+            slugInput.classList.remove('is-invalid');
+        }
+    }
+
+    async slugExists(slug: string): Promise<boolean>{
+        return eventService.slugExists(slug);
     }
 
 

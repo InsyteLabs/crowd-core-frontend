@@ -76,6 +76,14 @@ class EventService{
         return new ClientEvent(deletedEvent);
     }
 
+    async slugExists(slug: string): Promise<boolean>{
+        const url = `${ apiUrl }/events/check-slug/${ slug }`;
+
+        const result: { exists: boolean } = await http.get<{exists: boolean}>({ url });
+
+        return result.exists;
+    }
+
 
     /*
         ================
