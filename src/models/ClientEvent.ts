@@ -8,10 +8,12 @@ export class ClientEvent{
     clientId:    number;
     title:       string;
     slug:        string;
+    slugId:      string;
     description: string;
     startTime:   Date;
     endTime:     Date;
     active?:     boolean;
+    views?:      number;
 
     questions: IEventQuestion[];
     messages:  IEventMessage[];
@@ -23,10 +25,12 @@ export class ClientEvent{
         this.clientId    = event.clientId;
         this.title       = event.title;
         this.slug        = event.slug;
+        this.slugId      = event.slugId;
         this.description = event.description;
         this.startTime   = new Date(event.startTime);
         this.endTime     = new Date(event.endTime);
         this.active      = event.active;
+        this.views       = event.views;
 
         this.questions = event.questions || [];
         this.messages  = event.messages  || [];

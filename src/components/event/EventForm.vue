@@ -12,7 +12,7 @@
                 <div class="form-group">
                     <label for="title">Title</label>
                     <div class="input-group">
-                        <input v-model="title" type="text" id="title" class="form-control">
+                        <input @keyup="onTitleKeyup($event.target.value)" v-model="title" type="text" id="title" class="form-control">
                     </div>
                 </div>
             </div>
@@ -22,6 +22,7 @@
                     <div class="input-group">
                         <input v-model="slug" type="text" id="slug" class="form-control">
                     </div>
+                    <small v-if="slug"><i>{{ eventUrl }}</i></small>
                 </div>
             </div>
             <div class="col-md-6">
@@ -105,6 +106,8 @@ import { ClientEvent }             from '@/models';
 import { IClient, IEventSettings } from '@/interfaces';
 import { dateTimeFilter }          from '@/filters/date-time';
 
+import { slugify } from '@/utilities';
+
 @Component
 export default class EventForm extends Vue {
     @Prop() event!:    ClientEvent;
@@ -136,6 +139,7 @@ export default class EventForm extends Vue {
             clientId:    this.client.id,
             title:       this.title,
             slug:        this.slug,
+            slugId:      this.slugId,
             description: this.description,
             startTime:   new Date(this.start),
             endTime:     new Date(this.end),
@@ -144,11 +148,11 @@ export default class EventForm extends Vue {
             messages:  [],
 
             settings: <IEventSettings>{
-                password:        this.password,
-                isLocked:        this.locked,
-                requirePassword: this.requirePassword,
-                requireLogin:    this.requireLogin,
-                enableChat:      this.enableChat
+                password:          this.password,
+                isLocked:        !!this.locked,
+                requirePassword: !!this.requirePassword,
+                requireLogin:    !!this.requireLogin,
+                enableChat:      !!this.enableChat
             }
         }
 
@@ -166,6 +170,10 @@ export default class EventForm extends Vue {
         this._clearForm();
     }
 
+    onTitleKeyup(){
+        this.slug = slugify(this.title);
+    }
+
 
     /*
         =======
@@ -174,6 +182,18 @@ export default class EventForm extends Vue {
     */
     get client(): IClient|null{
         return this.$store.getters['client/client'];
+    }
+
+    get eventUrl(): string{
+        if(!this.client) return '';
+
+        return `https://crowdcore.io/${ this.client.slug }/events/${ this.slug }`;
+    }
+
+    get slugId(): string{
+        if(!this.client) return '';
+
+        return `${ this.client.id }_${ this.slug }`;
     }
 
 

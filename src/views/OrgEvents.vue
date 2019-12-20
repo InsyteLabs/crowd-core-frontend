@@ -21,6 +21,7 @@
                             <th>Start</th>
                             <th>End</th>
                             <th>Active</th>
+                            <th>Visitors</th>
                             <th class="text-center">Manage</th>
                             <th>View</th>
                         </tr>
@@ -38,6 +39,7 @@
                                         : 'No'
                                 }}
                             </td>
+                            <td>{{ event.views }}</td>
                             <td class="no-wrap text-center">
                                 <EditButton @click="onEditEventClick(event)"></EditButton>
                                 <DeleteButton @click="onDeleteEventClick(event)"></DeleteButton>
