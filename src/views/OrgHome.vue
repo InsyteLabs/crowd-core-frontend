@@ -3,10 +3,11 @@
         <div v-if="client && client.id" class="row">
             <div class="col-md-6">
                 <div class="card p-3 mb-3">
-                    <h3>Account Info</h3>
-                    <table class="table table-sm table-striped">
+                    <h4>Account</h4>
+                    <table class="table table-sm table-striped table-bordered">
                         <thead>
                             <tr>
+                                <th>Account Type</th>
                                 <th>Account Name</th>
                                 <th>Slug</th>
                                 <th>Owner</th>
@@ -16,6 +17,7 @@
                         </thead>
                         <tbody>
                             <tr>
+                                <td>{{ client.type.name }}</td>
                                 <td>{{ client.name }}</td>
                                 <td>{{ client.slug }}</td>
                                 <td>{{ client.owner ? client.owner.firstName + ' ' + client.owner.lastName : '' }}</td>
@@ -33,22 +35,39 @@
                 </div>
 
                 <div class="card p-3">
-                    <h3>Billing Info</h3>
-                    <table class="table table-sm table-striped">
+                    <h4>Limits / Usage</h4>
+                    <table class="table table-sm table-striped table-bordered mb-4">
                         <thead>
                             <tr>
-                                <th>Account Type</th>
                                 <th>Event Limit</th>
                                 <th>Event Viewer Limit</th>
-                                <th>Current Events</th>
+                                <th>Events Created</th>
                             </tr>
                         </thead>
                         <tbody>
                             <tr>
-                                <td>{{ client.type.name }}</td>
                                 <td>{{ client.type.maxEvents }}</td>
                                 <td>{{ client.type.maxEventViewers }}</td>
-                                <td></td>
+                                <td>
+                                    <span v-if="client.usage">{{ client.usage.totalEvents }}</span>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <table class="table table-sm table-striped table-bordered">
+                        <thead>
+                            <tr>
+                                <th>Registered Users</th>
+                                <th>Anonymous Users</th>
+                                <th>Total Users</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>{{ client.usage.userCount }}</td>
+                                <td>{{ client.usage.anonymousUserCount }}</td>
+                                <td>{{ client.usage.totalUsers }}</td>
                             </tr>
                         </tbody>
                     </table>
