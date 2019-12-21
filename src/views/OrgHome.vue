@@ -64,6 +64,7 @@
                     <table class="table table-sm table-striped table-bordered">
                         <thead>
                             <tr>
+                                <th>Registered User Limit</th>
                                 <th>Registered Users</th>
                                 <th>Anonymous Users</th>
                                 <th>Total Users</th>
@@ -71,6 +72,7 @@
                         </thead>
                         <tbody>
                             <tr>
+                                <td>{{ client.type.maxRegisteredUsers }}</td>
                                 <td>{{ client.usage.userCount }}</td>
                                 <td>{{ client.usage.anonymousUserCount }}</td>
                                 <td>{{ client.usage.totalUsers }}</td>
