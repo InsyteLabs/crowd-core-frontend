@@ -3,7 +3,7 @@
         <div v-if="client && client.id" class="row">
             <div class="col-md-6">
                 <div class="card p-3 mb-3">
-                    <h4>Account</h4>
+                    <h3>Account Info</h3>
                     <table class="table table-sm table-striped table-bordered">
                         <thead>
                             <tr>
@@ -33,15 +33,19 @@
                         </tbody>
                     </table>
                 </div>
-
+            </div>
+            <div class="col-md-6">
                 <div class="card p-3">
-                    <h4>Limits / Usage</h4>
+                    <h3>Account Limits / Usage</h3>
+                    <hr>
+                    <h5>Events</h5>
                     <table class="table table-sm table-striped table-bordered mb-4">
                         <thead>
                             <tr>
                                 <th>Event Limit</th>
                                 <th>Event Viewer Limit</th>
                                 <th>Events Created</th>
+                                <th>Active Events</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -51,10 +55,12 @@
                                 <td>
                                     <span v-if="client.usage">{{ client.usage.totalEvents }}</span>
                                 </td>
+                                <td>{{ client.usage.activeEvents }}</td>
                             </tr>
                         </tbody>
                     </table>
 
+                    <h5>Users</h5>
                     <table class="table table-sm table-striped table-bordered">
                         <thead>
                             <tr>
