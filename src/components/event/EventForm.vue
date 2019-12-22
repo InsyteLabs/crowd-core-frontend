@@ -138,7 +138,7 @@ export default class EventForm extends Vue {
 
         const slugExists = await eventService.slugExists(this.slug);
 
-        if(slugExists) return;
+        if(slugExists && !this.event) return;
 
         const event: ClientEvent = {
             clientId:    this.client.id,
@@ -188,7 +188,7 @@ export default class EventForm extends Vue {
 
         const exists: boolean = await this.slugExists(slug);
 
-        if(exists){
+        if(exists && !this.event){
             slugInput.classList.add('is-invalid');
         }
         else{
