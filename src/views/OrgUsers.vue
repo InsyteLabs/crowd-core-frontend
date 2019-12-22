@@ -103,7 +103,7 @@ export default class OrgUsers extends Vue {
 
         user.clientId = this.client.id;
 
-        const newUser = await userService.createUser(<number>this.client.id, user);
+        const newUser = await userService.createUser(user);
 
         this.userModal.close();
     }
@@ -113,7 +113,7 @@ export default class OrgUsers extends Vue {
 
         user.clientId = this.client.id;
 
-        const updatedUser = await userService.updateUser(<number>this.client.id, user);
+        const updatedUser = await userService.updateUser(user);
 
         this.userModal.close();
         this.userForm.clear();
@@ -122,7 +122,7 @@ export default class OrgUsers extends Vue {
     async onDeleteUserClick(user: User): Promise<void>{
         if(!(this.client && this.client.id)) return;
 
-        const deleted = await userService.deleteUser(this.client.id, user);
+        const deleted = await userService.deleteUser(user);
     }
 
 
@@ -211,7 +211,7 @@ export default class OrgUsers extends Vue {
     private async _loadUsers(): Promise<void>{
         if(!(this.client && this.client.id)) return;
 
-        this.$store.dispatch('user/loadUsers', this.client.id);
+        this.$store.dispatch('user/loadUsers');
     }
 
     private async _loadRoles(): Promise<IRole[]>{

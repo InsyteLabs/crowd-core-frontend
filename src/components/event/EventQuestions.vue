@@ -66,7 +66,7 @@ export default class EventQuestions extends Vue {
             hidden:  false
         }
 
-        let newQuestion = await eventService.createEventQuestion(this.client.id, question);
+        let newQuestion = await eventService.createEventQuestion(question);
 
         this.question = '';
     }
@@ -75,7 +75,7 @@ export default class EventQuestions extends Vue {
         if(this.isLocked)                    return;
         if(!(this.client && this.client.id)) return;
 
-        const updatedQuestion = await eventService.updateEventQuestion(this.client.id, question);
+        const updatedQuestion = await eventService.updateEventQuestion(question);
     }
 
     async onDeleteQuestion(question: IEventQuestion): Promise<void>{
@@ -83,7 +83,7 @@ export default class EventQuestions extends Vue {
         if(this.isLocked)                    return;
         if(!(this.client && this.client.id)) return;
 
-        const deleted = await eventService.deleteEventQuestion(this.client.id, question);
+        const deleted = await eventService.deleteEventQuestion(question);
     }
 
     async onUpvoteQuestionClick(question: IEventQuestion): Promise<void>{
@@ -104,7 +104,7 @@ export default class EventQuestions extends Vue {
         if(!(this.user && this.user.id))     return;
         if(!(this.client && this.client.id)) return;
 
-        const updatedQuestion = await eventService.createQuestionVote(this.client.id, <number>this.event.id, questionId, <number>this.user.id, val);
+        const updatedQuestion = await eventService.createQuestionVote(<number>this.event.id, questionId, <number>this.user.id, val);
     }
 
 

@@ -59,7 +59,7 @@ export default class EventChat extends Vue {
             hidden:  false
         }
 
-        await eventService.addMessage(<number>this.client.id, <number>this.event.id, message);
+        await eventService.addMessage(<number>this.event.id, message);
 
         this.newMessage = '';
     }
@@ -68,7 +68,7 @@ export default class EventChat extends Vue {
         if(this.isLocked)                return;
         if(!(this.event && this.client)) return;
         
-        await eventService.updateMessage(<number>this.client.id, <number>this.event.id, message);
+        await eventService.updateMessage(<number>this.event.id, message);
     }
 
     async deleteMessageClick(message: IEventMessage): Promise<void>{
@@ -76,7 +76,6 @@ export default class EventChat extends Vue {
         if(!(this.client && this.event)) return;
 
         await eventService.deleteMessage(
-            <number>this.client.id,
             <number>this.event.id,
             <number>message.id
         );

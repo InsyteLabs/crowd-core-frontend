@@ -188,7 +188,7 @@ export const eventModule: Module<any, any> = {
             =============
         */
         async loadEvents({ commit }, clientId: number): Promise<ClientEvent[]>{
-            const events: ClientEvent[] = await eventService.getEvents(clientId);
+            const events: ClientEvent[] = await eventService.getEvents();
 
             commit('setEvents', events);
 
@@ -196,7 +196,7 @@ export const eventModule: Module<any, any> = {
         },
         
         async loadEvent({ commit }, descriptor: IClientEventDescriptor): Promise<ClientEvent>{
-            const event: ClientEvent = await eventService.getEvent(descriptor.clientId, descriptor.eventSlug);
+            const event: ClientEvent = await eventService.getEvent(descriptor.eventSlug);
 
             commit('setEvent', event);
 

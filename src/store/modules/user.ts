@@ -60,8 +60,8 @@ export const userModule: Module<any, any> = {
     },
 
     actions: {
-        async loadUsers({ commit }, clientId: number): Promise<User[]>{
-            const users: User[] = await userService.getUsers(clientId);
+        async loadUsers({ commit }): Promise<User[]>{
+            const users: User[] = await userService.getUsers();
 
             commit('setUsers', users);
 

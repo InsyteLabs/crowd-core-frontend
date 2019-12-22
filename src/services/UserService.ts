@@ -14,7 +14,7 @@ const JSON_HEADERS = {
 }
 
 class UserService{
-    async getUsers(clientId: number): Promise<User[]>{
+    async getUsers(): Promise<User[]>{
         const url = `${ apiUrl }/users`;
 
         let users: User[] = await http.get<User[]>({ url });
@@ -22,7 +22,7 @@ class UserService{
         return users ? users.map(u => new User(u)) : [];
     }
 
-    async createUser(clientId: number, user: User): Promise<User>{
+    async createUser(user: User): Promise<User>{
         const url = `${ apiUrl }/users`;
 
         const newUser: User = await http.post<User>({
@@ -42,7 +42,7 @@ class UserService{
         return new User(newUser);
     }
     
-    async updateUser(clientId: number, user: User): Promise<User>{
+    async updateUser(user: User): Promise<User>{
         const url = `${ apiUrl }/users/${ user.id }`;
 
         const updatedUser: User = await http.put<User>({
@@ -54,7 +54,7 @@ class UserService{
         return new User(updatedUser);
     }
 
-    async deleteUser(clientId: number, user: User): Promise<any>{
+    async deleteUser(user: User): Promise<any>{
         const url = `${ apiUrl }/users/${ user.id }`;
 
         const deletedUser: any = await http.delete<any>({ url });
