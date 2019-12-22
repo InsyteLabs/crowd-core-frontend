@@ -142,7 +142,7 @@
                         <div class="form-group">
                             <label for="username">Username</label>
                             <div class="input-group">
-                                <input v-model="username" type="text" id="username" class="form-control form-control-sm">
+                                <input v-model="username" type="text" id="login-username" class="form-control form-control-sm">
                             </div>
                         </div>
                     </div>
@@ -150,7 +150,7 @@
                         <div class="form-group">
                             <label for="password">Password</label>
                             <div class="input-group">
-                                <input v-model="password" type="password" class="form-control form-control-sm">
+                                <input v-model="password" type="password" id="login-password" class="form-control form-control-sm">
                             </div>
                         </div>
                     </div>
@@ -227,8 +227,22 @@ export default class Login extends Vue {
     }
 
     async onLoginClick(): Promise<void>{
-        const username = this.username,
-              password = this.password;
+        let username = this.username,
+            password = this.password;
+
+        /*
+            iOS browsers do not emit input change event when autofilling
+            forms. Have to get values from inputs manually in those cases
+        */
+        if(!(username && password)){
+            const usernameInput = <HTMLInputElement>document.getElementById('login-username'),
+                  passwordInput = <HTMLInputElement>document.getElementById('login-password');
+
+            if(!(usernameInput && passwordInput)) return;
+
+            username = usernameInput.value;
+            password = passwordInput.value;
+        }
 
         if(!(username && password)) return;
 
