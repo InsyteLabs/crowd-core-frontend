@@ -19,7 +19,7 @@ class UserService{
 
         let users: User[] = await http.get<User[]>({ url });
 
-        return users.map(u => new User(u));
+        return users ? users.map(u => new User(u)) : [];
     }
 
     async createUser(clientId: number, user: User): Promise<User>{
@@ -102,6 +102,8 @@ class UserService{
         const url = `${ apiUrl }/roles`;
 
         const roles: IRole[] = await http.get<IRole[]>({ url });
+
+        if(!(roles && roles.length)) return [];
         
         roles.forEach((r: IRole) => r.checked = false);
         

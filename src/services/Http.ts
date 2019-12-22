@@ -40,7 +40,18 @@ class HttpService{
             opt.headers.Authorization = `Bearer ${ userToken.jwt }`;
         }
 
-        let response: Response = await fetch(<string>opt.url, opt);
+        let response: Response;
+        try{
+            response = await fetch(<string>opt.url, opt);
+        }
+        catch(e){
+            console.error('Network error:');
+            console.error(e.message);
+
+            store.commit('decrementPendingHttpCount');
+
+            return <T>(<unknown>undefined);
+        }
 
         store.commit('decrementPendingHttpCount');
 
@@ -73,6 +84,9 @@ class HttpService{
             if(!router.currentRoute.path.includes('login')){
                 router.push(`/login${ querystring }`);
             }
+        }
+        else if(response.status === 404){
+            return <T>(<unknown>undefined);
         }
 
         const data = <unknown>(await response.json());

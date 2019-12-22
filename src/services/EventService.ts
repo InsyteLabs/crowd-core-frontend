@@ -24,7 +24,7 @@ class EventService{
 
         const events: ClientEvent[] = await http.get<ClientEvent[]>({ url });
 
-        return events.map(e => new ClientEvent(e));
+        return events ? events.map(e => new ClientEvent(e)) : [];
     }
 
     async getEvent(clientId: number, slug: string): Promise<ClientEvent>{
@@ -95,7 +95,7 @@ class EventService{
 
         const questions: IEventQuestion[] = await http.get({ url });
         
-        return questions;
+        return questions ? questions : [];
     }
 
     async getQeustion(eventId: number, questionId: number): Promise<IEventQuestion>{
@@ -167,7 +167,7 @@ class EventService{
 
         const messages: IEventMessage[] = await http.get<IEventMessage[]>({ url });
 
-        return messages;
+        return messages ? messages : [];
     }
 
     async addMessage(clientId: number, eventId: number, message: IEventMessage): Promise<IEventMessage>{
