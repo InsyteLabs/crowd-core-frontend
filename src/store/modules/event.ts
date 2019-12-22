@@ -3,7 +3,7 @@
 import { Module } from 'vuex';
 
 import { eventService }         from '@/services';
-import { ClientEvent, User }          from '@/models';
+import { ClientEvent, User }    from '@/models';
 import { sortQuestionsByScore } from '@/utilities';
 
 import {
@@ -15,12 +15,16 @@ export const eventModule: Module<any, any> = {
     state: {
         events:        <ClientEvent[]>    [],
         event:         <ClientEvent|null> null,
+        questions:     <IEventQuestion[]> [],
+        messages:      <IEventMessage[]>  [],
         submittedPass: <string|null>      null
     },
 
     getters: {
         events:        (state): ClientEvent[]    => state.events,
         event:         (state): ClientEvent|null => state.event,
+        questions:     (state): IEventQuestion[] => state.questions || [],
+        messages:      (state): IEventMessage[]  => state.messages  || [],
         submittedPass: (state): string           => state.submittedPass,
 
         user(state, getters, rootState, rootGetters): User|null{
@@ -96,28 +100,33 @@ export const eventModule: Module<any, any> = {
             }
         },
 
+
         /*
             ======================
             EVENT QUESTION METHODS
             ======================
         */
+        setQuestions(state, questions: IEventQuestion[]): void{
+            state.questions = Array.isArray(questions) ? questions : [];
+        },
+
         addQuestion(state, question: IEventQuestion): void{
             const { eventId }: { eventId: number } = question;
 
             if(state.event && state.event.id === eventId){
-                state.event.questions.push(question);
+                state.questions.push(question);
 
-                state.event.questions = state.event.questions.sort(sortQuestionsByScore);
+                state.questions = state.questions.sort(sortQuestionsByScore);
             }
         },
 
         updateQuestion(state, question: IEventQuestion): void{
             if(state.event && (state.event.id === question.eventId)){
-                const questions: IEventQuestion[] = state.event.questions;
+                const questions: IEventQuestion[] = state.questions;
                 if(Array.isArray(questions)){
                     const idx = questions.findIndex(q => q.id === question.id);
                     if(~idx){
-                        state.event.questions.splice(idx, 1, question);
+                        questions.splice(idx, 1, question);
                     }
                 }
             }
@@ -127,7 +136,7 @@ export const eventModule: Module<any, any> = {
             const { eventId }: { eventId: number } = question;
 
             if(state.event && state.event.id === eventId){
-                const { questions }: { questions: IEventQuestion[] } = state.event;
+                const { questions }: { questions: IEventQuestion[] } = state.questions;
 
                 const idx = questions.findIndex(q => q.id === question.id);
                 if(~idx){
@@ -142,11 +151,15 @@ export const eventModule: Module<any, any> = {
             EVENT CHAT METHODS
             ==================
         */
+        setMessages(state, messages: IEventMessage[]): void{
+            state.messages = Array.isArray(messages) ? messages : [];
+        },
+
         addMessage(state, message: IEventMessage): void{
             const { eventId }: { eventId: number } = message;
 
             if(state.event && state.event.id === eventId){
-                const { messages }: { messages: IEventMessage[] } = state.event;
+                const messages: IEventMessage[] = state.messages;
 
                 messages.push(message);
             }
@@ -157,7 +170,7 @@ export const eventModule: Module<any, any> = {
             const { eventId }: { eventId: number } = message;
 
             if(state.event && state.event.id === eventId){
-                const { messages }: { messages: IEventMessage[] } = state.event;
+                const messages: IEventMessage[] = state.messages;
 
                 const idx = messages.findIndex(m => m.id === message.id);
                 if(~idx){
@@ -170,7 +183,7 @@ export const eventModule: Module<any, any> = {
             const { eventId }: { eventId: number } = message;
 
             if(state.event && state.event.id === eventId){
-                const { messages }: { messages: IEventMessage[] } = state.event;
+                const messages: IEventMessage[] = state.messages;
 
                 const idx = messages.findIndex(m => m.id === message.id);
                 if(~idx){
@@ -209,6 +222,22 @@ export const eventModule: Module<any, any> = {
             EVENT QUESTION METHODS
             ======================
         */
+        async loadQuestions({ commit, state }): Promise<IEventQuestion[]>{
+            const event: ClientEvent = state.event;
+
+            if(!(event && event.id)){
+                commit('setQuestions', []);
+
+                return [];
+            }
+
+            const questions: IEventQuestion[] = await eventService.getQuestions(event.id);
+
+            commit('setQuestions', questions);
+
+            return questions || [];
+        },
+
         addQuestion({ commit, getters }, question: IEventQuestion): void{
             if(question && question.stats && getters.user){
                 question.stats.voteRequester = getters.user.id;
@@ -222,7 +251,7 @@ export const eventModule: Module<any, any> = {
             const { eventId }: { eventId: number } = question;
 
             if(getters.event && (getters.event.id === eventId) && getters.user){
-                const { questions }: { questions: IEventQuestion[] } = getters.event;
+                const questions: IEventQuestion[] = getters.questions;
 
                 const idx = questions.findIndex(q => q.id === question.id);
                 if(~idx){
@@ -247,6 +276,28 @@ export const eventModule: Module<any, any> = {
 
         deleteQuestion({ commit, getters }, question: IEventQuestion): void{
             commit('deleteQuestion', question);
+        },
+
+
+        /*
+            =====================
+            EVENT MESSAGE METHODS
+            =====================
+        */
+        async loadMessages({ commit, state }): Promise<IEventMessage[]>{
+            const event: ClientEvent = state.event;
+
+            if(!(event && event.id)){
+                commit('setMessages', []);
+
+                return [];
+            }
+
+            const messages: IEventMessage[] = await eventService.getMessages(event.id);
+
+            commit('setMessages', messages);
+
+            return messages || [];
         }
     }
 }

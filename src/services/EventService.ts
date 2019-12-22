@@ -32,11 +32,11 @@ class EventService{
 
         const event: ClientEvent = await http.get<ClientEvent>({ url });
 
-        const questions: IEventQuestion[] = await this.getQuestions(<number>event.id),
-              messages:  IEventMessage[]  = await this.getMessages(<number>event.id);
+        // const questions: IEventQuestion[] = await this.getQuestions(<number>event.id),
+        //       messages:  IEventMessage[]  = await this.getMessages(<number>event.id);
 
-        event.questions = questions;
-        event.messages  = messages;
+        // event.questions = questions;
+        // event.messages  = messages;
 
         return new ClientEvent(event);
     }
@@ -62,8 +62,8 @@ class EventService{
             body: JSON.stringify(event)
         });
 
-        updatedEvent.questions = event.questions;
-        updatedEvent.messages  = event.messages;
+        // updatedEvent.questions = event.questions;
+        // updatedEvent.messages  = event.messages;
 
         return new ClientEvent(updatedEvent);
     }

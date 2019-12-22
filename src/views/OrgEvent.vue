@@ -254,6 +254,9 @@ export default class OrgEvent extends Vue {
             clientId:  this.client.id,
             eventSlug: this.$route.params.eventSlug
         });
+
+        this.$store.dispatch('event/loadQuestions');
+        this.$store.dispatch('event/loadMessages');
     }
 
     private _startSocketConnection(): void{

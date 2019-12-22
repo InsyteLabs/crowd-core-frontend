@@ -3,8 +3,8 @@
         <div class="card p-3">
             <div class="questions">
                 <h4>Question &amp; Answer</h4>
-                <transition-group v-if="event.questions && event.questions.length" name="questions" tag="ul">
-                    <li v-for="question of event.questions" :key="question.id">
+                <transition-group v-if="questions && questions.length" name="questions" tag="ul">
+                    <li v-for="question of questions" :key="question.id">
                         <Question
                             :question="question"
                             
@@ -123,6 +123,10 @@ export default class EventQuestions extends Vue {
 
     get event(): ClientEvent|null{
         return this.$store.getters['event/event'];
+    }
+
+    get questions(): IEventQuestion[]{
+        return this.$store.getters['event/questions'] || [];
     }
 
     get isLocked(): boolean{

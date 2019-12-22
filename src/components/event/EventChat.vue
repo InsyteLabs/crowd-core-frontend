@@ -100,9 +100,7 @@ export default class EventChat extends Vue {
     }
 
     get messages(): IEventMessage[]{
-        if(!this.event) return [];
-
-        return this.event.messages || [];
+        return this.$store.getters['event/messages'] || [];
     }
 
     get isLocked(): boolean{
