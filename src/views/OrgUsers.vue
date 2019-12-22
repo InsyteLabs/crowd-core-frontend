@@ -7,8 +7,15 @@
                 </div>
                 <div class="col-md-4">
                     <button @click="onAddUserClick()" class="btn btn-sm btn-primary float-right mb-1" :disabled="!client">Create User</button>
-                    <div class="form-group">
+                    <div class="form-group mb-1">
                         <input v-model="filter" type="text" class="form-control form-control-sm" placeholder="Filter users">
+                    </div>
+                    <div class="form-group mb-1">
+                        <div class="input-group mb-0">
+                            <label class="text-right d-block w-100">
+                                <input v-model="showAnonymous" type="checkbox" class="mr-2"> Show Anonymous Users
+                            </label>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -69,10 +76,11 @@ export default class OrgUsers extends Vue {
 
     socket: SocketClient|null = null;
 
-    selectedUser: User|null = null;
-    newUser:      boolean   = false;
-    roles:        IRole[]   = [];
-    filter:       string    = '';
+    selectedUser:  User|null = null;
+    newUser:       boolean   = false;
+    roles:         IRole[]   = [];
+    filter:        string    = '';
+    showAnonymous: boolean   = false;
 
     onAddUserClick(): void{
         this.newUser      = true;
@@ -134,10 +142,12 @@ export default class OrgUsers extends Vue {
     get users(): User[]{
         const users: User[] = this.$store.getters['user/users'];
 
-        if(!this.filter) return users;
-
         const exp = new RegExp(escapeRegex(this.filter), 'i');
         return users.filter((u: User) => {
+            if(!this.showAnonymous && u.isAnonymous) return false;
+
+            if(!this.filter) return true;
+            
             if(exp.test(u.firstName))               return true;
             if(exp.test(u.lastName))                return true;
             if(exp.test(u.email))                   return true;
@@ -149,6 +159,7 @@ export default class OrgUsers extends Vue {
             }
 
             if(exp.test(u.isDisabled ? 'yes' : 'no')) return true;
+
 
             return false;
         });
@@ -168,10 +179,6 @@ export default class OrgUsers extends Vue {
             this.socket = new SocketClient(`${ process.env.VUE_APP_WS_URL }/websocket`, `client::${ this.client.slug };users`, '', '');
 
             this.socket.subscribe((message: ISocketMessage) => {
-
-                console.log('[Socket Message Received]');
-                console.log(message);
-
                 switch(message.type){
                     case SocketClient.USER_CREATED:
                         this.$store.commit('user/addUser', <User>message.data);

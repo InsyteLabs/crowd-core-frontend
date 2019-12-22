@@ -15,11 +15,6 @@ import { User }                       from '@/models';
 
 @Component
 export default class Home extends Vue {
-
-    onBtnClick(){
-        console.log('clicked');
-    }
-
     /*
         =======
         GETTERS
