@@ -364,13 +364,14 @@ ul
     margin: 0 auto
 
 .subscriber-count
-    float: right
+    float: left
     background-color: $primary
     color: white
     padding: 1px 5px
-    border-radius: 5px
-    margin-right: 2px
-    margin-bottom: 6px
-    margin-top: -10px
+    border-radius: 3px
+    margin: -10px 2px 6px
     font-size: .9rem
+
+    @media screen and (min-width: 768px)
+        float: right
 </style>
