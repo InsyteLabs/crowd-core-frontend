@@ -136,7 +136,7 @@ export const eventModule: Module<any, any> = {
             const { eventId }: { eventId: number } = question;
 
             if(state.event && state.event.id === eventId){
-                const { questions }: { questions: IEventQuestion[] } = state.questions;
+                const questions: IEventQuestion[] = state.questions;
 
                 const idx = questions.findIndex(q => q.id === question.id);
                 if(~idx){
@@ -231,7 +231,9 @@ export const eventModule: Module<any, any> = {
                 return [];
             }
 
-            const questions: IEventQuestion[] = await eventService.getQuestions(event.id);
+            let questions: IEventQuestion[] = await eventService.getQuestions(event.id);
+
+            questions = questions.sort(sortQuestionsByScore);
 
             commit('setQuestions', questions);
 
@@ -267,15 +269,11 @@ export const eventModule: Module<any, any> = {
 
                     questions.splice(idx, 1, question);
 
-                    state.event.questions = state.event.questions.sort(sortQuestionsByScore);
+                    state.questions = state.questions.sort(sortQuestionsByScore);
                 }
             }
             
             commit('updateQuestion', question);
-        },
-
-        deleteQuestion({ commit, getters }, question: IEventQuestion): void{
-            commit('deleteQuestion', question);
         },
 
 

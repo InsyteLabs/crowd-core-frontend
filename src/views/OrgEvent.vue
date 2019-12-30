@@ -280,8 +280,6 @@ export default class OrgEvent extends Vue {
         this.socket.subscribe((message: ISocketMessage) => {
             switch(message.type){
                 case SocketClient.SUBSCRIBER_COUNT_UPDATE:
-                    console.log('subscriber count updated');
-                    console.log(message);
                     this.subscriberCount = (<any>message.data).count;
                     break;
                 case SocketClient.EVENT_UPDATED:
@@ -294,7 +292,7 @@ export default class OrgEvent extends Vue {
                     this.$store.dispatch('event/updateQuestion', <IEventQuestion>message.data);
                     break;
                 case SocketClient.QUESTION_DELETED:
-                    this.$store.dispatch('event/deleteQuestion', <IEventQuestion>message.data);
+                    this.$store.commit('event/deleteQuestion', <IEventQuestion>message.data);
                     break;
                 case SocketClient.MESSAGE_CREATED:
                     this.$store.commit('event/addMessage', <IEventMessage>message.data);
