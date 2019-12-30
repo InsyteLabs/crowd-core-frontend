@@ -48,15 +48,15 @@ import { Route }               from 'vue-router';
 
 import { userService, currentUserService } from '@/services';
 import { SocketClient }                    from '@/socket-client';
-import { Role }                            from '@/constants';
+import { Role, SocketMessageType }         from '@/constants';
 import { User }                            from '@/models';
 import { IRole, IClient }                  from '@/interfaces';
 import { escapeRegex }                     from '@/utilities';
 
-import UserList    from '@/components/user/UserList.vue';
-import UserForm    from '@/components/user/UserForm.vue';
-import ModalWindow from '@/components/ui/ModalWindow.vue';
-import { ISocketMessage } from '../socket-client/interfaces';
+import UserList           from '@/components/user/UserList.vue';
+import UserForm           from '@/components/user/UserForm.vue';
+import ModalWindow        from '@/components/ui/ModalWindow.vue';
+import { ISocketMessage } from '@/socket-client/interfaces';
 
 @Component({
     components: {
@@ -180,13 +180,13 @@ export default class OrgUsers extends Vue {
 
             this.socket.subscribe((message: ISocketMessage) => {
                 switch(message.type){
-                    case SocketClient.USER_CREATED:
+                    case SocketMessageType.USER_CREATED:
                         this.$store.commit('user/addUser', <User>message.data);
                         break;
-                    case SocketClient.USER_UPDATED:
+                    case SocketMessageType.USER_UPDATED:
                         this.$store.commit('user/updateUser', <User>message.data);
                         break;
-                    case SocketClient.USER_DELETED:
+                    case SocketMessageType.USER_DELETED:
                         this.$store.commit('user/deleteUser', <User>message.data);
                         break;
                 }

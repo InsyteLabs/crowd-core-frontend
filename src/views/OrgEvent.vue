@@ -94,11 +94,12 @@ import { User, ClientEvent }                      from '@/models';
 import { IClient, IEventMessage, IEventQuestion } from '@/interfaces';
 import { SocketClient }                           from '@/socket-client';
 import { ISocketMessage }                         from '@/socket-client/interfaces';
+import { SocketMessageType }                      from '@/constants';
 
 import EventQuestions     from '@/components/event/EventQuestions.vue';
 import EventChat          from '@/components/event/EventChat.vue';
 import EventPasswordForm  from '@/components/event/EventPasswordForm.vue';
-import ModalWindow        from '../components/ui/ModalWindow.vue';
+import ModalWindow        from '@/components/ui/ModalWindow.vue';
 
 @Component({
     components: {
@@ -279,28 +280,28 @@ export default class OrgEvent extends Vue {
 
         this.socket.subscribe((message: ISocketMessage) => {
             switch(message.type){
-                case SocketClient.SUBSCRIBER_COUNT_UPDATE:
+                case SocketMessageType.SUBSCRIBER_COUNT_UPDATE:
                     this.subscriberCount = (<any>message.data).count;
                     break;
-                case SocketClient.EVENT_UPDATED:
+                case SocketMessageType.EVENT_UPDATED:
                     this.$store.commit('event/updateEvent', <ClientEvent>message.data);
                     break;
-                case SocketClient.QUESTION_CREATED:
+                case SocketMessageType.QUESTION_CREATED:
                     this.$store.dispatch('event/addQuestion', <IEventQuestion>message.data);
                     break;
-                case SocketClient.QUESTION_UPDATED:
+                case SocketMessageType.QUESTION_UPDATED:
                     this.$store.dispatch('event/updateQuestion', <IEventQuestion>message.data);
                     break;
-                case SocketClient.QUESTION_DELETED:
+                case SocketMessageType.QUESTION_DELETED:
                     this.$store.commit('event/deleteQuestion', <IEventQuestion>message.data);
                     break;
-                case SocketClient.MESSAGE_CREATED:
+                case SocketMessageType.MESSAGE_CREATED:
                     this.$store.commit('event/addMessage', <IEventMessage>message.data);
                     break;
-                case SocketClient.MESSAGE_UPDATED:
+                case SocketMessageType.MESSAGE_UPDATED:
                     this.$store.commit('event/updateMessage', <IEventMessage>message.data);
                     break;
-                case SocketClient.MESSAGE_DELETED:
+                case SocketMessageType.MESSAGE_DELETED:
                     this.$store.commit('event/deleteMessage', <IEventMessage>message.data);
                     break;
             }

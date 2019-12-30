@@ -77,10 +77,11 @@ import { eventService, clientService } from '@/services';
 import { IClient }                     from '@/interfaces';
 import { User, ClientEvent }           from '@/models';
 import { SocketClient }                from '@/socket-client';
+import { SocketMessageType }           from '@/constants';
 
-import ModalWindow from '@/components/ui/ModalWindow.vue';
-import EventForm   from '@/components/event/EventForm.vue';
-import { ISocketMessage } from '../socket-client/interfaces';
+import ModalWindow        from '@/components/ui/ModalWindow.vue';
+import EventForm          from '@/components/event/EventForm.vue';
+import { ISocketMessage } from '@/socket-client/interfaces';
 
 @Component({
     components: {
@@ -222,13 +223,13 @@ export default class OrgEvents extends Vue {
 
         this.socket.subscribe((message: ISocketMessage) => {
             switch(message.type){
-                case SocketClient.EVENT_CREATED:
+                case SocketMessageType.EVENT_CREATED:
                     this.$store.commit('event/addEvent', <ClientEvent>message.data);
                     break;
-                case SocketClient.EVENT_UPDATED:
+                case SocketMessageType.EVENT_UPDATED:
                     this.$store.commit('event/updateEvent', <ClientEvent>message.data);
                     break;
-                case SocketClient.EVENT_DELETED:
+                case SocketMessageType.EVENT_DELETED:
                     this.$store.commit('event/deleteEvent', <ClientEvent>message.data);
                     break;
             }

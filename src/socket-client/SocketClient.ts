@@ -146,32 +146,4 @@ export class SocketClient{
         
         return querystring ? url + querystring : url;
     }
-
-    /*
-        ============
-        STATIC PROPS
-        ============
-    */
-    static CONNECTION_ACCEPTED:     string = 'connection-accepted';
-    static SUBSCRIBER_COUNT_UPDATE: string = 'subscriber-count-update';
-    
-    // User Messages
-    static USER_CREATED: string = 'user-created';
-    static USER_UPDATED: string = 'user-updated';
-    static USER_DELETED: string = 'user-deleted';
-
-    // Event Messages
-    static EVENT_CREATED: string = 'event-created';
-    static EVENT_UPDATED: string = 'event-updated';
-    static EVENT_DELETED: string = 'event-deleted';
-
-    // Question Messages
-    static QUESTION_CREATED: string = 'question-created';
-    static QUESTION_UPDATED: string = 'question-updated';
-    static QUESTION_DELETED: string = 'question-deleted';
-
-    // Message Messages
-    static MESSAGE_CREATED: string = 'message-created';
-    static MESSAGE_UPDATED: string = 'message-updated';
-    static MESSAGE_DELETED: string = 'message-deleted';
 }
