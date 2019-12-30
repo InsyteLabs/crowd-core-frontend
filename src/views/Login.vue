@@ -274,7 +274,7 @@ export default class Login extends Vue {
                 });
             }
 
-            this.$store.dispatch('ws/reopenConnection');
+            // this.$store.dispatch('ws/reopenConnection');
         }
         else{
             this.message = 'Incorrect username / password'

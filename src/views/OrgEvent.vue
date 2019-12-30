@@ -13,6 +13,12 @@
             </div>
 
             <div v-else>
+                <div class="clearfix">
+                    <span class="subscriber-count">
+                        {{ subscriberCount }} {{ subscriberCount === 1 ? 'person' : 'people' }} viewing
+                    </span>
+                </div>
+
                 <div v-if="isLocked" class="card p-3 mb-3">
                     <h3 class="mb-4"><b><u>WARNING:</u></b> This Event Has Been Locked</h3>
                     <h5>You may view details about the event but you may not post new questions or chat messages</h5>
@@ -20,8 +26,10 @@
                 <hr v-if="isLocked">
 
                 <div class="card p-3 mb-3">
-                    <h3>{{ event.title }}</h3>
-                    <p class="mb-0">{{ event.description }}</p>
+                    <div>
+                        <h3>{{ event.title }}</h3>
+                        <p class="mb-0">{{ event.description }}</p>
+                    </div>
                 </div>
                 <div class="row">
                     <div v-show="showQuestionColumn" class="col-md-7 mb-3">
@@ -82,15 +90,15 @@
 import { Vue, Component, Watch, Ref} from 'vue-property-decorator';
 import QRCode                        from 'qrcode';
 
-import { User, ClientEvent } from '@/models';
-import { IClient, IEventMessage, IEventQuestion }           from '@/interfaces';
-import { SocketClient }      from '@/socket-client';
+import { User, ClientEvent }                      from '@/models';
+import { IClient, IEventMessage, IEventQuestion } from '@/interfaces';
+import { SocketClient }                           from '@/socket-client';
+import { ISocketMessage }                         from '@/socket-client/interfaces';
 
-import EventQuestions    from '@/components/event/EventQuestions.vue';
-import EventChat         from '@/components/event/EventChat.vue';
-import EventPasswordForm from '@/components/event/EventPasswordForm.vue';
-import ModalWindow       from '../components/ui/ModalWindow.vue';
-import { ISocketMessage } from '../socket-client/interfaces';
+import EventQuestions     from '@/components/event/EventQuestions.vue';
+import EventChat          from '@/components/event/EventChat.vue';
+import EventPasswordForm  from '@/components/event/EventPasswordForm.vue';
+import ModalWindow        from '../components/ui/ModalWindow.vue';
 
 @Component({
     components: {
@@ -102,7 +110,8 @@ import { ISocketMessage } from '../socket-client/interfaces';
 export default class OrgEvent extends Vue {
     @Ref('qrModal') qrModal!: ModalWindow;
 
-    socket: SocketClient|null = null;
+    socket:          SocketClient|null = null;
+    subscriberCount: number            = 1;
 
     qrCodeDataUrl: string  = '';
     currentURL:    string  = window.location.href;
@@ -270,6 +279,11 @@ export default class OrgEvent extends Vue {
 
         this.socket.subscribe((message: ISocketMessage) => {
             switch(message.type){
+                case SocketClient.SUBSCRIBER_COUNT_UPDATE:
+                    console.log('subscriber count updated');
+                    console.log(message);
+                    this.subscriberCount = (<any>message.data).count;
+                    break;
                 case SocketClient.EVENT_UPDATED:
                     this.$store.commit('event/updateEvent', <ClientEvent>message.data);
                     break;
@@ -349,4 +363,15 @@ ul
     max-width: 100%
     display: block
     margin: 0 auto
+
+.subscriber-count
+    float: right
+    background-color: $purple
+    color: white
+    padding: 1px 5px
+    border-radius: 5px
+    margin-right: 2px
+    margin-bottom: 6px
+    margin-top: -10px
+    font-size: .9rem
 </style>

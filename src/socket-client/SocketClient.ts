@@ -152,7 +152,8 @@ export class SocketClient{
         STATIC PROPS
         ============
     */
-    static CONNECTION_ACCEPTED: string = 'connection-accepted';
+    static CONNECTION_ACCEPTED:     string = 'connection-accepted';
+    static SUBSCRIBER_COUNT_UPDATE: string = 'subscriber-count-update';
     
     // User Messages
     static USER_CREATED: string = 'user-created';
