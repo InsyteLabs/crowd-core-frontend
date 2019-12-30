@@ -153,7 +153,7 @@ export default class Question extends Vue {
 
 .upvote.active svg,
 .downvote.active svg
-    color: $purple
+    color: $primary
 
 .score
     line-height: .8

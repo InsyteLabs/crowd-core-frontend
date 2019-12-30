@@ -332,7 +332,7 @@ ul
 
 .event-icons
     .icon-btn
-        background-color: $purple
+        background-color: $primary
         color: white
         cursor: pointer
         float: right
@@ -364,7 +364,7 @@ ul
 
 .subscriber-count
     float: right
-    background-color: $purple
+    background-color: $primary
     color: white
     padding: 1px 5px
     border-radius: 5px

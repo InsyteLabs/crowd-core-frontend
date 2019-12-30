@@ -91,7 +91,7 @@ a, a:visited, a:active, a:hover
     text-decoration: none
 
     &.router-link-exact-active
-        background-color: $purple
+        background-color: $primary
 
 #nav
     height: 100%
